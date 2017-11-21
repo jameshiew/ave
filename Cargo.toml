@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["James Hiew <james@hiew.net>"]
 
 [dependencies]
+glium = "*"
 glutin = "*"
-gl = "*"
-libc = "*"
+genmesh = "*"
+obj = { version = "*", features = ["genmesh"] }
