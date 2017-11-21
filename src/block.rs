@@ -34,15 +34,15 @@ impl Chunk {
     }
 
     pub fn get_x(&self, x: u8) -> i32 {
-        self.x * (CHUNK_SIZE as u8 + x) as i32
+        (self.x * CHUNK_SIZE as i32) + x as i32
     }
 
     pub fn get_y(&self, y: u8) -> i32 {
-        self.y * (CHUNK_SIZE as u8 + y) as i32
+        (self.y * CHUNK_SIZE as i32) + y as i32
     }
 
     pub fn get_z(&self, z: u8) -> i32 {
-        self.z * (CHUNK_SIZE as u8 + z) as i32
+        (self.z * CHUNK_SIZE as i32) + z as i32
     }
 
     pub fn get_vertices<F: ? Sized>(&self, facade: &F, x: u8, y: u8, z: u8) -> Option<VertexBuffer<Vertex>> where F: Facade {
