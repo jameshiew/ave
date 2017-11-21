@@ -11,6 +11,10 @@ pub struct CameraState {
     moving_right: bool,
     moving_forward: bool,
     moving_backward: bool,
+    rotating_up: bool,
+    rotating_left: bool,
+    rotating_down: bool,
+    rotating_right: bool,
 }
 
 impl CameraState {
@@ -25,6 +29,10 @@ impl CameraState {
             moving_right: false,
             moving_forward: false,
             moving_backward: false,
+            rotating_up: false,
+            rotating_left: false,
+            rotating_down: false,
+            rotating_right: false,
         }
     }
 
@@ -137,6 +145,30 @@ impl CameraState {
             self.position.2 += s.2 * 0.01;
         }
 
+        if self.rotating_up {
+            self.direction.0 += u.0 * 0.01;
+            self.direction.1 += u.1 * 0.01;
+            self.direction.2 += u.2 * 0.01;
+        }
+
+        if self.rotating_left {
+            self.direction.0 -= s.0 * 0.01;
+            self.direction.1 -= s.1 * 0.01;
+            self.direction.2 -= s.2 * 0.01;
+        }
+
+        if self.rotating_down {
+            self.direction.0 -= u.0 * 0.01;
+            self.direction.1 -= u.1 * 0.01;
+            self.direction.2 -= u.2 * 0.01;
+        }
+
+        if self.rotating_right {
+            self.direction.0 += s.0 * 0.01;
+            self.direction.1 += s.1 * 0.01;
+            self.direction.2 += s.2 * 0.01;
+        }
+
         if self.moving_forward {
             self.position.0 += f.0 * 0.01;
             self.position.1 += f.1 * 0.01;
@@ -161,12 +193,16 @@ impl CameraState {
             None => return,
         };
         match key {
-            glutin::VirtualKeyCode::Up => self.moving_up = pressed,
-            glutin::VirtualKeyCode::Down => self.moving_down = pressed,
+            glutin::VirtualKeyCode::Space => self.moving_up = pressed,
+            glutin::VirtualKeyCode::LControl => self.moving_down = pressed,
             glutin::VirtualKeyCode::A => self.moving_left = pressed,
             glutin::VirtualKeyCode::D => self.moving_right = pressed,
             glutin::VirtualKeyCode::W => self.moving_forward = pressed,
             glutin::VirtualKeyCode::S => self.moving_backward = pressed,
+            glutin::VirtualKeyCode::Left => self.rotating_left = pressed,
+            glutin::VirtualKeyCode::Right => self.rotating_right = pressed,
+            glutin::VirtualKeyCode::Up => self.rotating_up = pressed,
+            glutin::VirtualKeyCode::Down => self.rotating_down = pressed,
             _ => (),
         };
     }
