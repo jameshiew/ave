@@ -10,6 +10,7 @@ use std::io::Cursor;
 use glium::{glutin, Surface};
 use vertex::Vertex;
 use block::Chunk;
+use block::BlockType;
 
 fn main() {
     let mut events_loop = glutin::EventsLoop::new();
@@ -61,14 +62,9 @@ fn main() {
     implement_vertex!(Vertex, position, normal, tex_coords);
 
     let mut chunk = Chunk::new(0, 0, 0);
-    for x in 0..32 {
-        for y in 0..32 {
-            for z in 0..32 {
-                if y == 1 || x == 1 {
-                    chunk.set(x, y, z, 1);
-                }
-            }
-        }
+    for z in 0..32 {
+        chunk.set((1, 1, z), BlockType::Solid);
+        chunk.set((2, (z * 2 + 1) % 32, 10), BlockType::Solid);
     }
 
     support::start_loop(|| {
