@@ -11,6 +11,9 @@ pub struct CameraState {
     position: (f32, f32, f32),
     direction: (f32, f32, f32),
 
+    move_speed: f32,
+    rotation_speed: f32,
+
     moving_up: bool,
     moving_left: bool,
     moving_down: bool,
@@ -29,6 +32,8 @@ impl CameraState {
             aspect_ratio: 1024.0 / 768.0,
             position: (0.1, 0.1, 1.0),
             direction: (0.0, 0.0, -1.0),
+            move_speed: 0.12,
+            rotation_speed: 0.08,
             moving_up: false,
             moving_left: false,
             moving_down: false,
@@ -128,63 +133,63 @@ impl CameraState {
                  s.0 * f.1 - s.1 * f.0);
 
         if self.moving_up {
-            self.position.0 += u.0 * 0.01;
-            self.position.1 += u.1 * 0.01;
-            self.position.2 += u.2 * 0.01;
+            self.position.0 += u.0 * self.move_speed;
+            self.position.1 += u.1 * self.move_speed;
+            self.position.2 += u.2 * self.move_speed;
         }
 
         if self.moving_left {
-            self.position.0 -= s.0 * 0.01;
-            self.position.1 -= s.1 * 0.01;
-            self.position.2 -= s.2 * 0.01;
+            self.position.0 -= s.0 * self.move_speed;
+            self.position.1 -= s.1 * self.move_speed;
+            self.position.2 -= s.2 * self.move_speed;
         }
 
         if self.moving_down {
-            self.position.0 -= u.0 * 0.01;
-            self.position.1 -= u.1 * 0.01;
-            self.position.2 -= u.2 * 0.01;
+            self.position.0 -= u.0 * self.move_speed;
+            self.position.1 -= u.1 * self.move_speed;
+            self.position.2 -= u.2 * self.move_speed;
         }
 
         if self.moving_right {
-            self.position.0 += s.0 * 0.01;
-            self.position.1 += s.1 * 0.01;
-            self.position.2 += s.2 * 0.01;
+            self.position.0 += s.0 * self.move_speed;
+            self.position.1 += s.1 * self.move_speed;
+            self.position.2 += s.2 * self.move_speed;
         }
 
         if self.rotating_up {
-            self.direction.0 += u.0 * 0.01;
-            self.direction.1 += u.1 * 0.01;
-            self.direction.2 += u.2 * 0.01;
+            self.direction.0 += u.0 * self.rotation_speed;
+            self.direction.1 += u.1 * self.rotation_speed;
+            self.direction.2 += u.2 * self.rotation_speed;
         }
 
         if self.rotating_left {
-            self.direction.0 -= s.0 * 0.01;
-            self.direction.1 -= s.1 * 0.01;
-            self.direction.2 -= s.2 * 0.01;
+            self.direction.0 -= s.0 * self.rotation_speed;
+            self.direction.1 -= s.1 * self.rotation_speed;
+            self.direction.2 -= s.2 * self.rotation_speed;
         }
 
         if self.rotating_down {
-            self.direction.0 -= u.0 * 0.01;
-            self.direction.1 -= u.1 * 0.01;
-            self.direction.2 -= u.2 * 0.01;
+            self.direction.0 -= u.0 * self.rotation_speed;
+            self.direction.1 -= u.1 * self.rotation_speed;
+            self.direction.2 -= u.2 * self.rotation_speed;
         }
 
         if self.rotating_right {
-            self.direction.0 += s.0 * 0.01;
-            self.direction.1 += s.1 * 0.01;
-            self.direction.2 += s.2 * 0.01;
+            self.direction.0 += s.0 * self.rotation_speed;
+            self.direction.1 += s.1 * self.rotation_speed;
+            self.direction.2 += s.2 * self.rotation_speed;
         }
 
         if self.moving_forward {
-            self.position.0 += f.0 * 0.01;
-            self.position.1 += f.1 * 0.01;
-            self.position.2 += f.2 * 0.01;
+            self.position.0 += f.0 * self.move_speed;
+            self.position.1 += f.1 * self.move_speed;
+            self.position.2 += f.2 * self.move_speed;
         }
 
         if self.moving_backward {
-            self.position.0 -= f.0 * 0.01;
-            self.position.1 -= f.1 * 0.01;
-            self.position.2 -= f.2 * 0.01;
+            self.position.0 -= f.0 * self.move_speed;
+            self.position.1 -= f.1 * self.move_speed;
+            self.position.2 -= f.2 * self.move_speed;
         }
     }
 
