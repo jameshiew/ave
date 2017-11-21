@@ -1,5 +1,11 @@
 extern crate glutin;
 
+use std;
+
+const DEFAULT_FIELD_OF_VIEW: f32 = std::f32::consts::PI / 2.0 * (7.0 / 9.0);
+const DEFAULT_Z_NEAR_CUTOFF: f32 = 0.1;
+const DEFAULT_Z_FAR_CUTOFF: f32 = 1024.0;
+
 pub struct CameraState {
     aspect_ratio: f32,
     position: (f32, f32, f32),
@@ -45,11 +51,11 @@ impl CameraState {
     }
 
     pub fn get_perspective(&self) -> [[f32; 4]; 4] {
-        let fov: f32 = 3.141592 / 2.0;
-        let zfar = 1024.0;
-        let znear = 0.1;
+        let fov = DEFAULT_FIELD_OF_VIEW;
+        let zfar = DEFAULT_Z_FAR_CUTOFF;
+        let znear = DEFAULT_Z_NEAR_CUTOFF;
 
-        let f = 1.0 / (fov / 2.0).tan();
+        let f = 1.0 / (DEFAULT_FIELD_OF_VIEW / 2.0).tan();
 
         // note: remember that this is column-major, so the lines of code are actually columns
         [
