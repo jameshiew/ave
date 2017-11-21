@@ -9,7 +9,7 @@ mod block;
 use std::io::Cursor;
 use glium::{glutin, Surface};
 use vertex::Vertex;
-use block::Block;
+use block::Chunk;
 
 fn main() {
     let mut events_loop = glutin::EventsLoop::new();
@@ -60,28 +60,45 @@ fn main() {
 
     implement_vertex!(Vertex, position, normal, tex_coords);
 
-    let blk = Block::new(1.0, 2.0, 0.0);
-    let shape = blk.get_vertices(&display);
+    let mut chunk = Chunk::new(0, 0, 0);
+    for x in 0..32 {
+        for y in 0..32 {
+            for z in 0..32 {
+                if y == 1 || x == 1 {
+                    chunk.set(x, y, z, 1);
+                }
+            }
+        }
+    }
 
     support::start_loop(|| {
         camera.update();
         let mut target = display.draw();
         target.clear_color_and_depth((0.0, 0.0, 1.0, 1.0), 1.0);
 
-        target.draw(
-            &shape,
-            glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip),
-            &program,
-            &uniform! {
-                model: model,
-                perspective: camera.get_perspective(),
-                view: camera.get_view(),
-                u_light: light,
-                diffuse_tex: &diffuse_texture,
-                normal_tex: &normal_map
-            },
-            &params
-        ).unwrap();
+        for x in 0..32 {
+            for y in 0..32 {
+                for z in 0..32 {
+                    match chunk.get_vertices(&display, x, y, z) {
+                        Some(block) => target.draw(
+                            &block,
+                            glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip),
+                            &program,
+                            &uniform! {
+                                model: model,
+                                perspective: camera.get_perspective(),
+                                view: camera.get_view(),
+                                u_light: light,
+                                diffuse_tex: &diffuse_texture,
+                                normal_tex: &normal_map
+                            },
+                            &params
+                        ).unwrap(),
+                        None => ()
+                    }
+                }
+            }
+        }
         target.finish().unwrap();
 
         let mut action = support::Action::Continue;
