@@ -6,6 +6,8 @@ use glium::vertex::VertexBuffer;
 use glium::backend::Facade;
 use std::option::Option;
 
+const BLOCK_SIZE: f32 = 0.5;
+
 #[derive(Copy, Clone)]
 pub struct Block {
     x: f32,
@@ -20,35 +22,35 @@ impl Block {
 
     pub fn get_vertices<F: ? Sized>(self, facade: &F) -> VertexBuffer<Vertex> where F: Facade {
         return VertexBuffer::new(facade, &[
-            Vertex { position: [self.x - 1.0, self.y - 1.0, self.z - 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [0.0, 1.0]},
-            Vertex { position: [self.x - 1.0, self.y - 1.0, self.z + 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [1.0, 1.0]},
-            Vertex { position: [self.x - 1.0, self.y + 1.0, self.z - 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [0.0, 0.0]},
-            Vertex { position: [self.x - 1.0, self.y + 1.0, self.z + 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [1.0, 0.0]},
+            Vertex { position: [self.x - BLOCK_SIZE, self.y - BLOCK_SIZE, self.z - BLOCK_SIZE], normal: [1.0, 0.0, 0.0], tex_coords: [0.0, 1.0]},
+            Vertex { position: [self.x - BLOCK_SIZE, self.y - BLOCK_SIZE, self.z + BLOCK_SIZE], normal: [1.0, 0.0, 0.0], tex_coords: [1.0, 1.0]},
+            Vertex { position: [self.x - BLOCK_SIZE, self.y + BLOCK_SIZE, self.z - BLOCK_SIZE], normal: [1.0, 0.0, 0.0], tex_coords: [0.0, 0.0]},
+            Vertex { position: [self.x - BLOCK_SIZE, self.y + BLOCK_SIZE, self.z + BLOCK_SIZE], normal: [1.0, 0.0, 0.0], tex_coords: [1.0, 0.0]},
 
-            Vertex { position: [self.x + 1.0, self.y - 1.0, self.z - 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [0.0, 1.0]},
-            Vertex { position: [self.x + 1.0, self.y - 1.0, self.z + 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [1.0, 1.0]},
-            Vertex { position: [self.x + 1.0, self.y + 1.0, self.z - 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [0.0, 0.0]},
-            Vertex { position: [self.x + 1.0, self.y + 1.0, self.z + 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [1.0, 0.0]},
+            Vertex { position: [self.x + BLOCK_SIZE, self.y - BLOCK_SIZE, self.z - BLOCK_SIZE], normal: [-1.0, 0.0, 0.0], tex_coords: [0.0, 1.0]},
+            Vertex { position: [self.x + BLOCK_SIZE, self.y - BLOCK_SIZE, self.z + BLOCK_SIZE], normal: [-1.0, 0.0, 0.0], tex_coords: [1.0, 1.0]},
+            Vertex { position: [self.x + BLOCK_SIZE, self.y + BLOCK_SIZE, self.z - BLOCK_SIZE], normal: [-1.0, 0.0, 0.0], tex_coords: [0.0, 0.0]},
+            Vertex { position: [self.x + BLOCK_SIZE, self.y + BLOCK_SIZE, self.z + BLOCK_SIZE], normal: [-1.0, 0.0, 0.0], tex_coords: [1.0, 0.0]},
 
-            Vertex { position: [self.x - 1.0, self.y + 1.0, self.z - 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [0.0, 1.0]},
-            Vertex { position: [self.x - 1.0, self.y + 1.0, self.z + 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [1.0, 1.0]},
-            Vertex { position: [self.x + 1.0, self.y + 1.0, self.z - 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [0.0, 0.0]},
-            Vertex { position: [self.x + 1.0, self.y + 1.0, self.z + 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [1.0, 0.0]},
+            Vertex { position: [self.x - BLOCK_SIZE, self.y + BLOCK_SIZE, self.z - BLOCK_SIZE], normal: [0.0, -1.0, 0.0], tex_coords: [0.0, 1.0]},
+            Vertex { position: [self.x - BLOCK_SIZE, self.y + BLOCK_SIZE, self.z + BLOCK_SIZE], normal: [0.0, -1.0, 0.0], tex_coords: [1.0, 1.0]},
+            Vertex { position: [self.x + BLOCK_SIZE, self.y + BLOCK_SIZE, self.z - BLOCK_SIZE], normal: [0.0, -1.0, 0.0], tex_coords: [0.0, 0.0]},
+            Vertex { position: [self.x + BLOCK_SIZE, self.y + BLOCK_SIZE, self.z + BLOCK_SIZE], normal: [0.0, -1.0, 0.0], tex_coords: [1.0, 0.0]},
 
-            Vertex { position: [self.x - 1.0, self.y - 1.0, self.z - 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [0.0, 1.0]},
-            Vertex { position: [self.x - 1.0, self.y - 1.0, self.z + 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [1.0, 1.0]},
-            Vertex { position: [self.x + 1.0, self.y - 1.0, self.z - 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [0.0, 0.0]},
-            Vertex { position: [self.x + 1.0, self.y - 1.0, self.z + 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [1.0, 0.0]},
+            Vertex { position: [self.x - BLOCK_SIZE, self.y - BLOCK_SIZE, self.z - BLOCK_SIZE], normal: [0.0, 1.0, 0.0], tex_coords: [0.0, 1.0]},
+            Vertex { position: [self.x - BLOCK_SIZE, self.y - BLOCK_SIZE, self.z + BLOCK_SIZE], normal: [0.0, 1.0, 0.0], tex_coords: [1.0, 1.0]},
+            Vertex { position: [self.x + BLOCK_SIZE, self.y - BLOCK_SIZE, self.z - BLOCK_SIZE], normal: [0.0, 1.0, 0.0], tex_coords: [0.0, 0.0]},
+            Vertex { position: [self.x + BLOCK_SIZE, self.y - BLOCK_SIZE, self.z + BLOCK_SIZE], normal: [0.0, 1.0, 0.0], tex_coords: [1.0, 0.0]},
 
-            Vertex { position: [self.x - 1.0, self.y - 1.0, self.z - 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [0.0, 1.0]},
-            Vertex { position: [self.x - 1.0, self.y + 1.0, self.z - 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [1.0, 1.0]},
-            Vertex { position: [self.x + 1.0, self.y - 1.0, self.z - 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [0.0, 0.0]},
-            Vertex { position: [self.x + 1.0, self.y + 1.0, self.z - 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [1.0, 0.0]},
+            Vertex { position: [self.x - BLOCK_SIZE, self.y - BLOCK_SIZE, self.z - BLOCK_SIZE], normal: [0.0, 0.0, 1.0], tex_coords: [0.0, 1.0]},
+            Vertex { position: [self.x - BLOCK_SIZE, self.y + BLOCK_SIZE, self.z - BLOCK_SIZE], normal: [0.0, 0.0, 1.0], tex_coords: [1.0, 1.0]},
+            Vertex { position: [self.x + BLOCK_SIZE, self.y - BLOCK_SIZE, self.z - BLOCK_SIZE], normal: [0.0, 0.0, 1.0], tex_coords: [0.0, 0.0]},
+            Vertex { position: [self.x + BLOCK_SIZE, self.y + BLOCK_SIZE, self.z - BLOCK_SIZE], normal: [0.0, 0.0, 1.0], tex_coords: [1.0, 0.0]},
 
-            Vertex { position: [self.x - 1.0, self.y - 1.0, self.z + 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [0.0, 1.0]},
-            Vertex { position: [self.x - 1.0, self.y + 1.0, self.z + 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [1.0, 1.0]},
-            Vertex { position: [self.x + 1.0, self.y - 1.0, self.z + 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [0.0, 0.0]},
-            Vertex { position: [self.x + 1.0, self.y + 1.0, self.z + 1.0], normal: [0.0, 0.0, self.z - 1.0], tex_coords: [1.0, 0.0]}
+            Vertex { position: [self.x - BLOCK_SIZE, self.y - BLOCK_SIZE, self.z + BLOCK_SIZE], normal: [0.0, 0.0, -1.0], tex_coords: [0.0, 1.0]},
+            Vertex { position: [self.x - BLOCK_SIZE, self.y + BLOCK_SIZE, self.z + BLOCK_SIZE], normal: [0.0, 0.0, -1.0], tex_coords: [1.0, 1.0]},
+            Vertex { position: [self.x + BLOCK_SIZE, self.y - BLOCK_SIZE, self.z + BLOCK_SIZE], normal: [0.0, 0.0, -1.0], tex_coords: [0.0, 0.0]},
+            Vertex { position: [self.x + BLOCK_SIZE, self.y + BLOCK_SIZE, self.z + BLOCK_SIZE], normal: [0.0, 0.0, -1.0], tex_coords: [1.0, 0.0]}
         ]).unwrap();
     }
 }
