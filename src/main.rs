@@ -33,8 +33,8 @@ fn main() {
 
     let program = glium::Program::from_source(
         &display,
-        include_str!("./shaders/texture.glslv"),
-        include_str!("./shaders/texture.glslf"),
+        include_str!("./shaders/notexture.glslv"),
+        include_str!("./shaders/notexture.glslf"),
         None,
     ).unwrap();
 
