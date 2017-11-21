@@ -55,7 +55,7 @@ impl CameraState {
         let zfar = DEFAULT_Z_FAR_CUTOFF;
         let znear = DEFAULT_Z_NEAR_CUTOFF;
 
-        let f = 1.0 / (DEFAULT_FIELD_OF_VIEW / 2.0).tan();
+        let f = 1.0 / (fov / 2.0).tan();
 
         // note: remember that this is column-major, so the lines of code are actually columns
         [
