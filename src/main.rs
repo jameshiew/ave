@@ -4,9 +4,11 @@ extern crate image;
 
 mod support;
 mod vertex;
+mod block;
 
 use std::io::Cursor;
 use vertex::Vertex;
+use block::Block;
 
 fn main() {
     use glium::{glutin, Surface};
@@ -18,13 +20,8 @@ fn main() {
 
     implement_vertex!(Vertex, position, normal, tex_coords);
 
-    let shape = glium::vertex::VertexBuffer::new(&display, &[
-        Vertex { position: [-1.0, 1.0, 0.0], normal: [0.0, 0.0, -1.0], tex_coords: [0.0, 1.0] },
-        Vertex { position: [1.0, 1.0, 0.0], normal: [0.0, 0.0, -1.0], tex_coords: [1.0, 1.0] },
-        Vertex { position: [-1.0, -1.0, 0.0], normal: [0.0, 0.0, -1.0], tex_coords: [0.0, 0.0] },
-        Vertex { position: [1.0, -1.0, 0.0], normal: [0.0, 0.0, -1.0], tex_coords: [1.0, 0.0] },
-    ]).unwrap();
-
+    let blk = Block::new();
+    let shape = blk.get_vertices(&display);
 
     let image = image::load(Cursor::new(&include_bytes!("./support/tuto-14-diffuse.jpg")[..]),
                             image::JPEG).unwrap().to_rgba();
