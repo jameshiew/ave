@@ -2,9 +2,11 @@
 extern crate glium;
 extern crate image;
 
-use std::io::Cursor;
-
 mod support;
+mod vertex;
+
+use std::io::Cursor;
+use vertex::Vertex;
 
 fn main() {
     use glium::{glutin, Surface};
@@ -13,13 +15,6 @@ fn main() {
     let window = glutin::WindowBuilder::new();
     let context = glutin::ContextBuilder::new().with_depth_buffer(24);
     let display = glium::Display::new(window, context, &events_loop).unwrap();
-
-    #[derive(Copy, Clone)]
-    struct Vertex {
-        position: [f32; 3],
-        normal: [f32; 3],
-        tex_coords: [f32; 2],
-    }
 
     implement_vertex!(Vertex, position, normal, tex_coords);
 
