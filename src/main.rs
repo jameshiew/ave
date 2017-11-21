@@ -20,7 +20,7 @@ fn main() {
 
     implement_vertex!(Vertex, position, normal, tex_coords);
 
-    let blk = Block::new();
+    let blk = Block::new(1.0, 2.0, 0.0);
     let shape = blk.get_vertices(&display);
 
     let image = image::load(Cursor::new(&include_bytes!("./support/tuto-14-diffuse.jpg")[..]),
