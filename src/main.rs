@@ -15,7 +15,7 @@ fn main() {
 
     let mut events_loop = glutin::EventsLoop::new();
     let window = glutin::WindowBuilder::new();
-    let context = glutin::ContextBuilder::new().with_depth_buffer(24);
+    let context = glutin::ContextBuilder::new().with_depth_buffer(24).with_vsync(true);
     let display = glium::Display::new(window, context, &events_loop).unwrap();
 
     implement_vertex!(Vertex, position, normal, tex_coords);
