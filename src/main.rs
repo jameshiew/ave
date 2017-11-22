@@ -7,7 +7,6 @@ mod vertex;
 mod block;
 
 use glium::{glutin, Surface};
-use vertex::Vertex;
 use block::Chunk;
 use block::BlockType;
 
@@ -45,8 +44,6 @@ fn main() {
     };
 
     let light = [1.4, 0.4, 0.7f32];
-
-    implement_vertex!(Vertex, position, normal, color);
 
     let mut chunk = Chunk::new(0, 0, 0);
     for z in 0..32 {

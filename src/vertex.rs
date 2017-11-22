@@ -4,3 +4,5 @@ pub struct Vertex {
     pub normal: [f32; 3],
     pub color: [f32; 3],
 }
+
+implement_vertex!(Vertex, position, normal, color);
