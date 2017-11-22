@@ -91,9 +91,8 @@ impl World {
                 }
             }
         } else if wy == 0 {
-            for z in 0..32 {
-                chunk.set((1, 1, z), BlockType::Solid);
-                chunk.set((2, (z * 2 + 1) % 32, 10), BlockType::Solid);
+            for y in 0..12 {
+                chunk.set((7, y, 7), BlockType::Solid);
             }
         }
         match self.chunks.insert((wx, wy, wz), chunk) {
