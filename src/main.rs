@@ -6,7 +6,6 @@ mod support;
 mod vertex;
 mod block;
 
-use std::io::Cursor;
 use glium::{glutin, Surface};
 use vertex::Vertex;
 use block::Chunk;
@@ -19,18 +18,6 @@ fn main() {
         .with_depth_buffer(24)
         .with_vsync(true);
     let display = glium::Display::new(window, context, &events_loop).unwrap();
-
-    let image = image::load(Cursor::new(&include_bytes!("./support/tuto-14-diffuse.jpg")[..]),
-                            image::JPEG).unwrap().to_rgba();
-    let image_dimensions = image.dimensions();
-    let image = glium::texture::RawImage2d::from_raw_rgba_reversed(&image.into_raw(), image_dimensions);
-    let diffuse_texture = glium::texture::SrgbTexture2d::new(&display, image).unwrap();
-
-    let image = image::load(Cursor::new(&include_bytes!("./support/tuto-14-normal.png")[..]),
-                            image::PNG).unwrap().to_rgba();
-    let image_dimensions = image.dimensions();
-    let image = glium::texture::RawImage2d::from_raw_rgba_reversed(&image.into_raw(), image_dimensions);
-    let normal_map = glium::texture::Texture2d::new(&display, image).unwrap();
 
     let program = glium::Program::from_source(
         &display,
@@ -59,7 +46,7 @@ fn main() {
 
     let light = [1.4, 0.4, 0.7f32];
 
-    implement_vertex!(Vertex, position, normal, tex_coords);
+    implement_vertex!(Vertex, position, normal);
 
     let mut chunk = Chunk::new(0, 0, 0);
     for z in 0..32 {
@@ -85,8 +72,6 @@ fn main() {
                                 perspective: camera.get_perspective(),
                                 view: camera.get_view(),
                                 u_light: light,
-                                diffuse_tex: &diffuse_texture,
-                                normal_tex: &normal_map
                             },
                             &params
                         ).unwrap(),
