@@ -7,6 +7,7 @@ extern crate obj;
 mod vertex;
 mod block;
 mod camera;
+mod space;
 
 use glium::{glutin, Surface};
 use block::Chunk;

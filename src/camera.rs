@@ -4,6 +4,7 @@ extern crate cgmath;
 use self::cgmath::{Rad, Angle, PerspectiveFov, Matrix4};
 
 use std;
+use space::{Position, Direction};
 
 const DEFAULT_ASPECT_RATIO: f32 = 1024.0 / 768.0;
 const DEFAULT_FIELD_OF_VIEW: Rad<f32> = Rad(std::f32::consts::PI / 2.0 * (7.0 / 9.0));
@@ -12,8 +13,8 @@ const DEFAULT_Z_FAR_CUTOFF: f32 = 1024.0;
 
 pub struct CameraState {
     perspective_fov: PerspectiveFov<f32>,
-    position: (f32, f32, f32),
-    direction: (f32, f32, f32),
+    position: Position,
+    direction: Direction,
 
     move_speed: f32,
     rotation_speed: f32,
@@ -39,8 +40,8 @@ impl CameraState {
                 near: DEFAULT_Z_NEAR_CUTOFF,
                 far: DEFAULT_Z_FAR_CUTOFF,
             },
-            position: (0.1, 0.1, 1.0),
-            direction: (0.0, 0.0, -1.0),
+            position: Position(0.1, 0.1, 1.0),
+            direction: Direction(0.0, 0.0, -1.0),
             move_speed: 0.12,
             rotation_speed: 0.08,
             moving_up: false,
@@ -68,7 +69,7 @@ impl CameraState {
 
     pub fn get_view(&self) -> [[f32; 4]; 4] {
         let f = {
-            let f = self.direction;
+            let f = &self.direction;
             let len = f.0 * f.0 + f.1 * f.1 + f.2 * f.2;
             let len = len.sqrt();
             (f.0 / len, f.1 / len, f.2 / len)
@@ -104,7 +105,7 @@ impl CameraState {
 
     pub fn update(&mut self) {
         let f = {
-            let f = self.direction;
+            let f = &self.direction;
             let len = f.0 * f.0 + f.1 * f.1 + f.2 * f.2;
             let len = len.sqrt();
             (f.0 / len, f.1 / len, f.2 / len)
