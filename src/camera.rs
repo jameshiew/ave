@@ -47,14 +47,6 @@ impl CameraState {
         }
     }
 
-    pub fn set_position(&mut self, pos: (f32, f32, f32)) {
-        self.position = pos;
-    }
-
-    pub fn set_direction(&mut self, dir: (f32, f32, f32)) {
-        self.direction = dir;
-    }
-
     pub fn get_perspective(&self) -> [[f32; 4]; 4] {
         let fov = DEFAULT_FIELD_OF_VIEW;
         let zfar = DEFAULT_Z_FAR_CUTOFF;
