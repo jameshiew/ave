@@ -9,3 +9,4 @@ glutin = "*"
 genmesh = "*"
 obj = { version = "*", features = ["genmesh"] }
 image = "*"
+cgmath = "*"
