@@ -12,7 +12,7 @@ mod space;
 
 use glium::{glutin, Surface};
 use cgmath::Matrix4;
-use block::{Chunk, BlockType, World};
+use block::{BlockType, World};
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -87,25 +87,30 @@ fn main() {
         let mut target = display.draw();
         target.clear_color_and_depth((0.0, 0.0, 0.0, 1.0), 1.0);
 
-        let chunk = world.get(0, 0, 0);
-
-        for x in 0..32 {
-            for y in 0..32 {
-                for z in 0..32 {
-                    match chunk.get_vertices(&display, x, y, z) {
-                        Some(block) => target.draw(
-                            &block,
-                            glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip),
-                            &program,
-                            &uniform! {
+        for x in -1..2 {
+            for y in -1..2 {
+                for z in -1..2 {
+                    let chunk = world.get(x, y, z);
+                    for (chunk_position, block_type) in chunk.blocks.iter() {
+                        match block_type {
+                            &BlockType::Solid => {
+                                let world_position = World::get_position(x, y, z, chunk_position.0, chunk_position.1, chunk_position.2);
+                                let vertices = block::make_cube(&display, world_position.0, world_position.1, world_position.2);
+                                target.draw(
+                                    &vertices,
+                                    glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip),
+                                    &program,
+                                    &uniform! {
                                 model: model,
                                 perspective: camera.get_perspective(),
                                 view: camera.get_view(),
                                 u_light: light,
                             },
-                            &params
-                        ).unwrap(),
-                        None => ()
+                                    &params
+                                ).unwrap()
+                            },
+                            &BlockType::Empty => (),
+                        }
                     }
                 }
             }
@@ -127,39 +132,4 @@ fn main() {
 
         return action;
     });
-}
-
-
-fn view_matrix(position: &[f32; 3], direction: &[f32; 3], up: &[f32; 3]) -> [[f32; 4]; 4] {
-    let f = {
-        let f = direction;
-        let len = f[0] * f[0] + f[1] * f[1] + f[2] * f[2];
-        let len = len.sqrt();
-        [f[0] / len, f[1] / len, f[2] / len]
-    };
-
-    let s = [up[1] * f[2] - up[2] * f[1],
-        up[2] * f[0] - up[0] * f[2],
-        up[0] * f[1] - up[1] * f[0]];
-
-    let s_norm = {
-        let len = s[0] * s[0] + s[1] * s[1] + s[2] * s[2];
-        let len = len.sqrt();
-        [s[0] / len, s[1] / len, s[2] / len]
-    };
-
-    let u = [f[1] * s_norm[2] - f[2] * s_norm[1],
-        f[2] * s_norm[0] - f[0] * s_norm[2],
-        f[0] * s_norm[1] - f[1] * s_norm[0]];
-
-    let p = [-position[0] * s_norm[0] - position[1] * s_norm[1] - position[2] * s_norm[2],
-        -position[0] * u[0] - position[1] * u[1] - position[2] * u[2],
-        -position[0] * f[0] - position[1] * f[1] - position[2] * f[2]];
-
-    [
-        [s_norm[0], u[0], f[0], 0.0],
-        [s_norm[1], u[1], f[1], 0.0],
-        [s_norm[2], u[2], f[2], 0.0],
-        [p[0], p[1], p[2], 1.0],
-    ]
 }

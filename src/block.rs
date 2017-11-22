@@ -1,10 +1,9 @@
 extern crate glium;
 
 use vertex::Vertex;
-
+use space::Position;
 use glium::vertex::VertexBuffer;
 use glium::backend::Facade;
-use std::option::Option;
 use std::collections::HashMap;
 
 const BLOCK_SIZE: f32 = 0.5;
@@ -52,43 +51,22 @@ pub enum BlockType {
 pub type ChunkPosition = (u8, u8, u8);
 
 pub struct Chunk {
-    x: i32,
-    y: i32,
-    z: i32,
-    blocks: HashMap<ChunkPosition, BlockType>,
+    pub blocks: HashMap<ChunkPosition, BlockType>,
 }
 
 impl Chunk {
-    pub fn new(x: i32, y: i32, z: i32) -> Chunk {
-        Chunk { x, y, z, blocks: HashMap::new() }
+    pub fn new() -> Chunk {
+        Chunk {blocks: HashMap::new() }
     }
 
     pub fn set(&mut self, position: ChunkPosition, block_type: BlockType) {
         self.blocks.insert(position, block_type);
     }
 
-    pub fn get_x(&self, x: u8) -> i32 {
-        (self.x * CHUNK_SIZE as i32) + x as i32
-    }
-
-    pub fn get_y(&self, y: u8) -> i32 {
-        (self.y * CHUNK_SIZE as i32) + y as i32
-    }
-
-    pub fn get_z(&self, z: u8) -> i32 {
-        (self.z * CHUNK_SIZE as i32) + z as i32
-    }
-
-    pub fn get_vertices<F: ? Sized>(&self, facade: &F, x: u8, y: u8, z: u8) -> Option<VertexBuffer<Vertex>> where F: Facade {
-        let _x = self.get_x(x) as f32;
-        let _y = self.get_y(y) as f32;
-        let _z = self.get_z(z) as f32;
-        match self.blocks.get(&(x, y, z)) {
-            Some(block_type) => match block_type {
-                &BlockType::Empty => None,
-                &BlockType::Solid => Some(make_cube(facade, _x, _y, _z)),
-            }
-            _ => None,
+    pub fn get(&mut self, position: ChunkPosition) -> &BlockType {
+        match self.blocks.get(&position) {
+            Some(block_type) => block_type,
+            None => &BlockType::Empty,
         }
     }
 }
@@ -102,24 +80,31 @@ impl World {
         World { chunks: HashMap::new() }
     }
 
-    fn create_chunk(&mut self, x: i32, y: i32, z: i32) {
-        let mut chunk = Chunk::new(0, 0, 0);
+    fn create_chunk(&mut self, wx: i32, wy: i32, wz: i32) {
+        let mut chunk = Chunk::new();
         for z in 0..32 {
             chunk.set((1, 1, z), BlockType::Solid);
             chunk.set((2, (z * 2 + 1) % 32, 10), BlockType::Solid);
         }
-        match self.chunks.insert((x, y, z), chunk) {
+        match self.chunks.insert((wx, wy, wz), chunk) {
             _ => ()
         }
     }
 
-    pub fn get(&mut self, x: i32, y: i32, z: i32) -> &Chunk {
-        if !self.chunks.contains_key(&(x, y, z)) {
-            self.create_chunk(x, y, z)
+    pub fn get(&mut self, wx: i32, wy: i32, wz: i32) -> &Chunk {
+        if !self.chunks.contains_key(&(wx, wy, wz)) {
+            self.create_chunk(wx, wy, wz)
         }
-        match self.chunks.get(&(x, y, z)) {
+        match self.chunks.get(&(wx, wy, wz)) {
             Some(chunk) => &chunk,
             None => panic!(),
         }
+    }
+
+    pub fn get_position(wx: i32, wy: i32, wz: i32, cx: u8, cy: u8, cz: u8) -> Position {
+        let x = (wx * CHUNK_SIZE as i32) + cx as i32;
+        let y = (wy * CHUNK_SIZE as i32) + cy as i32;
+        let z = (wz * CHUNK_SIZE as i32) + cz as i32;
+        return Position(x as f32, y as f32, z as f32);
     }
 }
