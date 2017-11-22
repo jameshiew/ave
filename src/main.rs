@@ -1,5 +1,6 @@
 #[macro_use]
 extern crate glium;
+extern crate cgmath;
 extern crate image;
 extern crate genmesh;
 extern crate obj;
@@ -10,6 +11,7 @@ mod camera;
 mod space;
 
 use glium::{glutin, Surface};
+use cgmath::Matrix4;
 use block::Chunk;
 use block::BlockType;
 use std::thread;
@@ -62,12 +64,12 @@ fn main() {
 
     let mut camera = camera::CameraState::new();
 
-    let model = [
-        [1.0, 0.0, 0.0, 0.0],
-        [0.0, 1.0, 0.0, 0.0],
-        [0.0, 0.0, 1.0, 0.0],
-        [0.0, 0.0, 0.0, 1.0f32]
-    ];
+    let model: [[f32; 4]; 4] = Matrix4::new(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0f32,
+    ).into();
 
     let params = glium::DrawParameters {
         depth: glium::Depth {
