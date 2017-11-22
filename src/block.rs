@@ -10,6 +10,40 @@ use std::collections::HashMap;
 const BLOCK_SIZE: f32 = 0.5;
 const CHUNK_SIZE: usize = 32;
 
+pub fn make_cube<F: ? Sized>(facade: &F, x: f32, y: f32, z: f32) -> VertexBuffer<Vertex> where F: Facade {
+    VertexBuffer::new(facade, &[
+        Vertex::new([x - BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE], [1.0, 0.0, 0.0], [1.0, 0.0, 0.0]),
+        Vertex::new([x - BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE], [1.0, 0.0, 0.0], [1.0, 0.0, 0.0]),
+        Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [1.0, 0.0, 0.0], [1.0, 0.0, 0.0]),
+        Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [1.0, 0.0, 0.0], [1.0, 0.0, 0.0]),
+
+        Vertex::new([x + BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
+        Vertex::new([x + BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
+        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
+        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
+
+        Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]),
+        Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]),
+        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]),
+        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]),
+
+        Vertex::new([x - BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE], [0.0, 1.0, 0.0], [1.0, 0.0, 1.0]),
+        Vertex::new([x - BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 1.0, 0.0], [1.0, 0.0, 1.0]),
+        Vertex::new([x + BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE], [0.0, 1.0, 0.0], [1.0, 0.0, 1.0]),
+        Vertex::new([x + BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 1.0, 0.0], [1.0, 0.0, 1.0]),
+
+        Vertex::new([x - BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0]),
+        Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0]),
+        Vertex::new([x + BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0]),
+        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0]),
+
+        Vertex::new([x - BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.0]),
+        Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.0]),
+        Vertex::new([x + BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.0]),
+        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.0]),
+    ]).unwrap()
+}
+
 pub enum BlockType {
     Empty,
     Solid,
@@ -46,43 +80,13 @@ impl Chunk {
     }
 
     pub fn get_vertices<F: ? Sized>(&self, facade: &F, x: u8, y: u8, z: u8) -> Option<VertexBuffer<Vertex>> where F: Facade {
-        let _x = x as f32;
-        let _y = y as f32;
-        let _z = z as f32;
+        let _x = self.get_x(x) as f32;
+        let _y = self.get_y(y) as f32;
+        let _z = self.get_z(z) as f32;
         match self.blocks.get(&(x, y, z)) {
             Some(block_type) => match block_type {
                 &BlockType::Empty => None,
-                &BlockType::Solid => Some(VertexBuffer::new(facade, &[
-                    Vertex::new([_x - BLOCK_SIZE, _y - BLOCK_SIZE, _z - BLOCK_SIZE], [1.0, 0.0, 0.0], [1.0, 0.0, 0.0]),
-                    Vertex::new([_x - BLOCK_SIZE, _y - BLOCK_SIZE, _z + BLOCK_SIZE], [1.0, 0.0, 0.0], [1.0, 0.0, 0.0]),
-                    Vertex::new([_x - BLOCK_SIZE, _y + BLOCK_SIZE, _z - BLOCK_SIZE], [1.0, 0.0, 0.0], [1.0, 0.0, 0.0]),
-                    Vertex::new([_x - BLOCK_SIZE, _y + BLOCK_SIZE, _z + BLOCK_SIZE], [1.0, 0.0, 0.0], [1.0, 0.0, 0.0]),
-
-                    Vertex::new([_x + BLOCK_SIZE, _y - BLOCK_SIZE, _z - BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
-                    Vertex::new([_x + BLOCK_SIZE, _y - BLOCK_SIZE, _z + BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
-                    Vertex::new([_x + BLOCK_SIZE, _y + BLOCK_SIZE, _z - BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
-                    Vertex::new([_x + BLOCK_SIZE, _y + BLOCK_SIZE, _z + BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
-
-                    Vertex::new([_x - BLOCK_SIZE, _y + BLOCK_SIZE, _z - BLOCK_SIZE], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]),
-                    Vertex::new([_x - BLOCK_SIZE, _y + BLOCK_SIZE, _z + BLOCK_SIZE], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]),
-                    Vertex::new([_x + BLOCK_SIZE, _y + BLOCK_SIZE, _z - BLOCK_SIZE], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]),
-                    Vertex::new([_x + BLOCK_SIZE, _y + BLOCK_SIZE, _z + BLOCK_SIZE], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]),
-
-                    Vertex::new([_x - BLOCK_SIZE, _y - BLOCK_SIZE, _z - BLOCK_SIZE], [0.0, 1.0, 0.0], [1.0, 0.0, 1.0]),
-                    Vertex::new([_x - BLOCK_SIZE, _y - BLOCK_SIZE, _z + BLOCK_SIZE], [0.0, 1.0, 0.0], [1.0, 0.0, 1.0]),
-                    Vertex::new([_x + BLOCK_SIZE, _y - BLOCK_SIZE, _z - BLOCK_SIZE], [0.0, 1.0, 0.0], [1.0, 0.0, 1.0]),
-                    Vertex::new([_x + BLOCK_SIZE, _y - BLOCK_SIZE, _z + BLOCK_SIZE], [0.0, 1.0, 0.0], [1.0, 0.0, 1.0]),
-
-                    Vertex::new([_x - BLOCK_SIZE, _y - BLOCK_SIZE, _z - BLOCK_SIZE], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0]),
-                    Vertex::new([_x - BLOCK_SIZE, _y + BLOCK_SIZE, _z - BLOCK_SIZE], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0]),
-                    Vertex::new([_x + BLOCK_SIZE, _y - BLOCK_SIZE, _z - BLOCK_SIZE], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0]),
-                    Vertex::new([_x + BLOCK_SIZE, _y + BLOCK_SIZE, _z - BLOCK_SIZE], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0]),
-
-                    Vertex::new([_x - BLOCK_SIZE, _y - BLOCK_SIZE, _z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.0]),
-                    Vertex::new([_x - BLOCK_SIZE, _y + BLOCK_SIZE, _z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.0]),
-                    Vertex::new([_x + BLOCK_SIZE, _y - BLOCK_SIZE, _z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.0]),
-                    Vertex::new([_x + BLOCK_SIZE, _y + BLOCK_SIZE, _z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.0]),
-                ]).unwrap()),
+                &BlockType::Solid => Some(make_cube(facade, _x, _y, _z)),
             }
             _ => None,
         }
