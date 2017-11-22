@@ -1,13 +1,17 @@
 extern crate glutin;
+extern crate cgmath;
+
+use self::cgmath::{Rad, Angle, PerspectiveFov, Matrix4};
 
 use std;
 
-const DEFAULT_FIELD_OF_VIEW: f32 = std::f32::consts::PI / 2.0 * (7.0 / 9.0);
+const DEFAULT_ASPECT_RATIO: f32 = 1024.0 / 768.0;
+const DEFAULT_FIELD_OF_VIEW: Rad<f32> = Rad(std::f32::consts::PI / 2.0 * (7.0 / 9.0));
 const DEFAULT_Z_NEAR_CUTOFF: f32 = 0.1;
 const DEFAULT_Z_FAR_CUTOFF: f32 = 1024.0;
 
 pub struct CameraState {
-    aspect_ratio: f32,
+    perspective_fov: PerspectiveFov<f32>,
     position: (f32, f32, f32),
     direction: (f32, f32, f32),
 
@@ -29,7 +33,12 @@ pub struct CameraState {
 impl CameraState {
     pub fn new() -> CameraState {
         CameraState {
-            aspect_ratio: 1024.0 / 768.0,
+            perspective_fov: PerspectiveFov {
+                fovy: DEFAULT_FIELD_OF_VIEW,
+                aspect: DEFAULT_ASPECT_RATIO,
+                near: DEFAULT_Z_NEAR_CUTOFF,
+                far: DEFAULT_Z_FAR_CUTOFF,
+            },
             position: (0.1, 0.1, 1.0),
             direction: (0.0, 0.0, -1.0),
             move_speed: 0.12,
@@ -48,19 +57,13 @@ impl CameraState {
     }
 
     pub fn get_perspective(&self) -> [[f32; 4]; 4] {
-        let fov = DEFAULT_FIELD_OF_VIEW;
-        let zfar = DEFAULT_Z_FAR_CUTOFF;
-        let znear = DEFAULT_Z_NEAR_CUTOFF;
-
-        let f = 1.0 / (fov / 2.0).tan();
-
-        // note: remember that this is column-major, so the lines of code are actually columns
-        [
-            [f / self.aspect_ratio,    0.0,              0.0              ,   0.0],
-            [         0.0         ,     f ,              0.0              ,   0.0],
-            [         0.0         ,    0.0,  (zfar+znear)/(zfar-znear)    ,   1.0],
-            [         0.0         ,    0.0, -(2.0*zfar*znear)/(zfar-znear),   0.0],
-        ]
+        let f = 1.0 / (self.perspective_fov.fovy / 2.0).tan();
+        Matrix4::new(
+            f / self.perspective_fov.aspect, 0.0, 0.0, 0.0,
+            0.0, f, 0.0, 0.0,
+            0.0, 0.0, (self.perspective_fov.far + self.perspective_fov.near) / (self.perspective_fov.far - self.perspective_fov.near), 1.0,
+            0.0, 0.0, -(2.0 * self.perspective_fov.far * self.perspective_fov.near) / (self.perspective_fov.far - self.perspective_fov.near), 0.0,
+        ).into()
     }
 
     pub fn get_view(&self) -> [[f32; 4]; 4] {
@@ -96,7 +99,7 @@ impl CameraState {
             [s_norm.0, u.0, f.0, 0.0],
             [s_norm.1, u.1, f.1, 0.0],
             [s_norm.2, u.2, f.2, 0.0],
-            [p.0, p.1,  p.2, 1.0],
+            [p.0, p.1, p.2, 1.0],
         ]
     }
 
