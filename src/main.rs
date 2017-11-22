@@ -1,14 +1,48 @@
 #[macro_use]
 extern crate glium;
 extern crate image;
+extern crate genmesh;
+extern crate obj;
 
-mod support;
 mod vertex;
 mod block;
+mod camera;
 
 use glium::{glutin, Surface};
 use block::Chunk;
 use block::BlockType;
+use std::thread;
+use std::time::{Duration, Instant};
+
+pub enum Action {
+    Stop,
+    Continue,
+}
+
+pub fn start_loop<F>(mut callback: F) where F: FnMut() -> Action {
+    let mut accumulator = Duration::new(0, 0);
+    let mut previous_clock = Instant::now();
+
+    loop {
+        match callback() {
+            Action::Stop => break,
+            Action::Continue => ()
+        };
+
+        let now = Instant::now();
+        accumulator += now - previous_clock;
+        previous_clock = now;
+
+        let fixed_time_stamp = Duration::new(0, 16666667);
+        while accumulator >= fixed_time_stamp {
+            accumulator -= fixed_time_stamp;
+
+            // if you have a game, update the state here
+        }
+
+        thread::sleep(fixed_time_stamp - accumulator);
+    }
+}
 
 fn main() {
     let mut events_loop = glutin::EventsLoop::new();
@@ -25,7 +59,7 @@ fn main() {
         None,
     ).unwrap();
 
-    let mut camera = support::camera::CameraState::new();
+    let mut camera = camera::CameraState::new();
 
     let model = [
         [1.0, 0.0, 0.0, 0.0],
@@ -51,7 +85,7 @@ fn main() {
         chunk.set((2, (z * 2 + 1) % 32, 10), BlockType::Solid);
     }
 
-    support::start_loop(|| {
+    start_loop(|| {
         camera.update();
         let mut target = display.draw();
         target.clear_color_and_depth((0.0, 0.0, 1.0, 1.0), 1.0);
@@ -79,13 +113,13 @@ fn main() {
         }
         target.finish().unwrap();
 
-        let mut action = support::Action::Continue;
+        let mut action = Action::Continue;
 
         // polling and handling the events received by the window
         events_loop.poll_events(|event| {
             match event {
                 glutin::Event::WindowEvent { event, .. } => match event {
-                    glutin::WindowEvent::Closed => action = support::Action::Stop,
+                    glutin::WindowEvent::Closed => action = Action::Stop,
                     ev => camera.process_input(&ev),
                 },
                 _ => (),
