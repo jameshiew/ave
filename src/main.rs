@@ -12,8 +12,7 @@ mod space;
 
 use glium::{glutin, Surface};
 use cgmath::Matrix4;
-use block::Chunk;
-use block::BlockType;
+use block::{Chunk, BlockType, World};
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -81,17 +80,14 @@ fn main() {
     };
 
     let light = [1.4, 0.4, 0.7f32];
-
-    let mut chunk = Chunk::new(0, 0, 0);
-    for z in 0..32 {
-        chunk.set((1, 1, z), BlockType::Solid);
-        chunk.set((2, (z * 2 + 1) % 32, 10), BlockType::Solid);
-    }
+    let mut world = World::new();
 
     start_loop(|| {
         camera.update();
         let mut target = display.draw();
         target.clear_color_and_depth((0.0, 0.0, 0.0, 1.0), 1.0);
+
+        let chunk = world.get(0, 0, 0);
 
         for x in 0..32 {
             for y in 0..32 {

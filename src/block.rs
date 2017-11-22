@@ -92,3 +92,34 @@ impl Chunk {
         }
     }
 }
+
+pub struct World {
+    chunks: HashMap<(i32, i32, i32), Chunk>
+}
+
+impl World {
+    pub fn new() -> World {
+        World { chunks: HashMap::new() }
+    }
+
+    fn create_chunk(&mut self, x: i32, y: i32, z: i32) {
+        let mut chunk = Chunk::new(0, 0, 0);
+        for z in 0..32 {
+            chunk.set((1, 1, z), BlockType::Solid);
+            chunk.set((2, (z * 2 + 1) % 32, 10), BlockType::Solid);
+        }
+        match self.chunks.insert((x, y, z), chunk) {
+            _ => ()
+        }
+    }
+
+    pub fn get(&mut self, x: i32, y: i32, z: i32) -> &Chunk {
+        if !self.chunks.contains_key(&(x, y, z)) {
+            self.create_chunk(x, y, z)
+        }
+        match self.chunks.get(&(x, y, z)) {
+            Some(chunk) => &chunk,
+            None => panic!(),
+        }
+    }
+}
