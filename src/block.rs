@@ -16,15 +16,15 @@ pub fn make_cube<F: ? Sized>(facade: &F, x: f32, y: f32, z: f32) -> VertexBuffer
         Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [1.0, 0.0, 0.0], [1.0, 0.0, 0.0]),
         Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [1.0, 0.0, 0.0], [1.0, 0.0, 0.0]),
 
-        Vertex::new([x + BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
-        Vertex::new([x + BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
-        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
-        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
+        Vertex::new([x + BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.3, 1.0, 0.0]),
+        Vertex::new([x + BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.3, 1.0, 0.0]),
+        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.3, 1.0, 0.0]),
+        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [-1.0, 0.0, 0.0], [0.3, 1.0, 0.0]),
 
-        Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]),
-        Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]),
-        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]),
-        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]),
+        Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [0.0, -1.0, 0.0], [0.2, 0.0, 1.0]),
+        Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [0.0, -1.0, 0.0], [0.2, 0.0, 1.0]),
+        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [0.0, -1.0, 0.0], [0.2, 0.0, 1.0]),
+        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [0.0, -1.0, 0.0], [0.2, 0.0, 1.0]),
 
         Vertex::new([x - BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE], [0.0, 1.0, 0.0], [1.0, 0.0, 1.0]),
         Vertex::new([x - BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 1.0, 0.0], [1.0, 0.0, 1.0]),
@@ -36,10 +36,10 @@ pub fn make_cube<F: ? Sized>(facade: &F, x: f32, y: f32, z: f32) -> VertexBuffer
         Vertex::new([x + BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0]),
         Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0]),
 
-        Vertex::new([x - BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.0]),
-        Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.0]),
-        Vertex::new([x + BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.0]),
-        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.0]),
+        Vertex::new([x - BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.4]),
+        Vertex::new([x - BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.4]),
+        Vertex::new([x + BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.4]),
+        Vertex::new([x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE], [0.0, 0.0, -1.0], [1.0, 1.0, 0.4]),
     ]).unwrap()
 }
 
@@ -82,9 +82,19 @@ impl World {
 
     fn create_chunk(&mut self, wx: i32, wy: i32, wz: i32) {
         let mut chunk = Chunk::new();
-        for z in 0..32 {
-            chunk.set((1, 1, z), BlockType::Solid);
-            chunk.set((2, (z * 2 + 1) % 32, 10), BlockType::Solid);
+        if wy < 0 {  // underground
+            for x in 0..32 {
+                for y in 0..32 {
+                    for z in 0..32 {
+                        chunk.set((x, y, z), BlockType::Solid);
+                    }
+                }
+            }
+        } else if wy == 0 {
+            for z in 0..32 {
+                chunk.set((1, 1, z), BlockType::Solid);
+                chunk.set((2, (z * 2 + 1) % 32, 10), BlockType::Solid);
+            }
         }
         match self.chunks.insert((wx, wy, wz), chunk) {
             _ => ()
