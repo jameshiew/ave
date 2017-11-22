@@ -91,7 +91,7 @@ fn main() {
     start_loop(|| {
         camera.update();
         let mut target = display.draw();
-        target.clear_color_and_depth((0.0, 0.0, 1.0, 1.0), 1.0);
+        target.clear_color_and_depth((0.0, 0.0, 0.0, 1.0), 1.0);
 
         for x in 0..32 {
             for y in 0..32 {
