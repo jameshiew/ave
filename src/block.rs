@@ -113,6 +113,9 @@ impl Chunk {
     }
 
     pub fn is_occluded(&self, position: ChunkPosition) -> bool {
+        if [0, CHUNK_SIZE - 1].contains(&position.0) || [0, CHUNK_SIZE - 1].contains(&position.1) || [0, CHUNK_SIZE - 1].contains(&position.2) {
+            return false;  // cheating by for now always showing blocks that are on the edge of chunks
+        }
         for adjacent_position in Chunk::get_adjacent(position) {
             match self.get(adjacent_position) {
                 &BlockType::Empty => return false,
