@@ -76,7 +76,9 @@ fn main() {
             write: true,
             ..Default::default()
         },
-        polygon_mode: glium::draw_parameters::PolygonMode::Line,
+        backface_culling: glium::draw_parameters::BackfaceCullingMode::CullingDisabled,
+        polygon_mode: glium::draw_parameters::PolygonMode::Fill,
+        smooth: Some(glium::draw_parameters::Smooth::Nicest),
         ..Default::default()
     };
 
