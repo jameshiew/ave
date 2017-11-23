@@ -80,7 +80,6 @@ fn main() {
         ..Default::default()
     };
 
-    let light = [1.4, 0.4, 0.7f32];
     let mut world = World::new();
 
     start_loop(|| {
@@ -105,7 +104,6 @@ fn main() {
                                 model: model,
                                 perspective: camera.get_perspective(),
                                 view: camera.get_view(),
-                                u_light: light,
                             },
                                     &params
                                 ).unwrap()
