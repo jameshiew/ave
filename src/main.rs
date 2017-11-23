@@ -91,7 +91,7 @@ fn main() {
             for y in -1..2 {
                 for z in 0..1 {
                     let chunk = world.get_or_create(x, y, z);
-                    for (chunk_position, block_type) in chunk.blocks.iter() {
+                    for (chunk_position, block_type) in chunk.get_visible() {
                         match block_type {
                             &BlockType::Solid => {
                                 let world_position = World::get_position(x, y, z, chunk_position.0, chunk_position.1, chunk_position.2);

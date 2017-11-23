@@ -38,7 +38,7 @@ pub fn make_cube<F: ? Sized>(facade: &F, x: f32, y: f32, z: f32) -> VertexBuffer
     ]).unwrap()
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Hash, Eq, PartialEq)]
 pub enum BlockType {
     Empty,
     Solid,
@@ -120,6 +120,18 @@ impl Chunk {
             }
         }
         return true
+    }
+
+    /// ideally this would be a lazy iterator - but need to think about lifetimes etc
+    pub fn get_visible(&self) -> HashSet<(ChunkPosition, &BlockType)> {
+        let mut visible = HashSet::new();
+        for (chunk_position, block_type) in self.blocks.iter() {
+            match self.mask.get(chunk_position) {
+                Some(_) => continue,
+                None => visible.insert((*chunk_position, block_type)),
+            };
+        }
+        return visible;
     }
 }
 
