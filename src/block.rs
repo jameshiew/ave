@@ -4,10 +4,10 @@ use vertex::Vertex;
 use space::Position;
 use glium::vertex::VertexBuffer;
 use glium::backend::Facade;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 const BLOCK_SIZE: f32 = 0.5;
-const CHUNK_SIZE: usize = 32;
+const CHUNK_SIZE: u8 = 32;
 
 pub fn make_cube<F: ? Sized>(facade: &F, x: f32, y: f32, z: f32) -> VertexBuffer<Vertex> where F: Facade {
     VertexBuffer::new(facade, &[
@@ -38,6 +38,7 @@ pub fn make_cube<F: ? Sized>(facade: &F, x: f32, y: f32, z: f32) -> VertexBuffer
     ]).unwrap()
 }
 
+#[derive(Debug, Eq, PartialEq)]
 pub enum BlockType {
     Empty,
     Solid,
@@ -47,22 +48,78 @@ pub type ChunkPosition = (u8, u8, u8);
 
 pub struct Chunk {
     pub blocks: HashMap<ChunkPosition, BlockType>,
+    /// chunk positions which are completely occluded and so should never be rendered
+    pub mask: HashSet<ChunkPosition>,
 }
 
 impl Chunk {
     pub fn new() -> Chunk {
-        Chunk { blocks: HashMap::new() }
+        Chunk { blocks: HashMap::new(), mask: HashSet::new() }
     }
 
     pub fn set(&mut self, position: ChunkPosition, block_type: BlockType) {
-        self.blocks.insert(position, block_type);
+        match block_type {
+            BlockType::Empty => {
+                self.blocks.remove(&position);
+                for adjacent_position in Chunk::get_adjacent(position) {
+                    if !self.is_occluded(adjacent_position) {
+                        self.mask.remove(&adjacent_position);
+                    }
+                }
+            },
+            _ => {
+                self.blocks.insert(position, block_type);
+                if self.is_occluded(position) {
+                    self.mask.insert(position);
+                }
+                for adjacent_position in Chunk::get_adjacent(position) {
+                    if self.is_occluded(adjacent_position) {
+                        self.mask.insert(adjacent_position);
+                    }
+                }
+            }
+        }
     }
 
-    pub fn get(&mut self, position: ChunkPosition) -> &BlockType {
+    pub fn get(&self, position: ChunkPosition) -> &BlockType {
         match self.blocks.get(&position) {
             Some(block_type) => block_type,
             None => &BlockType::Empty,
         }
+    }
+
+    /// get adjacent positions - ignoring diagonals
+    pub fn get_adjacent(position: ChunkPosition) -> HashSet<ChunkPosition> {
+        let mut set: HashSet<ChunkPosition> = HashSet::new();
+        if position.0 < CHUNK_SIZE - 1 {
+            set.insert((position.0 + 1u8, position.1, position.2));
+        }
+        if position.1 < CHUNK_SIZE - 1 {
+            set.insert((position.0, position.1 + 1u8, position.2));
+        }
+        if position.2 < CHUNK_SIZE - 1 {
+            set.insert((position.0, position.1, position.2 + 1u8));
+        }
+        if position.0 > 0 {
+            set.insert((position.0 - 1u8, position.1, position.2));
+        }
+        if position.1 > 0 {
+            set.insert((position.0, position.1 - 1u8, position.2));
+        }
+        if position.2 > 0 {
+            set.insert((position.0, position.1, position.2 - 1u8));
+        }
+        return set;
+    }
+
+    pub fn is_occluded(&self, position: ChunkPosition) -> bool {
+        for adjacent_position in Chunk::get_adjacent(position) {
+            match self.get(adjacent_position) {
+                &BlockType::Empty => return false,
+                _ => ()
+            }
+        }
+        return true
     }
 }
 
@@ -111,5 +168,59 @@ impl World {
         let y = (wy * CHUNK_SIZE as i32) + cy as i32;
         let z = (wz * CHUNK_SIZE as i32) + cz as i32;
         return Position(x as f32, y as f32, z as f32);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use space::Position;
+    use block::{World, Chunk, ChunkPosition, CHUNK_SIZE, BlockType};
+    use std::collections::{HashMap, HashSet};
+
+    #[test]
+    fn world_get_position() {
+        assert_eq!(World::get_position(0, 0, 0, 0, 0, 0), Position(0.0, 0.0, 0.0));
+        assert_eq!(World::get_position(0, 0, 0, 1, 1, 1), Position(1.0, 1.0, 1.0));
+        assert_eq!(World::get_position(1, 1, 1, 1, 1, 1), Position(CHUNK_SIZE as f32 + 1.0, CHUNK_SIZE as f32 + 1.0, CHUNK_SIZE as f32 + 1.0));
+    }
+
+    #[test]
+    fn chunk_get() {
+        let mut chunk = Chunk::new();
+        chunk.set((0, 0, 0), BlockType::Solid);
+        assert_eq!(chunk.get((0, 0, 0)), &BlockType::Solid);
+    }
+
+    #[test]
+    fn chunk_get_adjacent() {
+        let mut origin_adjacent = HashSet::new();
+        origin_adjacent.insert((1u8, 0u8, 0u8));
+        origin_adjacent.insert((0u8, 1u8, 0u8));
+        origin_adjacent.insert((0u8, 0u8, 1u8));
+        assert_eq!(Chunk::get_adjacent((0, 0, 0)), origin_adjacent);
+
+        let mut general_adjacent = HashSet::new();
+        general_adjacent.insert((6u8, 5u8, 5u8));
+        general_adjacent.insert((5u8, 6u8, 5u8));
+        general_adjacent.insert((5u8, 5u8, 6u8));
+        general_adjacent.insert((4u8, 5u8, 5u8));
+        general_adjacent.insert((5u8, 4u8, 5u8));
+        general_adjacent.insert((5u8, 5u8, 4u8));
+        assert_eq!(Chunk::get_adjacent((5, 5, 5)), general_adjacent);
+    }
+
+    #[test]
+    fn chunk_is_occluded() {
+        let mut chunk = Chunk::new();
+        chunk.set((3, 3, 3), BlockType::Solid);
+        chunk.set((3, 3, 2), BlockType::Solid);
+        chunk.set((5, 5, 5), BlockType::Solid);
+        assert!(!chunk.is_occluded((3, 3, 3)));
+        chunk.set((3, 2, 3), BlockType::Solid);
+        chunk.set((2, 3, 3), BlockType::Solid);
+        chunk.set((4, 3, 3), BlockType::Solid);
+        chunk.set((3, 4, 3), BlockType::Solid);
+        chunk.set((3, 3, 4), BlockType::Solid);
+        assert!(chunk.is_occluded((3, 3, 3)));
     }
 }
