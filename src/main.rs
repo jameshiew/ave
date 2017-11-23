@@ -90,7 +90,7 @@ fn main() {
         for x in 0..1 {
             for y in -1..2 {
                 for z in 0..1 {
-                    let chunk = world.get(x, y, z);
+                    let chunk = world.get_or_create(x, y, z);
                     for (chunk_position, block_type) in chunk.blocks.iter() {
                         match block_type {
                             &BlockType::Solid => {

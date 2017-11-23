@@ -96,7 +96,7 @@ impl World {
         }
     }
 
-    pub fn get(&mut self, wx: i32, wy: i32, wz: i32) -> &Chunk {
+    pub fn get_or_create(&mut self, wx: i32, wy: i32, wz: i32) -> &Chunk {
         if !self.chunks.contains_key(&(wx, wy, wz)) {
             self.create_chunk(wx, wy, wz)
         }
