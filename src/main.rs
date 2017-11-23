@@ -76,6 +76,7 @@ fn main() {
             write: true,
             ..Default::default()
         },
+        polygon_mode: glium::draw_parameters::PolygonMode::Line,
         ..Default::default()
     };
 
