@@ -7,15 +7,15 @@ use cgmath::Vector3;
 const CHUNK_SIZE: u8 = 32;
 
 /// Indicates an index into a chunk with dimensions CHUNK_SIZE x CHUNK_SIZE x CHUNK_SIZE
-pub type ChunkPosition = Vector3<u8>;
+pub type BlockCoordinates = Vector3<u8>;
 
 pub struct Chunk {
     /// Each chunk position is mapped to an index into the BLOCKS slice
     ///
     /// Absence of a chunk position key indicated an empty (air) block
-    pub blocks: HashMap<ChunkPosition, usize>,
+    pub blocks: HashMap<BlockCoordinates, usize>,
     /// Chunk positions which are completely occluded and so should never be rendered
-    pub mask: HashSet<ChunkPosition>,
+    pub mask: HashSet<BlockCoordinates>,
 }
 
 impl Chunk {
@@ -24,8 +24,8 @@ impl Chunk {
     }
 
     /// get adjacent positions - ignoring diagonals
-    pub fn get_adjacent(position: ChunkPosition) -> HashSet<ChunkPosition> {
-        let mut set: HashSet<ChunkPosition> = HashSet::new();
+    pub fn get_adjacent(position: BlockCoordinates) -> HashSet<BlockCoordinates> {
+        let mut set: HashSet<BlockCoordinates> = HashSet::new();
         if position[0] < CHUNK_SIZE - 1 {
             set.insert([position[0] + 1u8, position[1], position[2]].into());
         }
@@ -47,7 +47,7 @@ impl Chunk {
         return set;
     }
 
-    pub fn set(&mut self, position: ChunkPosition, block_type: usize) {
+    pub fn set(&mut self, position: BlockCoordinates, block_type: usize) {
         self.blocks.insert(position, block_type);
         if self.is_occluded(position) {
             self.mask.insert(position);
@@ -59,7 +59,7 @@ impl Chunk {
         }
     }
 
-    pub fn remove(&mut self, position: ChunkPosition) {
+    pub fn remove(&mut self, position: BlockCoordinates) {
         self.blocks.remove(&position);
         for adjacent_position in Chunk::get_adjacent(position) {
             if !self.is_occluded(adjacent_position) {
@@ -68,14 +68,14 @@ impl Chunk {
         }
     }
 
-    pub fn get(&self, position: ChunkPosition) -> Option<&BlockType> {
+    pub fn get(&self, position: BlockCoordinates) -> Option<&BlockType> {
         match self.blocks.get(&position) {
             Some(block_type) => Some(BLOCKS[*block_type]),
             None => None,
         }
     }
 
-    pub fn is_occluded(&self, position: ChunkPosition) -> bool {
+    pub fn is_occluded(&self, position: BlockCoordinates) -> bool {
         if [0, CHUNK_SIZE - 1].contains(&position[0]) || [0, CHUNK_SIZE - 1].contains(&position[1]) || [0, CHUNK_SIZE - 1].contains(&position[2]) {
             return false;  // cheating by for now always showing blocks that are on the edge of chunks
         }
@@ -89,7 +89,7 @@ impl Chunk {
     }
 
     /// ideally this would be a lazy iterator - but need to think about lifetimes etc
-    pub fn get_visible(&self) -> HashSet<(ChunkPosition, &BlockType)> {
+    pub fn get_visible(&self) -> HashSet<(BlockCoordinates, &BlockType)> {
         let mut visible = HashSet::new();
         for (chunk_position, block_type) in self.blocks.iter() {
             match self.mask.get(chunk_position) {
@@ -101,8 +101,10 @@ impl Chunk {
     }
 }
 
+pub type ChunkCoordinates = (i32, i32, i32);
+
 pub struct World {
-    chunks: HashMap<(i32, i32, i32), Chunk>
+    chunks: HashMap<ChunkCoordinates, Chunk>
 }
 
 impl World {
@@ -148,7 +150,7 @@ impl World {
         return [x as f32, y as f32, z as f32].into();
     }
 
-    pub fn get_chunk_xyz(x: f32, y: f32, z: f32) -> (i32, i32, i32) {
+    pub fn get_chunk_xyz(x: f32, y: f32, z: f32) -> ChunkCoordinates {
         ((x / CHUNK_SIZE as f32) as i32, (y / CHUNK_SIZE as f32) as i32, (z / CHUNK_SIZE as f32) as i32)
     }
 }
