@@ -52,7 +52,7 @@ impl WorldGenerator for RandomPillarsWorldGenerator {
             }
         }
         for y in 0..pillar_height {
-            chunk.set([pillar_x, y, pillar_z].into(), 0);
+            chunk.set([pillar_x, y, pillar_z].into(), 1);
         }
         return chunk;
     }
