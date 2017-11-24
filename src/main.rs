@@ -12,6 +12,7 @@ mod camera;
 mod space;
 mod color;
 mod world;
+mod worldgen;
 
 use glium::{glutin, Surface};
 use cgmath::Matrix4;

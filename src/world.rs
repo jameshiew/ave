@@ -2,9 +2,10 @@ use space::Position;
 use std::collections::{HashMap, HashSet};
 use block::{BLOCKS, BlockType};
 use cgmath::Vector3;
+use worldgen::{FlatWorldGenerator, WorldGenerator};
 
 /// Side length of a chunk (in blocks) - all chunks are cubic
-const CHUNK_SIZE: u8 = 32;
+pub const CHUNK_SIZE: u8 = 32;
 
 /// Indicates an index into a chunk with dimensions CHUNK_SIZE x CHUNK_SIZE x CHUNK_SIZE
 pub type BlockCoordinates = Vector3<u8>;
@@ -116,47 +117,26 @@ pub fn position_to_chunk(coordinates: Position) -> ChunkCoordinates {
 
 pub trait World {
     fn new() -> Self;
-    fn create_chunk(&mut self, coordinates: ChunkCoordinates);
     fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &Chunk;
 }
 
 pub struct InMemoryWorld {
-    chunks: HashMap<ChunkCoordinates, Chunk>
+    generator: Box<WorldGenerator>,
+    chunks: HashMap<ChunkCoordinates, Chunk>,
 }
 
 impl World for InMemoryWorld {
     fn new() -> InMemoryWorld {
-        InMemoryWorld { chunks: HashMap::new() }
-    }
-
-    fn create_chunk(&mut self, coordinates: ChunkCoordinates) {
-        let mut chunk = Chunk::new();
-        if coordinates[1] < 0 {
-            // underground
-            for x in 0..32 {
-                for y in 0..32 {
-                    for z in 0..32 {
-                        chunk.set([x, y, z].into(), 1);
-                    }
-                }
-            }
-        } else if coordinates[1] == 0 {
-            for y in 0..12 {
-                chunk.set([7, y, 7].into(), 0);
-            }
-        }
-        match self.chunks.insert(coordinates, chunk) {
-            _ => ()
-        }
+        InMemoryWorld { generator: Box::new(FlatWorldGenerator::new()), chunks: HashMap::new() }
     }
 
     fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &Chunk {
-        if !self.chunks.contains_key(&coordinates) {
-            self.create_chunk(coordinates)
-        }
-        match self.chunks.get(&coordinates) {
-            Some(chunk) => &chunk,
-            None => panic!(),
+        if self.chunks.contains_key(&coordinates) {
+            return self.chunks.get(&coordinates).unwrap();
+        } else {
+            let chunk = self.generator.generate_chunk(coordinates);
+            self.chunks.insert(coordinates, chunk);
+            return self.chunks.get_mut(&coordinates).unwrap()
         }
     }
 }
