@@ -10,6 +10,7 @@ impl PartialEq for Position {
         self.0.approx_eq_ulps(&other.0, 2) && self.1.approx_eq_ulps(&other.1, 2) && self.2.approx_eq_ulps(&other.2, 2)
     }
 }
+
 impl Eq for Position {}
 
 #[derive(Debug)]
@@ -20,4 +21,5 @@ impl PartialEq for Direction {
         self.0.approx_eq_ulps(&other.0, 2) && self.1.approx_eq_ulps(&other.1, 2) && self.2.approx_eq_ulps(&other.2, 2)
     }
 }
+
 impl Eq for Direction {}
