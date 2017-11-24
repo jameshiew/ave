@@ -1,0 +1,10 @@
+---
+image: rustdocker/rust:stable
+
+stages:
+  - test
+
+run_tests:
+  stage: test
+  script:
+    - cargo test
