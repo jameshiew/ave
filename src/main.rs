@@ -96,34 +96,26 @@ fn main() {
         let mut target = display.draw();
         target.clear_color_and_depth(sky, 1.0);
 
-        for x in -1..2 {
-            for y in -1..2 {
-                for z in -1..2 {
-                    let chunk = world.get_or_create(x, y, z);
-                    for (chunk_position, block_type) in chunk.get_visible() {
-                        let world_position = World::get_position(
-                            x, y, z, chunk_position.0, chunk_position.1, chunk_position.2,
-                        );
-                        let vertices = block::make_cube(
-                            &display,
-                            world_position.0, world_position.1, world_position.2,
-                            block_type.color,
-                        );
-                        target.draw(
-                            &vertices,
-                            indices,
-                            &program,
-                            &uniform! {
-                                model: model,
-                                perspective: camera.get_perspective(),
-                                view: camera.get_view(),
-                                },
-                            &params
-                        ).unwrap()
-                    }
-                }
-            }
+        for (position, block_type) in world.get_or_create(0, 0, 0).get_visible() {
+            let world_position = World::get_position(0, 0, 0, position.0, position.1, position.2);
+            let vertices = block::make_cube(
+                &display,
+                world_position.0, world_position.1, world_position.2,
+                block_type.color,
+            );
+            target.draw(
+                &vertices,
+                indices,
+                &program,
+                &uniform! {
+                    model: model,
+                    perspective: camera.get_perspective(),
+                    view: camera.get_view(),
+                },
+                &params
+            ).unwrap()
         }
+
         target.finish().unwrap();
 
         let mut action = Action::Continue;
