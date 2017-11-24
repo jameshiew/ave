@@ -5,6 +5,7 @@ use cgmath::Vector3;
 use worldgen::{FlatWorldGenerator, WorldGenerator};
 use camera::CameraState;
 use std::vec::Vec;
+use worldgen;
 
 /// Side length of a chunk (in blocks) - all chunks are cubic
 pub const CHUNK_SIZE: u8 = 32;
@@ -130,7 +131,7 @@ pub struct InMemoryWorld {
 
 impl World for InMemoryWorld {
     fn new() -> InMemoryWorld {
-        InMemoryWorld { generator: Box::new(FlatWorldGenerator::new()), chunks: HashMap::new() }
+        InMemoryWorld { generator: Box::new(worldgen::RandomPillarsWorldGenerator::new(192)), chunks: HashMap::new() }
     }
 
     fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &Chunk {
