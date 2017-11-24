@@ -89,6 +89,13 @@ fn main() {
     };
 
     let mut world = InMemoryWorld::new();
+    for x in -2..2 {
+        for y in -2..2 {
+            for z in -2..2 {
+                world.get_or_create([x, y, z].into());
+            }
+        }
+    }
     let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
 
     let sky = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
