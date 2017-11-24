@@ -4,15 +4,17 @@ extern crate cgmath;
 extern crate image;
 extern crate genmesh;
 extern crate obj;
+extern crate rand;
 
 mod vertex;
 mod block;
 mod camera;
 mod space;
+mod color;
 
 use glium::{glutin, Surface};
 use cgmath::Matrix4;
-use block::{BlockType, World};
+use block::World;
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -89,29 +91,30 @@ fn main() {
         let mut target = display.draw();
         target.clear_color_and_depth((0.0, 0.0, 0.0, 1.0), 1.0);
 
-        for x in 0..1 {
+        for x in -1..2 {
             for y in -1..2 {
-                for z in 0..1 {
+                for z in -1..2 {
                     let chunk = world.get_or_create(x, y, z);
                     for (chunk_position, block_type) in chunk.get_visible() {
-                        match block_type {
-                            &BlockType::Solid => {
-                                let world_position = World::get_position(x, y, z, chunk_position.0, chunk_position.1, chunk_position.2);
-                                let vertices = block::make_cube(&display, world_position.0, world_position.1, world_position.2);
-                                target.draw(
-                                    &vertices,
-                                    glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip),
-                                    &program,
-                                    &uniform! {
+                        let world_position = World::get_position(
+                            x, y, z, chunk_position.0, chunk_position.1, chunk_position.2,
+                        );
+                        let vertices = block::make_cube(
+                            &display,
+                            world_position.0, world_position.1, world_position.2,
+                            block_type.color,
+                        );
+                        target.draw(
+                            &vertices,
+                            glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip),
+                            &program,
+                            &uniform! {
                                 model: model,
                                 perspective: camera.get_perspective(),
                                 view: camera.get_view(),
-                            },
-                                    &params
-                                ).unwrap()
-                            },
-                            &BlockType::Empty => (),
-                        }
+                                },
+                            &params
+                        ).unwrap()
                     }
                 }
             }

@@ -11,3 +11,4 @@ obj = { version = "*", features = ["genmesh"] }
 image = "*"
 cgmath = "*"
 float-cmp = "*"
+rand = "*"
