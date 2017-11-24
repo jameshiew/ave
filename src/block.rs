@@ -8,10 +8,16 @@ use glium::backend::Facade;
 use std::collections::{HashMap, HashSet};
 use color::Color;
 
+/// Size of a block (in metres)
 const BLOCK_SIZE: f32 = 0.5;
+
+/// Side length of a chunk (in blocks) - all chunks are cubic
 const CHUNK_SIZE: u8 = 32;
-// ordering of vertices is important - so that the correct faces get culled
-const CUBE: [[f32; 3]; 24] = [
+
+/// Vertices of a cube
+///
+/// ordering is important - so that the correct faces get culled
+static CUBE: [[f32; 3]; 24] = [
     // face
     [-BLOCK_SIZE, -BLOCK_SIZE, BLOCK_SIZE],
     [BLOCK_SIZE, -BLOCK_SIZE, BLOCK_SIZE],
@@ -44,6 +50,7 @@ const CUBE: [[f32; 3]; 24] = [
     [BLOCK_SIZE, BLOCK_SIZE, -BLOCK_SIZE],
 ];
 
+/// Create a vertex buffer for a cube centred at (x, y, z)
 pub fn make_cube<F: ? Sized>(facade: &F, x: f32, y: f32, z: f32, color: Color) -> VertexBuffer<Vertex> where F: Facade {
     VertexBuffer::new(facade, &[
         Vertex::new([x + CUBE[0][0], y + CUBE[0][1], z + CUBE[0][2]], color),
@@ -92,18 +99,15 @@ impl PartialEq for BlockType {
 
 impl Eq for BlockType {}
 
-const GRASS: BlockType = BlockType {
-    id: 0,
-    color: [0.0, 1.0, 0.0]
-};
-const DIRT: BlockType = BlockType {
-    id: 1,
-    color: [1.0, 0.0, 0.0]
-};
-
-const BLOCKS: [&BlockType; 2] = [
-    &GRASS,
-    &DIRT,
+static BLOCKS: [&BlockType; 2] = [
+    &BlockType {
+        id: 0,
+        color: [0.0, 1.0, 0.0]
+    },
+    &BlockType {
+        id: 1,
+        color: [1.0, 0.0, 0.0]
+    },
 ];
 
 pub type ChunkPosition = (u8, u8, u8);
