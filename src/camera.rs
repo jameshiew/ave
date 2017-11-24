@@ -11,8 +11,8 @@ const DEFAULT_Z_FAR_CUTOFF: f32 = 1024.0;
 
 pub struct CameraState {
     perspective_fov: PerspectiveFov<f32>,
-    position: Position,
-    direction: Direction,
+    pub position: Position,
+    pub direction: Direction,
 
     move_speed: f32,
     rotation_speed: f32,

@@ -4,6 +4,7 @@ use glium::vertex::VertexBuffer;
 use glium::backend::Facade;
 use color::Color;
 use color;
+use space::Position;
 
 /// Size of a block (in metres)
 const BLOCK_SIZE: f32 = 0.5;
@@ -45,7 +46,10 @@ static CUBE: [[f32; 3]; 24] = [
 ];
 
 /// Create a vertex buffer for a cube centred at (x, y, z)
-pub fn make_cube<F: ? Sized>(facade: &F, x: f32, y: f32, z: f32, color: Color) -> VertexBuffer<Vertex> where F: Facade {
+pub fn make_cube<F: ? Sized>(facade: &F, position: &Position, color: Color) -> VertexBuffer<Vertex> where F: Facade {
+    let x = position[0];
+    let y = position[1];
+    let z = position[2];
     VertexBuffer::new(facade, &[
         Vertex::new([x + CUBE[0][0], y + CUBE[0][1], z + CUBE[0][2]], color),
         Vertex::new([x + CUBE[1][0], y + CUBE[1][1], z + CUBE[1][2]], color),

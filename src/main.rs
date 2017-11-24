@@ -16,7 +16,7 @@ mod worldgen;
 
 use glium::{glutin, Surface};
 use cgmath::Matrix4;
-use world::{World, get_position, InMemoryWorld};
+use world::{World, InMemoryWorld};
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -97,13 +97,8 @@ fn main() {
         let mut target = display.draw();
         target.clear_color_and_depth(sky, 1.0);
 
-        for (block_position_in_chunk, block_type) in world.get_or_create([0, 0, 0].into()).get_visible() {
-            let world_position = get_position([0, 0, 0].into(), block_position_in_chunk);
-            let vertices = block::make_cube(
-                &display,
-                world_position[0], world_position[1], world_position[2],
-                block_type.color,
-            );
+        for (position, block_type) in world.get_visible(&camera) {
+            let vertices = block::make_cube(&display, &position, block_type.color);
             target.draw(
                 &vertices,
                 indices,

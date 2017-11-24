@@ -3,6 +3,8 @@ use std::collections::{HashMap, HashSet};
 use block::{BLOCKS, BlockType};
 use cgmath::Vector3;
 use worldgen::{FlatWorldGenerator, WorldGenerator};
+use camera::CameraState;
+use std::vec::Vec;
 
 /// Side length of a chunk (in blocks) - all chunks are cubic
 pub const CHUNK_SIZE: u8 = 32;
@@ -104,20 +106,21 @@ impl Chunk {
 
 pub type ChunkCoordinates = Vector3<i32>;
 
-pub fn get_position(chunk_coordinates: ChunkCoordinates, block_coordinates: BlockCoordinates) -> Position {
+pub fn get_position(chunk_coordinates: &ChunkCoordinates, block_coordinates: &BlockCoordinates) -> Position {
     let x = (chunk_coordinates[0] * CHUNK_SIZE as i32) + block_coordinates[0] as i32;
     let y = (chunk_coordinates[1] * CHUNK_SIZE as i32) + block_coordinates[1] as i32;
     let z = (chunk_coordinates[2] * CHUNK_SIZE as i32) + block_coordinates[2] as i32;
     return [x as f32, y as f32, z as f32].into();
 }
 
-pub fn position_to_chunk(coordinates: Position) -> ChunkCoordinates {
+pub fn position_to_chunk(coordinates: &Position) -> ChunkCoordinates {
     ((coordinates[0] / CHUNK_SIZE as f32) as i32, (coordinates[1] / CHUNK_SIZE as f32) as i32, (coordinates[2] / CHUNK_SIZE as f32) as i32).into()
 }
 
 pub trait World {
     fn new() -> Self;
     fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &Chunk;
+    fn get_visible(&mut self, camera: &CameraState) -> Vec<(Position, &BlockType)>;
 }
 
 pub struct InMemoryWorld {
@@ -138,6 +141,17 @@ impl World for InMemoryWorld {
             self.chunks.insert(coordinates, chunk);
             return self.chunks.get_mut(&coordinates).unwrap()
         }
+    }
+
+    fn get_visible(&mut self, camera: &CameraState) -> Vec<(Position, &BlockType)> {
+        // for now, just return blocks of current chunk
+        let mut vec = Vec::new();
+        let chunk_coordinates = position_to_chunk(&camera.position);
+        let chunk = self.get_or_create(chunk_coordinates);
+        for (block_coordinates, block_type) in chunk.get_visible() {
+            vec.push((get_position(&chunk_coordinates, &block_coordinates), block_type))
+        }
+        vec
     }
 }
 
