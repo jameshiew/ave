@@ -150,13 +150,18 @@ impl World {
         let z = (wz * CHUNK_SIZE as i32) + cz as i32;
         return Position(x as f32, y as f32, z as f32);
     }
+
+    pub fn get_chunk_xyz(x: f32, y: f32, z: f32) -> (i32, i32, i32) {
+        ((x / CHUNK_SIZE as f32) as i32, (y / CHUNK_SIZE as f32) as i32, (z / CHUNK_SIZE as f32) as i32)
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use space::Position;
-    use block::{World, Chunk, ChunkPosition, CHUNK_SIZE, BlockType};
+    use block::{BlockType, BLOCKS};
     use std::collections::{HashMap, HashSet};
+    use world::{World, Chunk, CHUNK_SIZE};
 
     #[test]
     fn world_get_position() {
@@ -166,10 +171,16 @@ mod tests {
     }
 
     #[test]
+    fn world_get_chunk_xyz() {
+        assert_eq!(World::get_chunk_xyz(0.0, 0.0, 0.0), (0, 0, 0));
+        assert_eq!(World::get_chunk_xyz(10.0, 12.0, 15.0), (0, 0, 0));
+    }
+
+    #[test]
     fn chunk_get() {
         let mut chunk = Chunk::new();
-        chunk.set((0, 0, 0), BlockType::Solid);
-        assert_eq!(chunk.get((0, 0, 0)), &BlockType::Solid);
+        chunk.set((0, 0, 0), 1);
+        assert_eq!(chunk.get((0, 0, 0)), Some(BLOCKS[1]));
     }
 
     #[test]
@@ -193,15 +204,15 @@ mod tests {
     #[test]
     fn chunk_is_occluded() {
         let mut chunk = Chunk::new();
-        chunk.set((3, 3, 3), BlockType::Solid);
-        chunk.set((3, 3, 2), BlockType::Solid);
-        chunk.set((5, 5, 5), BlockType::Solid);
+        chunk.set((3, 3, 3), 1);
+        chunk.set((3, 3, 2), 1);
+        chunk.set((5, 5, 5), 1);
         assert!(!chunk.is_occluded((3, 3, 3)));
-        chunk.set((3, 2, 3), BlockType::Solid);
-        chunk.set((2, 3, 3), BlockType::Solid);
-        chunk.set((4, 3, 3), BlockType::Solid);
-        chunk.set((3, 4, 3), BlockType::Solid);
-        chunk.set((3, 3, 4), BlockType::Solid);
+        chunk.set((3, 2, 3), 1);
+        chunk.set((2, 3, 3), 1);
+        chunk.set((4, 3, 3), 1);
+        chunk.set((3, 4, 3), 1);
+        chunk.set((3, 3, 4), 1);
         assert!(chunk.is_occluded((3, 3, 3)));
     }
 }
