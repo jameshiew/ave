@@ -101,20 +101,37 @@ impl Chunk {
     }
 }
 
-pub type ChunkCoordinates = (i32, i32, i32);
+pub type ChunkCoordinates = Vector3<i32>;
 
-pub struct World {
+pub fn get_position(chunk_coordinates: ChunkCoordinates, block_coordinates: BlockCoordinates) -> Position {
+    let x = (chunk_coordinates[0] * CHUNK_SIZE as i32) + block_coordinates[0] as i32;
+    let y = (chunk_coordinates[1] * CHUNK_SIZE as i32) + block_coordinates[1] as i32;
+    let z = (chunk_coordinates[2] * CHUNK_SIZE as i32) + block_coordinates[2] as i32;
+    return [x as f32, y as f32, z as f32].into();
+}
+
+pub fn position_to_chunk(coordinates: Position) -> ChunkCoordinates {
+    ((coordinates[0] / CHUNK_SIZE as f32) as i32, (coordinates[1] / CHUNK_SIZE as f32) as i32, (coordinates[2] / CHUNK_SIZE as f32) as i32).into()
+}
+
+pub trait World {
+    fn new() -> Self;
+    fn create_chunk(&mut self, coordinates: ChunkCoordinates);
+    fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &Chunk;
+}
+
+pub struct InMemoryWorld {
     chunks: HashMap<ChunkCoordinates, Chunk>
 }
 
-impl World {
-    pub fn new() -> World {
-        World { chunks: HashMap::new() }
+impl World for InMemoryWorld {
+    fn new() -> InMemoryWorld {
+        InMemoryWorld { chunks: HashMap::new() }
     }
 
-    fn create_chunk(&mut self, wx: i32, wy: i32, wz: i32) {
+    fn create_chunk(&mut self, coordinates: ChunkCoordinates) {
         let mut chunk = Chunk::new();
-        if wy < 0 {
+        if coordinates[1] < 0 {
             // underground
             for x in 0..32 {
                 for y in 0..32 {
@@ -123,35 +140,24 @@ impl World {
                     }
                 }
             }
-        } else if wy == 0 {
+        } else if coordinates[1] == 0 {
             for y in 0..12 {
                 chunk.set([7, y, 7].into(), 0);
             }
         }
-        match self.chunks.insert((wx, wy, wz), chunk) {
+        match self.chunks.insert(coordinates, chunk) {
             _ => ()
         }
     }
 
-    pub fn get_or_create(&mut self, wx: i32, wy: i32, wz: i32) -> &Chunk {
-        if !self.chunks.contains_key(&(wx, wy, wz)) {
-            self.create_chunk(wx, wy, wz)
+    fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &Chunk {
+        if !self.chunks.contains_key(&coordinates) {
+            self.create_chunk(coordinates)
         }
-        match self.chunks.get(&(wx, wy, wz)) {
+        match self.chunks.get(&coordinates) {
             Some(chunk) => &chunk,
             None => panic!(),
         }
-    }
-
-    pub fn get_position(wx: i32, wy: i32, wz: i32, cx: u8, cy: u8, cz: u8) -> Position {
-        let x = (wx * CHUNK_SIZE as i32) + cx as i32;
-        let y = (wy * CHUNK_SIZE as i32) + cy as i32;
-        let z = (wz * CHUNK_SIZE as i32) + cz as i32;
-        return [x as f32, y as f32, z as f32].into();
-    }
-
-    pub fn get_chunk_xyz(x: f32, y: f32, z: f32) -> ChunkCoordinates {
-        ((x / CHUNK_SIZE as f32) as i32, (y / CHUNK_SIZE as f32) as i32, (z / CHUNK_SIZE as f32) as i32)
     }
 }
 
@@ -160,58 +166,58 @@ mod tests {
     use space::Position;
     use block::{BlockType, BLOCKS};
     use std::collections::{HashMap, HashSet};
-    use world::{World, Chunk, CHUNK_SIZE};
+    use world::{InMemoryWorld, get_position, position_to_chunk, Chunk, CHUNK_SIZE};
 
     #[test]
     fn world_get_position() {
-        assert_eq!(World::get_position(0, 0, 0, 0, 0, 0), Position(0.0, 0.0, 0.0));
-        assert_eq!(World::get_position(0, 0, 0, 1, 1, 1), Position(1.0, 1.0, 1.0));
-        assert_eq!(World::get_position(1, 1, 1, 1, 1, 1), Position(CHUNK_SIZE as f32 + 1.0, CHUNK_SIZE as f32 + 1.0, CHUNK_SIZE as f32 + 1.0));
+        assert_eq!(get_position([0, 0, 0].into(), [0, 0, 0].into()), [0.0, 0.0, 0.0].into());
+        assert_eq!(get_position([0, 0, 0].into(), [1, 1, 1].into()), [1.0, 1.0, 1.0].into());
+        assert_eq!(get_position([1, 1, 1].into(), [1, 1, 1].into()), [CHUNK_SIZE as f32 + 1.0, CHUNK_SIZE as f32 + 1.0, CHUNK_SIZE as f32 + 1.0].into());
     }
 
     #[test]
     fn world_get_chunk_xyz() {
-        assert_eq!(World::get_chunk_xyz(0.0, 0.0, 0.0), (0, 0, 0));
-        assert_eq!(World::get_chunk_xyz(10.0, 12.0, 15.0), (0, 0, 0));
+        assert_eq!(position_to_chunk([0.0, 0.0, 0.0].into()), [0, 0, 0].into());
+        assert_eq!(position_to_chunk([10.0, 12.0, 15.0].into()), [0, 0, 0].into());
     }
 
     #[test]
     fn chunk_get() {
         let mut chunk = Chunk::new();
-        chunk.set((0, 0, 0), 1);
-        assert_eq!(chunk.get((0, 0, 0)), Some(BLOCKS[1]));
+        chunk.set([0, 0, 0].into(), 1);
+        assert_eq!(chunk.get([0, 0, 0].into()), Some(BLOCKS[1]));
     }
 
     #[test]
     fn chunk_get_adjacent() {
         let mut origin_adjacent = HashSet::new();
-        origin_adjacent.insert((1u8, 0u8, 0u8));
-        origin_adjacent.insert((0u8, 1u8, 0u8));
-        origin_adjacent.insert((0u8, 0u8, 1u8));
-        assert_eq!(Chunk::get_adjacent((0, 0, 0)), origin_adjacent);
+        origin_adjacent.insert([1u8, 0u8, 0u8].into());
+        origin_adjacent.insert([0u8, 1u8, 0u8].into());
+        origin_adjacent.insert([0u8, 0u8, 1u8].into());
+        assert_eq!(Chunk::get_adjacent([0, 0, 0].into()), origin_adjacent);
 
         let mut general_adjacent = HashSet::new();
-        general_adjacent.insert((6u8, 5u8, 5u8));
-        general_adjacent.insert((5u8, 6u8, 5u8));
-        general_adjacent.insert((5u8, 5u8, 6u8));
-        general_adjacent.insert((4u8, 5u8, 5u8));
-        general_adjacent.insert((5u8, 4u8, 5u8));
-        general_adjacent.insert((5u8, 5u8, 4u8));
-        assert_eq!(Chunk::get_adjacent((5, 5, 5)), general_adjacent);
+        general_adjacent.insert([6u8, 5u8, 5u8].into());
+        general_adjacent.insert([5u8, 6u8, 5u8].into());
+        general_adjacent.insert([5u8, 5u8, 6u8].into());
+        general_adjacent.insert([4u8, 5u8, 5u8].into());
+        general_adjacent.insert([5u8, 4u8, 5u8].into());
+        general_adjacent.insert([5u8, 5u8, 4u8].into());
+        assert_eq!(Chunk::get_adjacent([5, 5, 5].into()), general_adjacent);
     }
 
     #[test]
     fn chunk_is_occluded() {
         let mut chunk = Chunk::new();
-        chunk.set((3, 3, 3), 1);
-        chunk.set((3, 3, 2), 1);
-        chunk.set((5, 5, 5), 1);
-        assert!(!chunk.is_occluded((3, 3, 3)));
-        chunk.set((3, 2, 3), 1);
-        chunk.set((2, 3, 3), 1);
-        chunk.set((4, 3, 3), 1);
-        chunk.set((3, 4, 3), 1);
-        chunk.set((3, 3, 4), 1);
-        assert!(chunk.is_occluded((3, 3, 3)));
+        chunk.set([3, 3, 3].into(), 1);
+        chunk.set([3, 3, 2].into(), 1);
+        chunk.set([5, 5, 5].into(), 1);
+        assert!(!chunk.is_occluded([3, 3, 3].into()));
+        chunk.set([3, 2, 3].into(), 1);
+        chunk.set([2, 3, 3].into(), 1);
+        chunk.set([4, 3, 3].into(), 1);
+        chunk.set([3, 4, 3].into(), 1);
+        chunk.set([3, 3, 4].into(), 1);
+        assert!(chunk.is_occluded([3, 3, 3].into()));
     }
 }
