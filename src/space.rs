@@ -1,5 +1,3 @@
-extern crate float_cmp;
-
 use cgmath::Vector3;
 
 pub type Position = Vector3<f32>;

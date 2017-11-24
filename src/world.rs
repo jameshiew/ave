@@ -1,5 +1,3 @@
-extern crate glium;
-
 use space::Position;
 use std::collections::{HashMap, HashSet};
 use block::{BLOCKS, BlockType};

@@ -1,10 +1,7 @@
-extern crate glium;
-
 use vertex::Vertex;
 use std::hash::{Hash, Hasher};
 use glium::vertex::VertexBuffer;
 use glium::backend::Facade;
-use std::collections::HashSet;
 use color::Color;
 use color;
 

@@ -1,9 +1,7 @@
-extern crate glutin;
-extern crate cgmath;
-
-use self::cgmath::{Rad, Angle, PerspectiveFov, Matrix4};
+use cgmath::{Rad, Angle, PerspectiveFov, Matrix4};
 
 use std;
+use glium::glutin;
 use space::{Position, Direction};
 
 const DEFAULT_ASPECT_RATIO: f32 = 1024.0 / 768.0;
