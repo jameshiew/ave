@@ -168,11 +168,11 @@ impl World for InMemoryWorld {
 
     fn get_visible(&self, camera: &CameraState) -> Vec<(Position, &BlockType)> {
         // for now, just return blocks of current nearby chunks
-        let mut nearby_chunk_coordinates = Vec::new();
+        let mut nearby_chunk_coordinates = HashSet::new();
         let current_chunk_coordinates = position_to_chunk(&camera.position);
-        nearby_chunk_coordinates.push(current_chunk_coordinates);
+        nearby_chunk_coordinates.insert(current_chunk_coordinates);
         for chunk_coordinates in current_chunk_coordinates.directly_adjacent() {
-            nearby_chunk_coordinates.push(chunk_coordinates);
+            nearby_chunk_coordinates.insert(chunk_coordinates);
         }
 
         let mut blocks = Vec::new();
