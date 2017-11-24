@@ -77,6 +77,7 @@ pub fn make_cube<F: ? Sized>(facade: &F, x: f32, y: f32, z: f32, color: Color) -
     ]).unwrap()
 }
 
+#[derive(Debug)]
 pub struct BlockType {
     pub id: u8,
     pub color: Color,
