@@ -100,7 +100,7 @@ fn main() {
             let world_position = World::get_position(0, 0, 0, block_position_in_chunk[0], block_position_in_chunk[1], block_position_in_chunk[2]);
             let vertices = block::make_cube(
                 &display,
-                world_position.0, world_position.1, world_position.2,
+                world_position[0], world_position[1], world_position[2],
                 block_type.color,
             );
             target.draw(

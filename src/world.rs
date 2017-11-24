@@ -147,7 +147,7 @@ impl World {
         let x = (wx * CHUNK_SIZE as i32) + cx as i32;
         let y = (wy * CHUNK_SIZE as i32) + cy as i32;
         let z = (wz * CHUNK_SIZE as i32) + cz as i32;
-        return Position(x as f32, y as f32, z as f32);
+        return [x as f32, y as f32, z as f32].into();
     }
 
     pub fn get_chunk_xyz(x: f32, y: f32, z: f32) -> (i32, i32, i32) {

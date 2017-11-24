@@ -40,8 +40,8 @@ impl CameraState {
                 near: DEFAULT_Z_NEAR_CUTOFF,
                 far: DEFAULT_Z_FAR_CUTOFF,
             },
-            position: Position(0.1, 0.1, 1.0),
-            direction: Direction(0.0, 0.0, -1.0),
+            position: [0.1, 0.1, 1.0].into(),
+            direction: [0.0, 0.0, -1.0].into(),
             move_speed: 0.12,
             rotation_speed: 0.08,
             moving_up: false,
@@ -70,9 +70,9 @@ impl CameraState {
     pub fn get_view(&self) -> [[f32; 4]; 4] {
         let f = {
             let f = &self.direction;
-            let len = f.0 * f.0 + f.1 * f.1 + f.2 * f.2;
+            let len = f[0] * f[0] + f[1] * f[1] + f[2] * f[2];
             let len = len.sqrt();
-            (f.0 / len, f.1 / len, f.2 / len)
+            (f[0] / len, f[1] / len, f[2] / len)
         };
 
         let up = (0.0, 1.0, 0.0);
@@ -91,9 +91,9 @@ impl CameraState {
                  s_norm.2 * f.0 - s_norm.0 * f.2,
                  s_norm.0 * f.1 - s_norm.1 * f.0);
 
-        let p = (-self.position.0 * s.0 - self.position.1 * s.1 - self.position.2 * s.2,
-                 -self.position.0 * u.0 - self.position.1 * u.1 - self.position.2 * u.2,
-                 -self.position.0 * f.0 - self.position.1 * f.1 - self.position.2 * f.2);
+        let p = (-self.position[0] * s.0 - self.position[1] * s.1 - self.position[2] * s.2,
+                 -self.position[0] * u.0 - self.position[1] * u.1 - self.position[2] * u.2,
+                 -self.position[0] * f.0 - self.position[1] * f.1 - self.position[2] * f.2);
 
         Matrix4::new(
             s_norm.0, u.0, f.0, 0.0,
@@ -106,9 +106,9 @@ impl CameraState {
     pub fn update(&mut self) {
         let f = {
             let f = &self.direction;
-            let len = f.0 * f.0 + f.1 * f.1 + f.2 * f.2;
+            let len = f[0] * f[0] + f[1] * f[1] + f[2] * f[2];
             let len = len.sqrt();
-            (f.0 / len, f.1 / len, f.2 / len)
+            (f[0] / len, f[1] / len, f[2] / len)
         };
 
         let up = (0.0, 1.0, 0.0);
@@ -128,63 +128,63 @@ impl CameraState {
                  s.0 * f.1 - s.1 * f.0);
 
         if self.moving_up {
-            self.position.0 += u.0 * self.move_speed;
-            self.position.1 += u.1 * self.move_speed;
-            self.position.2 += u.2 * self.move_speed;
+            self.position[0] += u.0 * self.move_speed;
+            self.position[1] += u.1 * self.move_speed;
+            self.position[2] += u.2 * self.move_speed;
         }
 
         if self.moving_left {
-            self.position.0 -= s.0 * self.move_speed;
-            self.position.1 -= s.1 * self.move_speed;
-            self.position.2 -= s.2 * self.move_speed;
+            self.position[0] -= s.0 * self.move_speed;
+            self.position[1] -= s.1 * self.move_speed;
+            self.position[2] -= s.2 * self.move_speed;
         }
 
         if self.moving_down {
-            self.position.0 -= u.0 * self.move_speed;
-            self.position.1 -= u.1 * self.move_speed;
-            self.position.2 -= u.2 * self.move_speed;
+            self.position[0] -= u.0 * self.move_speed;
+            self.position[1] -= u.1 * self.move_speed;
+            self.position[2] -= u.2 * self.move_speed;
         }
 
         if self.moving_right {
-            self.position.0 += s.0 * self.move_speed;
-            self.position.1 += s.1 * self.move_speed;
-            self.position.2 += s.2 * self.move_speed;
+            self.position[0] += s.0 * self.move_speed;
+            self.position[1] += s.1 * self.move_speed;
+            self.position[2] += s.2 * self.move_speed;
         }
 
         if self.rotating_up {
-            self.direction.0 += u.0 * self.rotation_speed;
-            self.direction.1 += u.1 * self.rotation_speed;
-            self.direction.2 += u.2 * self.rotation_speed;
+            self.direction[0] += u.0 * self.rotation_speed;
+            self.direction[1] += u.1 * self.rotation_speed;
+            self.direction[2] += u.2 * self.rotation_speed;
         }
 
         if self.rotating_left {
-            self.direction.0 -= s.0 * self.rotation_speed;
-            self.direction.1 -= s.1 * self.rotation_speed;
-            self.direction.2 -= s.2 * self.rotation_speed;
+            self.direction[0] -= s.0 * self.rotation_speed;
+            self.direction[1] -= s.1 * self.rotation_speed;
+            self.direction[2] -= s.2 * self.rotation_speed;
         }
 
         if self.rotating_down {
-            self.direction.0 -= u.0 * self.rotation_speed;
-            self.direction.1 -= u.1 * self.rotation_speed;
-            self.direction.2 -= u.2 * self.rotation_speed;
+            self.direction[0] -= u.0 * self.rotation_speed;
+            self.direction[1] -= u.1 * self.rotation_speed;
+            self.direction[2] -= u.2 * self.rotation_speed;
         }
 
         if self.rotating_right {
-            self.direction.0 += s.0 * self.rotation_speed;
-            self.direction.1 += s.1 * self.rotation_speed;
-            self.direction.2 += s.2 * self.rotation_speed;
+            self.direction[0] += s.0 * self.rotation_speed;
+            self.direction[1] += s.1 * self.rotation_speed;
+            self.direction[2] += s.2 * self.rotation_speed;
         }
 
         if self.moving_forward {
-            self.position.0 += f.0 * self.move_speed;
-            self.position.1 += f.1 * self.move_speed;
-            self.position.2 += f.2 * self.move_speed;
+            self.position[0] += f.0 * self.move_speed;
+            self.position[1] += f.1 * self.move_speed;
+            self.position[2] += f.2 * self.move_speed;
         }
 
         if self.moving_backward {
-            self.position.0 -= f.0 * self.move_speed;
-            self.position.1 -= f.1 * self.move_speed;
-            self.position.2 -= f.2 * self.move_speed;
+            self.position[0] -= f.0 * self.move_speed;
+            self.position[1] -= f.1 * self.move_speed;
+            self.position[2] -= f.2 * self.move_speed;
         }
     }
 
