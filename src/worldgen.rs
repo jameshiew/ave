@@ -43,9 +43,6 @@ impl RandomPillarsWorldGenerator {
 impl WorldGenerator for RandomPillarsWorldGenerator {
     fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> Chunk {
         let mut chunk = Chunk::new();
-        let pillar_x = self.prng.gen_range(0, CHUNK_SIZE - 1);
-        let pillar_z = self.prng.gen_range(0, CHUNK_SIZE - 1);
-        let pillar_height = self.prng.gen_range(0, CHUNK_SIZE);
         if coordinates[1] == 0 {
             for x in 0..CHUNK_SIZE {
                 for z in 0..CHUNK_SIZE {
@@ -53,8 +50,15 @@ impl WorldGenerator for RandomPillarsWorldGenerator {
                 }
             }
         }
-        for y in 0..pillar_height {
-            chunk.set([pillar_x, y, pillar_z].into(), 1);
+
+        let number_of_pillars = self.prng.gen_range(1, 8);
+        for _ in 0..number_of_pillars {
+            let pillar_x = self.prng.gen_range(0, CHUNK_SIZE - 1);
+            let pillar_z = self.prng.gen_range(0, CHUNK_SIZE - 1);
+            let pillar_height = self.prng.gen_range(0, CHUNK_SIZE);
+            for y in 0..pillar_height {
+                chunk.set([pillar_x, y, pillar_z].into(), 1);
+            }
         }
         return chunk;
     }
