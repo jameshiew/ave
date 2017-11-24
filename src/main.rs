@@ -96,8 +96,8 @@ fn main() {
         let mut target = display.draw();
         target.clear_color_and_depth(sky, 1.0);
 
-        for (position, block_type) in world.get_or_create(0, 0, 0).get_visible() {
-            let world_position = World::get_position(0, 0, 0, position.0, position.1, position.2);
+        for (block_position_in_chunk, block_type) in world.get_or_create(0, 0, 0).get_visible() {
+            let world_position = World::get_position(0, 0, 0, block_position_in_chunk[0], block_position_in_chunk[1], block_position_in_chunk[2]);
             let vertices = block::make_cube(
                 &display,
                 world_position.0, world_position.1, world_position.2,

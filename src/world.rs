@@ -1,23 +1,22 @@
 extern crate glium;
 
-use vertex::Vertex;
-use std::hash::{Hash, Hasher};
 use space::Position;
-use glium::vertex::VertexBuffer;
-use glium::backend::Facade;
 use std::collections::{HashMap, HashSet};
-use color::Color;
-use color;
 use block::{BLOCKS, BlockType};
+use cgmath::Vector3;
 
 /// Side length of a chunk (in blocks) - all chunks are cubic
 const CHUNK_SIZE: u8 = 32;
 
-pub type ChunkPosition = (u8, u8, u8);
+/// Indicates an index into a chunk with dimensions CHUNK_SIZE x CHUNK_SIZE x CHUNK_SIZE
+pub type ChunkPosition = Vector3<u8>;
 
 pub struct Chunk {
+    /// Each chunk position is mapped to an index into the BLOCKS slice
+    ///
+    /// Absence of a chunk position key indicated an empty (air) block
     pub blocks: HashMap<ChunkPosition, usize>,
-    /// chunk positions which are completely occluded and so should never be rendered
+    /// Chunk positions which are completely occluded and so should never be rendered
     pub mask: HashSet<ChunkPosition>,
 }
 
@@ -29,23 +28,23 @@ impl Chunk {
     /// get adjacent positions - ignoring diagonals
     pub fn get_adjacent(position: ChunkPosition) -> HashSet<ChunkPosition> {
         let mut set: HashSet<ChunkPosition> = HashSet::new();
-        if position.0 < CHUNK_SIZE - 1 {
-            set.insert((position.0 + 1u8, position.1, position.2));
+        if position[0] < CHUNK_SIZE - 1 {
+            set.insert([position[0] + 1u8, position[1], position[2]].into());
         }
-        if position.1 < CHUNK_SIZE - 1 {
-            set.insert((position.0, position.1 + 1u8, position.2));
+        if position[1] < CHUNK_SIZE - 1 {
+            set.insert([position[0], position[1] + 1u8, position[2]].into());
         }
-        if position.2 < CHUNK_SIZE - 1 {
-            set.insert((position.0, position.1, position.2 + 1u8));
+        if position[2] < CHUNK_SIZE - 1 {
+            set.insert([position[0], position[1], position[2] + 1u8].into());
         }
-        if position.0 > 0 {
-            set.insert((position.0 - 1u8, position.1, position.2));
+        if position[0] > 0 {
+            set.insert([position[0] - 1u8, position[1], position[2]].into());
         }
-        if position.1 > 0 {
-            set.insert((position.0, position.1 - 1u8, position.2));
+        if position[1] > 0 {
+            set.insert([position[0], position[1] - 1u8, position[2]].into());
         }
-        if position.2 > 0 {
-            set.insert((position.0, position.1, position.2 - 1u8));
+        if position[2] > 0 {
+            set.insert([position[0], position[1], position[2] - 1u8].into());
         }
         return set;
     }
@@ -79,7 +78,7 @@ impl Chunk {
     }
 
     pub fn is_occluded(&self, position: ChunkPosition) -> bool {
-        if [0, CHUNK_SIZE - 1].contains(&position.0) || [0, CHUNK_SIZE - 1].contains(&position.1) || [0, CHUNK_SIZE - 1].contains(&position.2) {
+        if [0, CHUNK_SIZE - 1].contains(&position[0]) || [0, CHUNK_SIZE - 1].contains(&position[1]) || [0, CHUNK_SIZE - 1].contains(&position[2]) {
             return false;  // cheating by for now always showing blocks that are on the edge of chunks
         }
         for adjacent_position in Chunk::get_adjacent(position) {
@@ -120,13 +119,13 @@ impl World {
             for x in 0..32 {
                 for y in 0..32 {
                     for z in 0..32 {
-                        chunk.set((x, y, z), 1);
+                        chunk.set([x, y, z].into(), 1);
                     }
                 }
             }
         } else if wy == 0 {
             for y in 0..12 {
-                chunk.set((7, y, 7), 0);
+                chunk.set([7, y, 7].into(), 0);
             }
         }
         match self.chunks.insert((wx, wy, wz), chunk) {
