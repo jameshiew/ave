@@ -46,9 +46,11 @@ impl WorldGenerator for RandomPillarsWorldGenerator {
         let pillar_x = self.prng.gen_range(0, CHUNK_SIZE - 1);
         let pillar_z = self.prng.gen_range(0, CHUNK_SIZE - 1);
         let pillar_height = self.prng.gen_range(0, CHUNK_SIZE);
-        for x in 0..CHUNK_SIZE {
-            for z in 0..CHUNK_SIZE {
-                chunk.set([x, 0, z].into(), 0);
+        if coordinates[1] == 0 {
+            for x in 0..CHUNK_SIZE {
+                for z in 0..CHUNK_SIZE {
+                    chunk.set([x, 0, z].into(), 0);
+                }
             }
         }
         for y in 0..pillar_height {
