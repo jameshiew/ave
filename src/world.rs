@@ -5,6 +5,7 @@ use cgmath::Vector3;
 use worldgen::{FlatWorldGenerator, WorldGenerator};
 use camera::CameraState;
 use std::vec::Vec;
+use space::Adjacent;
 use worldgen;
 
 /// Side length of a chunk (in blocks) - all chunks are cubic
@@ -107,6 +108,27 @@ impl Chunk {
 
 pub type ChunkCoordinates = Vector3<i32>;
 
+impl Adjacent for Vector3<i32> {
+    fn adjacent(&self) -> Vec<Self> {
+        unimplemented!()
+    }
+
+    fn directly_adjacent(&self) -> Vec<Self> {
+        let mut vec = Vec::new();
+        vec.push([self[0] + 1, self[1], self[2]].into());
+        vec.push([self[0], self[1] + 1, self[2]].into());
+        vec.push([self[0], self[1], self[2] + 1].into());
+        vec.push([self[0] - 1, self[1], self[2]].into());
+        vec.push([self[0], self[1] - 1, self[2]].into());
+        vec.push([self[0], self[1], self[2] - 1].into());
+        return vec;
+    }
+
+    fn diagonally_adjacent(&self) -> Vec<Self> {
+        unimplemented!()
+    }
+}
+
 pub fn get_position(chunk_coordinates: &ChunkCoordinates, block_coordinates: &BlockCoordinates) -> Position {
     let x = (chunk_coordinates[0] * CHUNK_SIZE as i32) + block_coordinates[0] as i32;
     let y = (chunk_coordinates[1] * CHUNK_SIZE as i32) + block_coordinates[1] as i32;
@@ -121,7 +143,7 @@ pub fn position_to_chunk(coordinates: &Position) -> ChunkCoordinates {
 pub trait World {
     fn new() -> Self;
     fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &Chunk;
-    fn get_visible(&mut self, camera: &CameraState) -> Vec<(Position, &BlockType)>;
+    fn get_visible(&self, camera: &CameraState) -> Vec<(Position, &BlockType)>;
 }
 
 pub struct InMemoryWorld {
@@ -140,19 +162,32 @@ impl World for InMemoryWorld {
         } else {
             let chunk = self.generator.generate_chunk(coordinates);
             self.chunks.insert(coordinates, chunk);
-            return self.chunks.get_mut(&coordinates).unwrap()
+            return self.chunks.get_mut(&coordinates).unwrap();
         }
     }
 
-    fn get_visible(&mut self, camera: &CameraState) -> Vec<(Position, &BlockType)> {
-        // for now, just return blocks of current chunk
-        let mut vec = Vec::new();
-        let chunk_coordinates = position_to_chunk(&camera.position);
-        let chunk = self.get_or_create(chunk_coordinates);
-        for (block_coordinates, block_type) in chunk.get_visible() {
-            vec.push((get_position(&chunk_coordinates, &block_coordinates), block_type))
+    fn get_visible(&self, camera: &CameraState) -> Vec<(Position, &BlockType)> {
+        // for now, just return blocks of current nearby chunks
+        let mut nearby_chunk_coordinates = Vec::new();
+        let current_chunk_coordinates = position_to_chunk(&camera.position);
+        nearby_chunk_coordinates.push(current_chunk_coordinates);
+        for chunk_coordinates in current_chunk_coordinates.directly_adjacent() {
+            nearby_chunk_coordinates.push(chunk_coordinates);
         }
-        vec
+
+        let mut blocks = Vec::new();
+        for chunk_coordinates in nearby_chunk_coordinates {
+            let chunk_opt = self.chunks.get(&chunk_coordinates);
+            match chunk_opt {
+                Some(chunk) => {
+                    for (block_coordinates, block_type) in chunk.get_visible() {
+                        blocks.push((get_position(&chunk_coordinates, &block_coordinates), block_type))
+                    }
+                },
+                None => (),
+            }
+        }
+        blocks
     }
 }
 
