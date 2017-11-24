@@ -89,10 +89,11 @@ fn main() {
     let mut world = World::new();
     let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
 
+    let sky = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
     start_loop(|| {
         camera.update();
         let mut target = display.draw();
-        target.clear_color_and_depth((0.0, 0.0, 0.0, 1.0), 1.0);
+        target.clear_color_and_depth(sky, 1.0);
 
         for x in -1..2 {
             for y in -1..2 {

@@ -7,6 +7,7 @@ use glium::vertex::VertexBuffer;
 use glium::backend::Facade;
 use std::collections::{HashMap, HashSet};
 use color::Color;
+use color;
 
 /// Size of a block (in metres)
 const BLOCK_SIZE: f32 = 0.5;
@@ -102,11 +103,11 @@ impl Eq for BlockType {}
 static BLOCKS: [&BlockType; 2] = [
     &BlockType {
         id: 0,
-        color: [0.0, 1.0, 0.0]
+        color: color::GREEN,
     },
     &BlockType {
         id: 1,
-        color: [1.0, 0.0, 0.0]
+        color: color::BROWN,
     },
 ];
 
