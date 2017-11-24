@@ -3,7 +3,6 @@ use std::collections::{HashMap, HashSet};
 use block::{BLOCKS, BlockType};
 use cgmath::Vector3;
 use worldgen::{FlatWorldGenerator, WorldGenerator};
-use camera::CameraState;
 use std::vec::Vec;
 use space::Adjacent;
 use worldgen;
@@ -143,7 +142,7 @@ pub fn position_to_chunk(coordinates: &Position) -> ChunkCoordinates {
 pub trait World {
     fn new() -> Self;
     fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &Chunk;
-    fn get_visible(&self, camera: &CameraState) -> Vec<(Position, &BlockType)>;
+    fn at(&self, position: Position, radius: u8) -> Vec<(Position, &BlockType)>;
 }
 
 pub struct InMemoryWorld {
@@ -166,10 +165,10 @@ impl World for InMemoryWorld {
         }
     }
 
-    fn get_visible(&self, camera: &CameraState) -> Vec<(Position, &BlockType)> {
+    fn at(&self, position: Position, radius: u8) -> Vec<(Position, &BlockType)> {
         // for now, just return blocks of current nearby chunks
         let mut nearby_chunk_coordinates = HashSet::new();
-        let current_chunk_coordinates = position_to_chunk(&camera.position);
+        let current_chunk_coordinates = position_to_chunk(&position);
         nearby_chunk_coordinates.insert(current_chunk_coordinates);
         for chunk_coordinates in current_chunk_coordinates.directly_adjacent() {
             nearby_chunk_coordinates.insert(chunk_coordinates);

@@ -115,7 +115,7 @@ fn main() {
         let mut target = display.draw();
         target.clear_color_and_depth(sky, 1.0);
 
-        for (position, block_type) in game.world.get_visible(&camera) {
+        for (position, block_type) in game.world.at(camera.position, 1) {
             let vertices = block::make_cube(&display, &position, block_type.color);
             target.draw(
                 &vertices,
