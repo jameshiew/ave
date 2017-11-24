@@ -87,6 +87,7 @@ fn main() {
     };
 
     let mut world = World::new();
+    let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
 
     start_loop(|| {
         camera.update();
@@ -108,7 +109,7 @@ fn main() {
                         );
                         target.draw(
                             &vertices,
-                            glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip),
+                            indices,
                             &program,
                             &uniform! {
                                 model: model,
