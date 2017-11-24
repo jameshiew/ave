@@ -20,6 +20,16 @@ use world::{World, InMemoryWorld};
 use std::thread;
 use std::time::{Duration, Instant};
 
+struct Game {
+    pub world: InMemoryWorld,
+}
+
+impl Game {
+    fn new() -> Game {
+        Game { world: InMemoryWorld::new() }
+    }
+}
+
 pub enum Action {
     Stop,
     Continue,
@@ -88,11 +98,12 @@ fn main() {
         ..Default::default()
     };
 
-    let mut world = InMemoryWorld::new();
+    let mut game = Box::new(Game::new());
+
     for x in -2..2 {
         for y in -2..2 {
             for z in -2..2 {
-                world.get_or_create([x, y, z].into());
+                game.world.get_or_create([x, y, z].into());
             }
         }
     }
@@ -104,7 +115,7 @@ fn main() {
         let mut target = display.draw();
         target.clear_color_and_depth(sky, 1.0);
 
-        for (position, block_type) in world.get_visible(&camera) {
+        for (position, block_type) in game.world.get_visible(&camera) {
             let vertices = block::make_cube(&display, &position, block_type.color);
             target.draw(
                 &vertices,
