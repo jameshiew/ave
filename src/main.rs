@@ -50,7 +50,9 @@ pub fn start_loop<F>(mut callback: F) where F: FnMut() -> Action {
 
 fn main() {
     let mut events_loop = glutin::EventsLoop::new();
-    let window = glutin::WindowBuilder::new();
+    let window = glutin::WindowBuilder::new()
+        .with_dimensions(1024, 768)
+        .with_title("Ave");
     let context = glutin::ContextBuilder::new()
         .with_depth_buffer(24)
         .with_vsync(true);
