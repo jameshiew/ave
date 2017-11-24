@@ -11,10 +11,11 @@ mod block;
 mod camera;
 mod space;
 mod color;
+mod world;
 
 use glium::{glutin, Surface};
 use cgmath::Matrix4;
-use block::World;
+use world::World;
 use std::thread;
 use std::time::{Duration, Instant};
 
