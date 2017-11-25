@@ -40,7 +40,7 @@ impl CameraState {
                 near: DEFAULT_Z_NEAR_CUTOFF,
                 far: DEFAULT_Z_FAR_CUTOFF,
             },
-            position: [0.1, 0.1, 1.0].into(),
+            position: [0.0, 2.7, 0.0].into(),
             direction: [0.0, 0.0, -1.0].into(),
             move_speed: 0.12,
             rotation_speed: 0.08,
