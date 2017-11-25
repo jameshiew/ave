@@ -1,6 +1,13 @@
-use cgmath::{Vector3, Point3};
+use cgmath::{Vector3, Point3, Matrix4, Vector4};
 use std::vec::Vec;
 use std;
+
+pub const MODEL: [[f32; 4]; 4] = [
+    [1.0, 0.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0, 0.0],
+    [0.0, 0.0, 1.0, 0.0],
+    [0.0, 0.0, 0.0, 1.0],
+];
 
 pub type Position = Point3<f32>;
 pub type Direction = Vector3<f32>;

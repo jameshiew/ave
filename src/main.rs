@@ -78,13 +78,6 @@ fn main() {
 
     let mut camera = camera::CameraState::new();
 
-    let model: [[f32; 4]; 4] = Matrix4::new(
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0f32,
-    ).into();
-
     let params = glium::DrawParameters {
         depth: glium::Depth {
             test: glium::draw_parameters::DepthTest::IfLess,
@@ -116,7 +109,7 @@ fn main() {
         let perspective: [[f32; 4]; 4] = camera.get_perspective().into();
         let view: [[f32; 4]; 4] = camera.get_view().into();
         let uniform = uniform! {
-            model: model,
+            model: space::MODEL,
             perspective: perspective,
             view: view
         };
