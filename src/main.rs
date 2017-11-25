@@ -1,10 +1,9 @@
 #[macro_use]
 extern crate glium;
+extern crate glutin;
 extern crate cgmath;
-extern crate image;
-extern crate genmesh;
-extern crate obj;
 extern crate rand;
+extern crate collision;
 
 mod vertex;
 mod block;
@@ -14,7 +13,7 @@ mod color;
 mod world;
 mod worldgen;
 
-use glium::{glutin, Surface};
+use glium::Surface;
 use cgmath::Matrix4;
 use world::{World, InMemoryWorld};
 use std::thread;
@@ -114,6 +113,8 @@ fn main() {
         camera.update();
         let mut target = display.draw();
         target.clear_color_and_depth(sky, 1.0);
+        let perspective: [[f32; 4]; 4] = camera.get_perspective().into();
+        let view: [[f32; 4]; 4] = camera.get_view().into();
 
         for (position, block_type) in game.world.at(camera.position, 1) {
             let vertices = block::make_cube(&display, &position, block_type.color);
@@ -121,11 +122,7 @@ fn main() {
                 &vertices,
                 indices,
                 &program,
-                &uniform! {
-                    model: model,
-                    perspective: camera.get_perspective(),
-                    view: camera.get_view(),
-                },
+                &uniform! { model: model, perspective: perspective, view: view },
                 &params
             ).unwrap()
         }

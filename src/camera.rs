@@ -1,7 +1,7 @@
 use cgmath::{Rad, Angle, PerspectiveFov, Matrix4};
-
+use collision::{Aabb3, Frustum};
 use std;
-use glium::glutin;
+use glutin;
 use space::{Position, Direction};
 
 const DEFAULT_ASPECT_RATIO: f32 = 1024.0 / 768.0;
@@ -55,17 +55,17 @@ impl CameraState {
         }
     }
 
-    pub fn get_perspective(&self) -> [[f32; 4]; 4] {
+    pub fn get_perspective(&self) -> Matrix4<f32> {
         let f = 1.0 / (self.perspective_fov.fovy / 2.0).tan();
         Matrix4::new(
             f / self.perspective_fov.aspect, 0.0, 0.0, 0.0,
             0.0, f, 0.0, 0.0,
             0.0, 0.0, (self.perspective_fov.far + self.perspective_fov.near) / (self.perspective_fov.far - self.perspective_fov.near), 1.0,
             0.0, 0.0, -(2.0 * self.perspective_fov.far * self.perspective_fov.near) / (self.perspective_fov.far - self.perspective_fov.near), 0.0,
-        ).into()
+        )
     }
 
-    pub fn get_view(&self) -> [[f32; 4]; 4] {
+    pub fn get_view(&self) -> Matrix4<f32> {
         let f = {
             let f = &self.direction;
             let len = f[0] * f[0] + f[1] * f[1] + f[2] * f[2];
@@ -98,7 +98,7 @@ impl CameraState {
             s_norm.1, u.1, f.1, 0.0,
             s_norm.2, u.2, f.2, 0.0,
             p.0, p.1, p.2, 1.0,
-        ).into()
+        )
     }
 
     pub fn update(&mut self) {

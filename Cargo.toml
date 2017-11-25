@@ -6,9 +6,7 @@ authors = ["James Hiew <james@hiew.net>"]
 [dependencies]
 glium = "*"
 glutin = "*"
-genmesh = "*"
-obj = { version = "*", features = ["genmesh"] }
-image = "*"
 cgmath = "*"
+collision = "*"
 float-cmp = "*"
 rand = "*"
