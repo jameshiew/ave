@@ -181,7 +181,18 @@ impl World for InMemoryWorld {
         let mut chunk_coordinates_to_render = HashSet::new();
         let current_chunk_coordinates = position_to_chunk(&position);
         chunk_coordinates_to_render.insert(current_chunk_coordinates);
-        chunk_coordinates_to_render.extend(current_chunk_coordinates.adjacent());
+        let iradius = radius as i32;
+        for x in -iradius..iradius + 1 {
+            for y in -iradius..iradius + 1 {
+                for z in -iradius..iradius + 1 {
+                    chunk_coordinates_to_render.insert(
+                        [current_chunk_coordinates[0] + x,
+                        current_chunk_coordinates[0] + y,
+                        current_chunk_coordinates[0] + z].into()
+                    );
+                }
+            }
+        }
 
         let mut blocks = Vec::new();
         for chunk_coordinates in chunk_coordinates_to_render {
