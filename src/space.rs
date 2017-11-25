@@ -1,4 +1,4 @@
-use cgmath::{Vector3, Point3, Matrix4, Vector4};
+use cgmath::{Vector3, Point3};
 use std::vec::Vec;
 use std;
 

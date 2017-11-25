@@ -1,6 +1,6 @@
 use cgmath::{Rad, Angle, PerspectiveFov};
 use cgmath::Matrix4;
-use collision::{Frustum, Bound};
+use collision::Frustum;
 use std;
 use collision;
 use glutin;

@@ -15,10 +15,35 @@ mod worldgen;
 mod game;
 
 use glium::Surface;
-use cgmath::Matrix4;
-use world::{World, InMemoryWorld};
+use world::World;
 use std::thread;
 use std::time::{Duration, Instant};
+
+/// Global, thread-safe context for the application
+struct Application {
+    pub display: glium::Display,
+    pub camera: camera::CameraState,
+    pub game: game::Game,
+}
+
+impl Application {
+    pub fn new(events_loop: &glutin::EventsLoop) -> Application {
+        let window = glutin::WindowBuilder::new()
+            .with_dimensions(1024, 768)
+            .with_title("Ave");
+        let context = glutin::ContextBuilder::new()
+            .with_depth_buffer(24)
+            .with_vsync(true);
+        let display = glium::Display::new(window, context, events_loop).unwrap();
+        let mut camera = camera::CameraState::new();
+        let game = game::Game::new();
+        Application {
+            display,
+            camera,
+            game,
+        }
+    }
+}
 
 pub enum Action {
     Stop,
@@ -52,17 +77,11 @@ pub fn start_loop<F>(mut callback: F) where F: FnMut() -> Action {
 
 fn main() {
     let mut events_loop = glutin::EventsLoop::new();
-    let window = glutin::WindowBuilder::new()
-        .with_dimensions(1024, 768)
-        .with_title("Ave");
-    let context = glutin::ContextBuilder::new()
-        .with_depth_buffer(24)
-        .with_vsync(true);
-    let display = glium::Display::new(window, context, &events_loop).unwrap();
+    let mut application = Application::new(&events_loop);
 
     let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
     let program = glium::Program::from_source(
-        &display,
+        &application.display,
         include_str!("./shaders/simple.glslv"),
         include_str!("./shaders/simple.glslf"),
         None,
@@ -78,26 +97,23 @@ fn main() {
         smooth: Some(glium::draw_parameters::Smooth::Nicest),
         ..Default::default()
     };
-
-    let mut camera = camera::CameraState::new();
     let sky_color = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
-    let game = Box::new(game::Game::new());
 
-    start_loop(|| {
-        camera.update();
-        let mut target = display.draw();
+    start_loop(move || {
+        application.camera.update();
+        let mut target = application.display.draw();
         target.clear_color_and_depth(sky_color, 1.0);
-        let perspective: [[f32; 4]; 4] = camera.get_perspective().into();
-        let view: [[f32; 4]; 4] = camera.get_view().into();
+        let perspective: [[f32; 4]; 4] = application.camera.get_perspective().into();
+        let view: [[f32; 4]; 4] = application.camera.get_view().into();
         let uniform = uniform! {
             model: space::MODEL,
             perspective: perspective,
             view: view
         };
 
-        for (position, block_type) in game.world.at(camera.position, 2) {
-            if camera.can_see(position) {
-                let vertices = block::make_cube(&display, &position, block_type.color);
+        for (position, block_type) in application.game.world.at(application.camera.position, 2) {
+            if application.camera.can_see(position) {
+                let vertices = block::make_cube(&application.display, &position, block_type.color);
                 target.draw(
                     &vertices,
                     indices,
@@ -117,7 +133,7 @@ fn main() {
             match event {
                 glutin::Event::WindowEvent { event, .. } => match event {
                     glutin::WindowEvent::Closed => action = Action::Stop,
-                    ev => camera.process_input(&ev),
+                    ev => application.camera.process_input(&ev),
                 },
                 _ => (),
             }
