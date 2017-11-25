@@ -12,22 +12,13 @@ mod space;
 mod color;
 mod world;
 mod worldgen;
+mod game;
 
 use glium::Surface;
 use cgmath::Matrix4;
 use world::{World, InMemoryWorld};
 use std::thread;
 use std::time::{Duration, Instant};
-
-struct Game {
-    pub world: InMemoryWorld,
-}
-
-impl Game {
-    fn new() -> Game {
-        Game { world: InMemoryWorld::new() }
-    }
-}
 
 pub enum Action {
     Stop,
@@ -90,7 +81,7 @@ fn main() {
         ..Default::default()
     };
 
-    let mut game = Box::new(Game::new());
+    let mut game = Box::new(game::Game::new());
 
     for x in -3..3 + 1 {
         for y in -3..3 + 1 {
