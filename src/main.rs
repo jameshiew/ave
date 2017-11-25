@@ -35,7 +35,7 @@ impl Application {
             .with_depth_buffer(24)
             .with_vsync(true);
         let display = glium::Display::new(window, context, events_loop).unwrap();
-        let mut camera = camera::CameraState::new();
+        let camera = camera::CameraState::new();
         let game = game::Game::new();
         Application {
             display,
