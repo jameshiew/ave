@@ -5,7 +5,9 @@ pub trait WorldGenerator {
     fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> Chunk;
 }
 
-/// Simple world generator which generates a flat surface for chunks at y=0
+/// Generates a flat world with no structures
+///
+/// Everything at and below world y=0 is ground, everything above is air
 pub struct FlatWorldGenerator {}
 
 impl FlatWorldGenerator {
@@ -17,10 +19,12 @@ impl FlatWorldGenerator {
 impl WorldGenerator for FlatWorldGenerator {
     fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> Chunk {
         let mut chunk = Chunk::new();
-        if coordinates[1] == 0 {
+        if coordinates[1] < 0 {
             for x in 0..CHUNK_SIZE {
-                for z in 0..CHUNK_SIZE {
-                    chunk.set([x, 0, z].into(), 0);
+                for y in 0..CHUNK_SIZE {
+                    for z in 0..CHUNK_SIZE {
+                        chunk.set([x, y, z].into(), 0);
+                    }
                 }
             }
         }
