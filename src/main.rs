@@ -116,7 +116,7 @@ fn main() {
         let perspective: [[f32; 4]; 4] = camera.get_perspective().into();
         let view: [[f32; 4]; 4] = camera.get_view().into();
 
-        for (position, block_type) in game.world.at(camera.position, 1) {
+        for (position, block_type) in game.world.at(camera.position, 2) {
             if camera.can_see(position) {
                 let vertices = block::make_cube(&display, &position, block_type.color);
                 target.draw(
