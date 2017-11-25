@@ -60,15 +60,13 @@ fn main() {
         .with_vsync(true);
     let display = glium::Display::new(window, context, &events_loop).unwrap();
 
+    let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
     let program = glium::Program::from_source(
         &display,
         include_str!("./shaders/simple.glslv"),
         include_str!("./shaders/simple.glslf"),
         None,
     ).unwrap();
-
-    let mut camera = camera::CameraState::new();
-
     let params = glium::DrawParameters {
         depth: glium::Depth {
             test: glium::draw_parameters::DepthTest::IfLess,
@@ -81,22 +79,14 @@ fn main() {
         ..Default::default()
     };
 
-    let mut game = Box::new(game::Game::new());
+    let mut camera = camera::CameraState::new();
+    let sky_color = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
+    let game = Box::new(game::Game::new());
 
-    for x in -3..3 + 1 {
-        for y in -3..3 + 1 {
-            for z in -3..3 + 1 {
-                game.world.get_or_create([x, y, z].into());
-            }
-        }
-    }
-    let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
-
-    let sky = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
     start_loop(|| {
         camera.update();
         let mut target = display.draw();
-        target.clear_color_and_depth(sky, 1.0);
+        target.clear_color_and_depth(sky_color, 1.0);
         let perspective: [[f32; 4]; 4] = camera.get_perspective().into();
         let view: [[f32; 4]; 4] = camera.get_view().into();
         let uniform = uniform! {
