@@ -117,14 +117,16 @@ fn main() {
         let view: [[f32; 4]; 4] = camera.get_view().into();
 
         for (position, block_type) in game.world.at(camera.position, 1) {
-            let vertices = block::make_cube(&display, &position, block_type.color);
-            target.draw(
-                &vertices,
-                indices,
-                &program,
-                &uniform! { model: model, perspective: perspective, view: view },
-                &params
-            ).unwrap()
+            if camera.can_see(position) {
+                let vertices = block::make_cube(&display, &position, block_type.color);
+                target.draw(
+                    &vertices,
+                    indices,
+                    &program,
+                    &uniform! { model: model, perspective: perspective, view: view },
+                    &params
+                ).unwrap()
+            }
         }
 
         target.finish().unwrap();

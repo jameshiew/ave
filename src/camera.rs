@@ -1,6 +1,8 @@
-use cgmath::{Rad, Angle, PerspectiveFov, Matrix4};
-use collision::{Aabb3, Frustum};
+use cgmath::{Rad, Angle, PerspectiveFov};
+use cgmath::Matrix4;
+use collision::{Frustum, Bound};
 use std;
+use collision;
 use glutin;
 use space::{Position, Direction};
 
@@ -183,6 +185,14 @@ impl CameraState {
             self.position[0] -= f.0 * self.move_speed;
             self.position[1] -= f.1 * self.move_speed;
             self.position[2] -= f.2 * self.move_speed;
+        }
+    }
+
+    pub fn can_see(&self, position: Position) -> bool {
+        let frustum = Frustum::from_matrix4(self.get_perspective() * self.get_view()).unwrap();
+        match frustum.contains(&position) {
+            collision::Relation::Out => false,
+            _ => true,
         }
     }
 
