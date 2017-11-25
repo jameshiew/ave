@@ -1,8 +1,8 @@
-use cgmath::Vector3;
+use cgmath::{Vector3, Point3};
 use std::vec::Vec;
 use std;
 
-pub type Position = Vector3<f32>;
+pub type Position = Point3<f32>;
 pub type Direction = Vector3<f32>;
 
 pub trait Adjacent {

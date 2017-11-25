@@ -1,7 +1,7 @@
 use space::Position;
 use std::collections::{HashMap, HashSet};
 use block::{BLOCKS, BlockType};
-use cgmath::Vector3;
+use cgmath::Point3;
 use worldgen::WorldGenerator;
 use std::vec::Vec;
 use space::Adjacent;
@@ -11,7 +11,7 @@ use worldgen;
 pub const CHUNK_SIZE: u8 = 32;
 
 /// Indicates an index into a chunk with dimensions CHUNK_SIZE x CHUNK_SIZE x CHUNK_SIZE
-pub type BlockCoordinates = Vector3<u8>;
+pub type BlockCoordinates = Point3<u8>;
 
 pub struct Chunk {
     /// Each chunk position is mapped to an index into the BLOCKS slice
@@ -105,9 +105,9 @@ impl Chunk {
     }
 }
 
-pub type ChunkCoordinates = Vector3<i32>;
+pub type ChunkCoordinates = Point3<i32>;
 
-impl Adjacent for Vector3<i32> {
+impl Adjacent for Point3<i32> {
     fn adjacent(&self) -> Vec<Self> {
         let mut vec = self.directly_adjacent();
         vec.append(&mut self.diagonally_adjacent());
