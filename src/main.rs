@@ -115,6 +115,11 @@ fn main() {
         target.clear_color_and_depth(sky, 1.0);
         let perspective: [[f32; 4]; 4] = camera.get_perspective().into();
         let view: [[f32; 4]; 4] = camera.get_view().into();
+        let uniform = uniform! {
+            model: model,
+            perspective: perspective,
+            view: view
+        };
 
         for (position, block_type) in game.world.at(camera.position, 2) {
             if camera.can_see(position) {
@@ -123,7 +128,7 @@ fn main() {
                     &vertices,
                     indices,
                     &program,
-                    &uniform! { model: model, perspective: perspective, view: view },
+                    &uniform,
                     &params
                 ).unwrap()
             }
