@@ -109,7 +109,9 @@ pub type ChunkCoordinates = Vector3<i32>;
 
 impl Adjacent for Vector3<i32> {
     fn adjacent(&self) -> Vec<Self> {
-        unimplemented!()
+        let mut vec = self.directly_adjacent();
+        vec.append(&mut self.diagonally_adjacent());
+        vec
     }
 
     fn directly_adjacent(&self) -> Vec<Self> {
@@ -120,11 +122,20 @@ impl Adjacent for Vector3<i32> {
         vec.push([self[0] - 1, self[1], self[2]].into());
         vec.push([self[0], self[1] - 1, self[2]].into());
         vec.push([self[0], self[1], self[2] - 1].into());
-        return vec;
+        vec
     }
 
     fn diagonally_adjacent(&self) -> Vec<Self> {
-        unimplemented!()
+        let mut vec = Vec::new();
+        vec.push([self[0] + 1, self[1] + 1, self[2] + 1].into());
+        vec.push([self[0] - 1, self[1] + 1, self[2] + 1].into());
+        vec.push([self[0] - 1, self[1] - 1, self[2] + 1].into());
+        vec.push([self[0] - 1, self[1] - 1, self[2] - 1].into());
+        vec.push([self[0] - 1, self[1] + 1, self[2] - 1].into());
+        vec.push([self[0] + 1, self[1] + 1, self[2] - 1].into());
+        vec.push([self[0] + 1, self[1] - 1, self[2] - 1].into());
+        vec.push([self[0] + 1, self[1] - 1, self[2] + 1].into());
+        vec
     }
 }
 
@@ -167,15 +178,13 @@ impl World for InMemoryWorld {
 
     fn at(&self, position: Position, radius: u8) -> Vec<(Position, &BlockType)> {
         // for now, just return blocks of current nearby chunks
-        let mut nearby_chunk_coordinates = HashSet::new();
+        let mut chunk_coordinates_to_render = HashSet::new();
         let current_chunk_coordinates = position_to_chunk(&position);
-        nearby_chunk_coordinates.insert(current_chunk_coordinates);
-        for chunk_coordinates in current_chunk_coordinates.directly_adjacent() {
-            nearby_chunk_coordinates.insert(chunk_coordinates);
-        }
+        chunk_coordinates_to_render.insert(current_chunk_coordinates);
+        chunk_coordinates_to_render.extend(current_chunk_coordinates.adjacent());
 
         let mut blocks = Vec::new();
-        for chunk_coordinates in nearby_chunk_coordinates {
+        for chunk_coordinates in chunk_coordinates_to_render {
             let chunk_opt = self.chunks.get(&chunk_coordinates);
             match chunk_opt {
                 Some(chunk) => {

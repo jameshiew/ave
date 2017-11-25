@@ -100,9 +100,9 @@ fn main() {
 
     let mut game = Box::new(Game::new());
 
-    for x in -2..2 {
-        for y in -2..2 {
-            for z in -2..2 {
+    for x in -3..3 + 1 {
+        for y in -3..3 + 1 {
+            for z in -3..3 + 1 {
                 game.world.get_or_create([x, y, z].into());
             }
         }
