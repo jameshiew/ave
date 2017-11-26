@@ -116,6 +116,20 @@ fn main() {
             view: view
         };
 
+        // generate chunks as we move the camera
+        let chunk_coords = world::position_to_chunk(&application.camera.position);
+        let cx = chunk_coords.x;
+        let cy = chunk_coords.y;
+        let cz = chunk_coords.z;
+//        println!("Chunk: {}, {}, {}", cx, cy, cz);
+        for x in (cx - 2)..(cx + 2) {
+            for y in (cy - 2)..(cy + 2) {
+                for z in (cz - 2)..(cz + 2) {
+                    application.game.world.get_or_create([x, y, z].into());
+                }
+            }
+        }
+
         for (position, block_type) in application.game.world.at(application.camera.position, 2) {
             if application.camera.can_see(position) {
                 let vertices = block::make_cube(&application.display, &position, block_type.color);
