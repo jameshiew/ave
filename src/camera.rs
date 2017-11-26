@@ -45,7 +45,7 @@ impl CameraState {
             perspective: [[0.0; 4]; 4].into(),
             position: [0.0, 16.0, 0.0].into(),
             direction: [0.0, -1.0, -1.0].into(),
-            move_speed: 0.12,
+            move_speed: 0.3,
             rotation_speed: 0.08,
             moving_up: false,
             moving_left: false,
@@ -219,6 +219,18 @@ impl CameraState {
             glutin::VirtualKeyCode::Right => self.rotating_right = pressed,
             glutin::VirtualKeyCode::Up => self.rotating_up = pressed,
             glutin::VirtualKeyCode::Down => self.rotating_down = pressed,
+            glutin::VirtualKeyCode::Q => {
+                self.move_speed += self.move_speed + 0.1;
+                if self.move_speed > 1.0 {
+                    self.move_speed = 1.0;
+                }
+            },
+            glutin::VirtualKeyCode::E => {
+                self.move_speed = self.move_speed - 0.1;
+                if self.move_speed < 0.1 {
+                    self.move_speed = 0.1;
+                }
+            },
             _ => (),
         };
     }
