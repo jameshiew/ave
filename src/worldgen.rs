@@ -95,15 +95,13 @@ impl WorldGenerator for NaturalWorldGenerator {
                     height = height.powi(5);
                     let normalized_height: u8 = (height * (CHUNK_SIZE as f32)) as u8;
                     println!("({}, {}): Height: {}, Normalized: {}", position.x, position.z, height, normalized_height);
-                    // only one-block thick layer hills for now
-                    // until rendering performance improves
-                    let block_id;
                     if normalized_height == 0 {
-                        block_id = 0;
+                        chunk.set([x, 0, z].into(), 0);
                     } else {
-                        block_id = 1;
+                        for y in 0..normalized_height + 1 {
+                            chunk.set([x, y, z].into(), 1);
+                        }
                     }
-                    chunk.set([x, normalized_height, z].into(), block_id);
                 }
             }
         }
