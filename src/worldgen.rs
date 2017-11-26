@@ -97,7 +97,13 @@ impl WorldGenerator for NaturalWorldGenerator {
                     println!("({}, {}): Height: {}, Normalized: {}", position.x, position.z, height, normalized_height);
                     // only one-block thick layer hills for now
                     // until rendering performance improves
-                    chunk.set([x, normalized_height, z].into(), 1);
+                    let block_id;
+                    if normalized_height == 0 {
+                        block_id = 0;
+                    } else {
+                        block_id = 1;
+                    }
+                    chunk.set([x, normalized_height, z].into(), block_id);
                 }
             }
         }
