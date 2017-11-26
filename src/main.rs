@@ -19,8 +19,9 @@ use glium::Surface;
 use world::World;
 use std::thread;
 use std::time::{Duration, Instant};
+use glutin::GlContext;
 use glutin::ElementState::Pressed;
-use glutin::WindowEvent::{Closed, KeyboardInput};
+use glutin::WindowEvent::{Closed, Resized, KeyboardInput};
 
 /// Global, thread-safe context for the application
 struct Application {
@@ -152,6 +153,9 @@ fn main() {
             match event {
                 glutin::Event::WindowEvent { event, .. } => match event {
                     Closed => action = Action::Stop,
+                    Resized(w, h) => {
+                        println!("Resized window to {}px x {}px", w, h);
+                    },
                     KeyboardInput { input, .. } => {
                         let pressed = input.state == Pressed;
                         let key = match input.virtual_keycode {
