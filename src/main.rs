@@ -139,7 +139,7 @@ fn main() {
                 glutin::Event::WindowEvent { event, .. } => match event {
                     Closed => action = Action::Stop,
                     KeyboardInput { input, .. } => {
-                        let pressed = input.state == glutin::ElementState::Pressed;
+                        let pressed = input.state == Pressed;
                         let key = match input.virtual_keycode {
                             Some(key) => match key {
                                 glutin::VirtualKeyCode::Escape => {
