@@ -170,6 +170,7 @@ impl World for InMemoryWorld {
         if self.chunks.contains_key(&coordinates) {
             return self.chunks.get(&coordinates).unwrap();
         } else {
+            println!("Generating chunk at {}, {}, {}", coordinates.x, coordinates.y, coordinates.z);
             let chunk = self.generator.generate_chunk(coordinates);
             self.chunks.insert(coordinates, chunk);
             return self.chunks.get_mut(&coordinates).unwrap();
@@ -187,8 +188,8 @@ impl World for InMemoryWorld {
                 for z in -iradius..iradius + 1 {
                     chunk_coordinates_to_render.insert(
                         [current_chunk_coordinates[0] + x,
-                        current_chunk_coordinates[0] + y,
-                        current_chunk_coordinates[0] + z].into()
+                        current_chunk_coordinates[1] + y,
+                        current_chunk_coordinates[2] + z].into()
                     );
                 }
             }
