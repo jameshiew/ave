@@ -1,4 +1,4 @@
-use vertex::Vertex;
+use render::Vertex;
 use std::hash::{Hash, Hasher};
 use glium::vertex::VertexBuffer;
 use glium::backend::Facade;

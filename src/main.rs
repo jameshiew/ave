@@ -6,7 +6,7 @@ extern crate rand;
 extern crate collision;
 extern crate noise;
 
-mod vertex;
+mod render;
 mod block;
 mod camera;
 mod space;
@@ -86,12 +86,7 @@ fn main() {
     let mut cursor_grabbed = true;
 
     let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
-    let program = glium::Program::from_source(
-        &application.display,
-        include_str!("./shaders/phong.glslv"),
-        include_str!("./shaders/phong.glslf"),
-        None,
-    ).unwrap();
+    let program = render::get_shader(&application.display, render::Shaders::Phong);
     let params = glium::DrawParameters {
         depth: glium::Depth {
             test: glium::draw_parameters::DepthTest::IfLess,
