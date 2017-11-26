@@ -14,6 +14,7 @@ mod color;
 mod world;
 mod worldgen;
 mod game;
+mod default;
 
 use glium::Surface;
 use world::World;
@@ -118,15 +119,15 @@ fn main() {
         let cy = chunk_coords.y;
         let cz = chunk_coords.z;
 //        println!("Chunk: {}, {}, {}", cx, cy, cz);
-        for x in (cx - 2)..(cx + 2) {
-            for y in (cy - 2)..(cy + 2) {
-                for z in (cz - 2)..(cz + 2) {
+        for x in (cx - default::RENDER_DISTANCE_I32)..(cx + default::RENDER_DISTANCE_I32) {
+            for y in (cy - default::RENDER_DISTANCE_I32)..(cy + default::RENDER_DISTANCE_I32) {
+                for z in (cz - default::RENDER_DISTANCE_I32)..(cz + default::RENDER_DISTANCE_I32) {
                     application.game.world.get_or_create([x, y, z].into());
                 }
             }
         }
 
-        for (position, block_type) in application.game.world.at(application.camera.position, 2) {
+        for (position, block_type) in application.game.world.at(application.camera.position, default::RENDER_DISTANCE_U8) {
             if application.camera.can_see(position) {
                 let vertices = block::make_cube(&application.display, &position, block_type.color);
                 target.draw(
