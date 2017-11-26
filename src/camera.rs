@@ -14,6 +14,7 @@ const DEFAULT_Z_FAR_CUTOFF: f32 = 1024.0;
 
 pub struct CameraState {
     perspective_fov: PerspectiveFov<f32>,
+    pub perspective: Matrix4<f32>,
     pub position: Position,
     pub direction: Direction,
 
@@ -34,13 +35,14 @@ pub struct CameraState {
 
 impl CameraState {
     pub fn new() -> CameraState {
-        CameraState {
+        let mut camera = CameraState {
             perspective_fov: PerspectiveFov {
                 fovy: DEFAULT_FIELD_OF_VIEW,
                 aspect: DEFAULT_ASPECT_RATIO,
                 near: DEFAULT_Z_NEAR_CUTOFF,
                 far: DEFAULT_Z_FAR_CUTOFF,
             },
+            perspective: [[0.0; 4]; 4].into(),
             position: [0.0, 16.0, 0.0].into(),
             direction: [0.0, -1.0, -1.0].into(),
             move_speed: 0.12,
@@ -55,17 +57,19 @@ impl CameraState {
             rotating_left: false,
             rotating_down: false,
             rotating_right: false,
-        }
+        };
+        camera.update_perspective();
+        camera
     }
 
-    pub fn get_perspective(&self) -> Matrix4<f32> {
+    fn update_perspective(&mut self) {
         let f = 1.0 / (self.perspective_fov.fovy / 2.0).tan();
-        Matrix4::new(
+        self.perspective = Matrix4::new(
             f / self.perspective_fov.aspect, 0.0, 0.0, 0.0,
             0.0, f, 0.0, 0.0,
             0.0, 0.0, (self.perspective_fov.far + self.perspective_fov.near) / (self.perspective_fov.far - self.perspective_fov.near), 1.0,
             0.0, 0.0, -(2.0 * self.perspective_fov.far * self.perspective_fov.near) / (self.perspective_fov.far - self.perspective_fov.near), 0.0,
-        )
+        );
     }
 
     pub fn get_view(&self) -> Matrix4<f32> {
@@ -190,7 +194,7 @@ impl CameraState {
     }
 
     pub fn can_see(&self, position: Position) -> bool {
-        let frustum = Frustum::from_matrix4(self.get_perspective() * self.get_view()).unwrap();
+        let frustum = Frustum::from_matrix4(self.perspective * self.get_view()).unwrap();
         // this is a naive approach for frustum culling cubes
         // we should check if all cube vertices lie on the wrong side of one plane, rather than
         // if all vertices are outside the frustum - see http://www.lighthouse3d.com/tutorials/view-frustum-culling/geometric-approach-testing-boxes/

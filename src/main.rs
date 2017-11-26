@@ -109,7 +109,7 @@ fn main() {
         application.camera.update();
         let mut target = application.display.draw();
         target.clear_color_and_depth(sky_color, 1.0);
-        let perspective: [[f32; 4]; 4] = application.camera.get_perspective().into();
+        let perspective: [[f32; 4]; 4] = application.camera.perspective.into();
         let view: [[f32; 4]; 4] = application.camera.get_view().into();
         let uniform = uniform! {
             model: space::MODEL,
