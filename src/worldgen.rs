@@ -1,7 +1,7 @@
 use world::{ChunkCoordinates, BlockCoordinates, Chunk, CHUNK_SIZE, get_position};
 use rand::{Rng, StdRng, SeedableRng};
 use noise::{NoiseModule, Perlin, Point2};
-use std::cmp::max;
+use std;
 
 pub trait WorldGenerator {
     fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> Chunk;
@@ -84,14 +84,19 @@ impl NaturalWorldGenerator {
 impl WorldGenerator for NaturalWorldGenerator {
     fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> Chunk {
         let mut chunk = Chunk::new();
-        if coordinates[1] == 0 {
+        if coordinates[1] == 0 {  // only create hills in ground chunks
             for x in 0..CHUNK_SIZE {
                 for z in 0..CHUNK_SIZE {
-                    chunk.set([x, 0, z].into(), 0);
+                    // we need a height in the range [0, CHUNK_SIZE)
+                    // https://www.redblobgames.com/maps/terrain-from-noise/ is a good source for tips
                     let position = get_position(&coordinates, &[x, 0, z].into());
-                    let height = self.perlin.get([x as f32 * 0.01, z as f32 * 0.01]);
+                    let mut height = self.perlin.get([position.x * 0.05, position.z * 0.05]).abs();
+                    // raise to a power to so we get more 'flat' areas
+                    height = height.powi(5);
                     let normalized_height: u8 = (height * (CHUNK_SIZE as f32)) as u8;
-                    println!("Height: {}, Normalized: {}", height, normalized_height);
+                    println!("({}, {}): Height: {}, Normalized: {}", position.x, position.z, height, normalized_height);
+                    // only one-block thick layer hills for now
+                    // until rendering performance improves
                     chunk.set([x, normalized_height, z].into(), 1);
                 }
             }
