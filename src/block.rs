@@ -6,6 +6,9 @@ use color::Color;
 use color;
 use space::{Position, Direction, get_normal_for_triangle, UP, DOWN, NORTH, EAST, SOUTH, WEST};
 
+/// A block type's ID is its index into the global BLOCKS array
+pub type ID = usize;
+
 /// Size of a block (in metres)
 const BLOCK_SIZE: f32 = 1.0;
 
@@ -113,19 +116,19 @@ pub fn make_cube<F: ? Sized>(facade: &F, position: &Position, color: Color) -> V
 
 #[derive(Debug)]
 pub struct BlockType {
-    pub id: u8,
+    pub name: &'static str,
     pub color: Color,
 }
 
 impl Hash for BlockType {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.id.hash(state)
+        self.name.hash(state)
     }
 }
 
 impl PartialEq for BlockType {
     fn eq(&self, other: &BlockType) -> bool {
-        self.id == other.id
+        self.name == other.name
     }
 }
 
@@ -133,11 +136,11 @@ impl Eq for BlockType {}
 
 pub static BLOCKS: [&BlockType; 2] = [
     &BlockType {
-        id: 0,
+        name: "grass",
         color: color::GREEN,
     },
     &BlockType {
-        id: 1,
+        name: "dirt",
         color: color::BROWN,
     },
 ];

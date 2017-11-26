@@ -6,6 +6,7 @@ use worldgen::WorldGenerator;
 use std::vec::Vec;
 use space::Adjacent;
 use worldgen;
+use block;
 
 /// Side length of a chunk (in blocks) - all chunks are cubic
 pub const CHUNK_SIZE: u8 = 32;
@@ -17,7 +18,7 @@ pub struct Chunk {
     /// Each chunk position is mapped to an index into the BLOCKS slice
     ///
     /// Absence of a chunk position key indicated an empty (air) block
-    pub blocks: HashMap<BlockCoordinates, usize>,
+    pub blocks: HashMap<BlockCoordinates, block::ID>,
     /// Chunk positions which are completely occluded and so should never be rendered
     pub mask: HashSet<BlockCoordinates>,
 }
@@ -51,7 +52,7 @@ impl Chunk {
         return set;
     }
 
-    pub fn set(&mut self, position: BlockCoordinates, block_type: usize) {
+    pub fn set(&mut self, position: BlockCoordinates, block_type: block::ID) {
         self.blocks.insert(position, block_type);
         if self.is_occluded(position) {
             self.mask.insert(position);
