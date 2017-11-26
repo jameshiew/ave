@@ -4,6 +4,7 @@ extern crate glutin;
 extern crate cgmath;
 extern crate rand;
 extern crate collision;
+extern crate noise;
 
 mod vertex;
 mod block;

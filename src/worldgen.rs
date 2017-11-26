@@ -1,5 +1,7 @@
-use world::{ChunkCoordinates, Chunk, CHUNK_SIZE};
+use world::{ChunkCoordinates, BlockCoordinates, Chunk, CHUNK_SIZE, get_position};
 use rand::{Rng, StdRng, SeedableRng};
+use noise::{NoiseModule, Perlin, Point2};
+use std::cmp::max;
 
 pub trait WorldGenerator {
     fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> Chunk;
@@ -65,5 +67,35 @@ impl WorldGenerator for RandomPillarsWorldGenerator {
             }
         }
         return chunk;
+    }
+}
+
+/// Generate a natural looking world
+pub struct NaturalWorldGenerator {
+    perlin: Perlin,
+}
+
+impl NaturalWorldGenerator {
+    pub fn new() -> NaturalWorldGenerator {
+        NaturalWorldGenerator { perlin: Perlin::new() }
+    }
+}
+
+impl WorldGenerator for NaturalWorldGenerator {
+    fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> Chunk {
+        let mut chunk = Chunk::new();
+        if coordinates[1] == 0 {
+            for x in 0..CHUNK_SIZE {
+                for z in 0..CHUNK_SIZE {
+                    chunk.set([x, 0, z].into(), 0);
+                    let position = get_position(&coordinates, &[x, 0, z].into());
+                    let height = self.perlin.get([x as f32 * 0.01, z as f32 * 0.01]);
+                    let normalized_height: u8 = (height * (CHUNK_SIZE as f32)) as u8;
+                    println!("Height: {}, Normalized: {}", height, normalized_height);
+                    chunk.set([x, normalized_height, z].into(), 1);
+                }
+            }
+        }
+        chunk
     }
 }

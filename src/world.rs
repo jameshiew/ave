@@ -163,7 +163,7 @@ pub struct InMemoryWorld {
 
 impl World for InMemoryWorld {
     fn new() -> InMemoryWorld {
-        InMemoryWorld { generator: Box::new(worldgen::RandomPillarsWorldGenerator::new(192)), chunks: HashMap::new() }
+        InMemoryWorld { generator: Box::new(worldgen::NaturalWorldGenerator::new()), chunks: HashMap::new() }
     }
 
     fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &Chunk {
