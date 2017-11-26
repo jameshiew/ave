@@ -19,6 +19,8 @@ use glium::Surface;
 use world::World;
 use std::thread;
 use std::time::{Duration, Instant};
+use glutin::ElementState::Pressed;
+use glutin::WindowEvent::{Closed, KeyboardInput};
 
 /// Global, thread-safe context for the application
 struct Application {
@@ -79,6 +81,8 @@ pub fn start_loop<F>(mut callback: F) where F: FnMut() -> Action {
 fn main() {
     let mut events_loop = glutin::EventsLoop::new();
     let mut application = Application::new(&events_loop);
+    application.display.gl_window().set_cursor_state(glutin::CursorState::Grab).expect("couldn't grab cursor");
+    let mut cursor_grabbed = true;
 
     let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
     let program = glium::Program::from_source(
@@ -133,8 +137,28 @@ fn main() {
         events_loop.poll_events(|event| {
             match event {
                 glutin::Event::WindowEvent { event, .. } => match event {
-                    glutin::WindowEvent::Closed => action = Action::Stop,
-                    ev => application.camera.process_input(&ev),
+                    Closed => action = Action::Stop,
+                    KeyboardInput { input, .. } => {
+                        let pressed = input.state == glutin::ElementState::Pressed;
+                        let key = match input.virtual_keycode {
+                            Some(key) => match key {
+                                glutin::VirtualKeyCode::Escape => {
+                                    if pressed {
+                                        if cursor_grabbed {
+                                            application.display.gl_window().set_cursor_state(glutin::CursorState::Normal).expect("couldn't ungrab cursor");
+                                            cursor_grabbed = false;
+                                        } else {
+                                            application.display.gl_window().set_cursor_state(glutin::CursorState::Grab).expect("couldn't grab cursor");
+                                            cursor_grabbed = true;
+                                        }
+                                    }
+                                }
+                                _ => application.camera.process_input(pressed, key),
+                            },
+                            None => (),
+                        };
+                    },
+                    _ => (),
                 },
                 _ => (),
             }

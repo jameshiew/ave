@@ -203,16 +203,7 @@ impl CameraState {
         false
     }
 
-    pub fn process_input(&mut self, event: &glutin::WindowEvent) {
-        let input = match *event {
-            glutin::WindowEvent::KeyboardInput { input, .. } => input,
-            _ => return,
-        };
-        let pressed = input.state == glutin::ElementState::Pressed;
-        let key = match input.virtual_keycode {
-            Some(key) => key,
-            None => return,
-        };
+    pub fn process_input(&mut self, pressed: bool, key: glutin::VirtualKeyCode) {
         match key {
             glutin::VirtualKeyCode::Space => self.moving_up = pressed,
             glutin::VirtualKeyCode::LControl => self.moving_down = pressed,
