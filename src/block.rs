@@ -5,7 +5,7 @@ use glium::backend::Facade;
 use color::Color;
 use color;
 use space;
-use space::{Position, Direction, get_normal_for_triangle};
+use space::{Position, Direction};
 
 /// A block type's ID is its index into the global BLOCKS array
 pub type ID = usize;
