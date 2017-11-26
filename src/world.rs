@@ -63,15 +63,6 @@ impl Chunk {
         }
     }
 
-    pub fn remove(&mut self, position: BlockCoordinates) {
-        self.blocks.remove(&position);
-        for adjacent_position in Chunk::get_adjacent(position) {
-            if !self.is_occluded(adjacent_position) {
-                self.mask.remove(&adjacent_position);
-            }
-        }
-    }
-
     pub fn get(&self, position: BlockCoordinates) -> Option<&BlockType> {
         match self.blocks.get(&position) {
             Some(block_type) => Some(BLOCKS[*block_type]),
