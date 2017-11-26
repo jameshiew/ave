@@ -83,8 +83,8 @@ fn main() {
     let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
     let program = glium::Program::from_source(
         &application.display,
-        include_str!("./shaders/simple.glslv"),
-        include_str!("./shaders/simple.glslf"),
+        include_str!("./shaders/gouraud.glslv"),
+        include_str!("./shaders/gouraud.glslf"),
         None,
     ).unwrap();
     let params = glium::DrawParameters {
