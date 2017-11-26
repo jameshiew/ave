@@ -5,6 +5,7 @@ use std;
 use collision;
 use glutin;
 use space::{Position, Direction};
+use block::cube_at;
 
 const DEFAULT_ASPECT_RATIO: f32 = 1024.0 / 768.0;
 const DEFAULT_FIELD_OF_VIEW: Rad<f32> = Rad(std::f32::consts::PI / 2.0 * (7.0 / 9.0));
@@ -190,10 +191,16 @@ impl CameraState {
 
     pub fn can_see(&self, position: Position) -> bool {
         let frustum = Frustum::from_matrix4(self.get_perspective() * self.get_view()).unwrap();
-        match frustum.contains(&position) {
-            collision::Relation::Out => false,
-            _ => true,
+        // this is a naive approach for frustum culling cubes
+        // we should check if all cube vertices lie on the wrong side of one plane, rather than
+        // if all vertices are outside the frustum - see http://www.lighthouse3d.com/tutorials/view-frustum-culling/geometric-approach-testing-boxes/
+        for vertex in cube_at(&position).iter() {
+            match frustum.contains(vertex) {
+                collision::Relation::Out => continue,
+                _ => return true,
+            }
         }
+        false
     }
 
     pub fn process_input(&mut self, event: &glutin::WindowEvent) {

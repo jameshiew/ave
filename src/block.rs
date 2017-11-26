@@ -7,42 +7,42 @@ use color;
 use space::{Position, Direction, get_normal_for_triangle, UP, DOWN, NORTH, EAST, SOUTH, WEST};
 
 /// Size of a block (in metres)
-const BLOCK_SIZE: f32 = 0.5;
+const BLOCK_SIZE: f32 = 1.0;
 
 /// Vertices of a cube
 ///
 /// ordering is important - so that the correct faces get culled
 const CUBE_VERTICES: [Position; 24] = [
     // face
-    Position { x: -BLOCK_SIZE, y: -BLOCK_SIZE, z: BLOCK_SIZE },
-    Position { x: BLOCK_SIZE, y: -BLOCK_SIZE, z: BLOCK_SIZE },
-    Position { x: -BLOCK_SIZE, y: BLOCK_SIZE, z: BLOCK_SIZE },
+    Position { x: 0.0, y: 0.0, z: BLOCK_SIZE },
+    Position { x: BLOCK_SIZE, y: 0.0, z: BLOCK_SIZE },
+    Position { x: 0.0, y: BLOCK_SIZE, z: BLOCK_SIZE },
     Position { x: BLOCK_SIZE, y: BLOCK_SIZE, z: BLOCK_SIZE },
     // face
-    Position { x: BLOCK_SIZE, y: -BLOCK_SIZE, z: BLOCK_SIZE },
-    Position { x: BLOCK_SIZE, y: -BLOCK_SIZE, z: -BLOCK_SIZE },
+    Position { x: BLOCK_SIZE, y: 0.0, z: BLOCK_SIZE },
+    Position { x: BLOCK_SIZE, y: 0.0, z: 0.0},
     Position { x: BLOCK_SIZE, y: BLOCK_SIZE, z: BLOCK_SIZE },
-    Position { x: BLOCK_SIZE, y: BLOCK_SIZE, z: -BLOCK_SIZE },
+    Position { x: BLOCK_SIZE, y: BLOCK_SIZE, z: 0.0},
     // face
-    Position { x: BLOCK_SIZE, y: -BLOCK_SIZE, z: -BLOCK_SIZE },
-    Position { x: -BLOCK_SIZE, y: -BLOCK_SIZE, z: -BLOCK_SIZE },
-    Position { x: BLOCK_SIZE, y: BLOCK_SIZE, z: -BLOCK_SIZE },
-    Position { x: -BLOCK_SIZE, y: BLOCK_SIZE, z: -BLOCK_SIZE },
+    Position { x: BLOCK_SIZE, y: 0.0, z: 0.0},
+    Position { x: 0.0, y: 0.0, z: 0.0},
+    Position { x: BLOCK_SIZE, y: BLOCK_SIZE, z: 0.0},
+    Position { x: 0.0, y: BLOCK_SIZE, z: 0.0},
     // face
-    Position { x: -BLOCK_SIZE, y: -BLOCK_SIZE, z: -BLOCK_SIZE },
-    Position { x: -BLOCK_SIZE, y: -BLOCK_SIZE, z: BLOCK_SIZE },
-    Position { x: -BLOCK_SIZE, y: BLOCK_SIZE, z: -BLOCK_SIZE },
-    Position { x: -BLOCK_SIZE, y: BLOCK_SIZE, z: BLOCK_SIZE },
+    Position { x: 0.0, y: 0.0, z: 0.0},
+    Position { x: 0.0, y: 0.0, z: BLOCK_SIZE },
+    Position { x: 0.0, y: BLOCK_SIZE, z: 0.0},
+    Position { x: 0.0, y: BLOCK_SIZE, z: BLOCK_SIZE },
     // face
-    Position { x: -BLOCK_SIZE, y: -BLOCK_SIZE, z: -BLOCK_SIZE },
-    Position { x: BLOCK_SIZE, y: -BLOCK_SIZE, z: -BLOCK_SIZE },
-    Position { x: -BLOCK_SIZE, y: -BLOCK_SIZE, z: BLOCK_SIZE },
-    Position { x: BLOCK_SIZE, y: -BLOCK_SIZE, z: BLOCK_SIZE },
+    Position { x: 0.0, y: 0.0, z: 0.0},
+    Position { x: BLOCK_SIZE, y: 0.0, z: 0.0},
+    Position { x: 0.0, y: 0.0, z: BLOCK_SIZE },
+    Position { x: BLOCK_SIZE, y: 0.0, z: BLOCK_SIZE },
     // face
-    Position { x: -BLOCK_SIZE, y: BLOCK_SIZE, z: BLOCK_SIZE },
+    Position { x: 0.0, y: BLOCK_SIZE, z: BLOCK_SIZE },
     Position { x: BLOCK_SIZE, y: BLOCK_SIZE, z: BLOCK_SIZE },
-    Position { x: -BLOCK_SIZE, y: BLOCK_SIZE, z: -BLOCK_SIZE },
-    Position { x: BLOCK_SIZE, y: BLOCK_SIZE, z: -BLOCK_SIZE },
+    Position { x: 0.0, y: BLOCK_SIZE, z: 0.0},
+    Position { x: BLOCK_SIZE, y: BLOCK_SIZE, z: 0.0},
 ];
 
 fn cube_normals() -> [Direction; 6] {
@@ -53,6 +53,22 @@ fn cube_normals() -> [Direction; 6] {
         get_normal_for_triangle(CUBE_VERTICES[12], CUBE_VERTICES[13], CUBE_VERTICES[14]),
         get_normal_for_triangle(CUBE_VERTICES[16], CUBE_VERTICES[17], CUBE_VERTICES[18]),
         get_normal_for_triangle(CUBE_VERTICES[20], CUBE_VERTICES[21], CUBE_VERTICES[22]),
+    ]
+}
+
+pub fn cube_at(position: &Position) -> [Position; 8] {
+    let x = position.x;
+    let y = position.y;
+    let z = position.z;
+    return [
+        [x, y, z].into(),
+        [x, y, z + 1.0].into(),
+        [x, y + 1.0, z].into(),
+        [x, y + 1.0, z + 1.0].into(),
+        [x + 1.0, y, z].into(),
+        [x + 1.0, y, z + 1.0].into(),
+        [x + 1.0, y + 1.0, z].into(),
+        [x + 1.0, y + 1.0, z + 1.0].into(),
     ]
 }
 
