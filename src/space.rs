@@ -1,4 +1,5 @@
 use cgmath::{Vector3, Point3};
+use collision::Plane;
 use std::vec::Vec;
 use std;
 
@@ -28,13 +29,7 @@ pub trait Adjacent {
 
 /// See https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal
 pub fn get_normal_for_triangle(point_a: Position, point_b: Position, point_c: Position) -> Direction {
-    let edge_a = point_b - point_a;
-    let edge_b = point_c - point_a;
-    [
-        edge_a.y * edge_b.z - edge_a.z * edge_b.y,
-        edge_a.z * edge_b.x - edge_a.x * edge_b.z,
-        edge_a.y * edge_b.x - edge_a.x * edge_b.z,
-    ].into()
+    Plane::from_points(point_a, point_b, point_c).unwrap().n
 }
 
 
