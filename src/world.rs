@@ -88,9 +88,8 @@ impl Chunk {
     pub fn get_visible(&self) -> HashSet<(BlockCoordinates, &BlockType)> {
         let mut visible = HashSet::new();
         for (chunk_position, block_type) in self.blocks.iter() {
-            match self.mask.get(chunk_position) {
-                Some(_) => continue,
-                None => visible.insert((*chunk_position, BLOCKS[*block_type])),
+            if !self.mask.contains(chunk_position) {
+                visible.insert((*chunk_position, BLOCKS[*block_type]));
             };
         }
         return visible;
