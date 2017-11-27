@@ -158,7 +158,7 @@ fn main() {
             nearby_blocks_count += 1;
             if application.camera.can_see(position) {
                 blocks_rendered_count += 1;
-                let vertices = block::make_cube(&application.display, &position, block_type.color);
+                let vertices = block::make_cube(&application.display, &position, block_type.color, block::Mask::new());
                 target.draw(
                     &vertices,
                     indices,
