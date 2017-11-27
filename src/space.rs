@@ -17,7 +17,7 @@ pub const DOWN: Direction = Vector3 { x: 0.0, y: -1.0, z: 0.0 };
 pub const NORTH: Direction = Vector3 { x: 0.0, y: 0.0, z: -1.0 };
 pub const SOUTH: Direction = Vector3 { x: 0.0, y: 0.0, z: 1.0 };
 pub const EAST: Direction = Vector3 { x: 1.0, y: 0.0, z: 0.0 };
-pub const WEST: Direction = Vector3 { x: -1.0, y: 0.0, z: 1.0 };
+pub const WEST: Direction = Vector3 { x: -1.0, y: 0.0, z: 0.0 };
 
 pub trait Adjacent {
     fn adjacent(&self) -> Vec<Self> where Self: std::marker::Sized;
