@@ -138,3 +138,18 @@ pub static DIRT: &BlockType = &BlockType {
     name: "dirt",
     color: [0.545, 0.271, 0.075],
 };
+
+pub static STONE: &BlockType = &BlockType {
+    name: "stone",
+    color: [0.827, 0.827, 0.827],
+};
+
+pub static WATER: &BlockType = &BlockType {
+    name: "water",
+    color: [0.498, 1.000, 0.831],
+};
+
+pub static SAND: &BlockType = &BlockType {
+    name: "sand",
+    color: [0.941, 0.902, 0.549],
+};
