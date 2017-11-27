@@ -1,6 +1,6 @@
-use world::{ChunkCoordinates, BlockCoordinates, Chunk, CHUNK_SIZE, get_position};
+use world::{ChunkCoordinates, Chunk, CHUNK_SIZE, get_position};
 use rand::{Rng, StdRng, SeedableRng};
-use noise::{NoiseModule, Perlin, Point2};
+use noise::{NoiseModule, Perlin, Seedable};
 use std;
 use block;
 
@@ -77,8 +77,11 @@ pub struct NaturalWorldGenerator {
 }
 
 impl NaturalWorldGenerator {
-    pub fn new() -> NaturalWorldGenerator {
-        NaturalWorldGenerator { perlin: Perlin::new() }
+    pub fn new(seed: usize) -> NaturalWorldGenerator {
+        let mut generator = NaturalWorldGenerator { perlin: Perlin::new() };
+        generator.perlin = generator.perlin.set_seed(seed);
+        println!("Seed {}", generator.perlin.seed);
+        generator
     }
 }
 

@@ -6,7 +6,8 @@ use worldgen::WorldGenerator;
 use std::vec::Vec;
 use space::Adjacent;
 use worldgen;
-use block;
+use rand::{Rng, OsRng};
+use rand;
 
 /// Side length of a chunk (in blocks) - all chunks are cubic
 pub const CHUNK_SIZE: u8 = 32;
@@ -151,7 +152,11 @@ pub struct InMemoryWorld {
 
 impl World for InMemoryWorld {
     fn new() -> InMemoryWorld {
-        InMemoryWorld { generator: Box::new(worldgen::NaturalWorldGenerator::new()), chunks: HashMap::new() }
+        let seed = rand::random::<usize>();
+        InMemoryWorld {
+            generator: Box::new(worldgen::NaturalWorldGenerator::new(seed)),
+            chunks: HashMap::new()
+        }
     }
 
     fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &Chunk {
