@@ -2,6 +2,7 @@ use world::{ChunkCoordinates, BlockCoordinates, Chunk, CHUNK_SIZE, get_position}
 use rand::{Rng, StdRng, SeedableRng};
 use noise::{NoiseModule, Perlin, Point2};
 use std;
+use block;
 
 pub trait WorldGenerator {
     fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> Chunk;
@@ -25,7 +26,7 @@ impl WorldGenerator for FlatWorldGenerator {
             for x in 0..CHUNK_SIZE {
                 for y in 0..CHUNK_SIZE {
                     for z in 0..CHUNK_SIZE {
-                        chunk.set([x, y, z].into(), 0);
+                        chunk.set([x, y, z].into(), block::GRASS);
                     }
                 }
             }
@@ -52,7 +53,7 @@ impl WorldGenerator for RandomPillarsWorldGenerator {
         if coordinates[1] == 0 {
             for x in 0..CHUNK_SIZE {
                 for z in 0..CHUNK_SIZE {
-                    chunk.set([x, 0, z].into(), 0);
+                    chunk.set([x, 0, z].into(), block::GRASS);
                 }
             }
         }
@@ -63,7 +64,7 @@ impl WorldGenerator for RandomPillarsWorldGenerator {
             let pillar_z = self.prng.gen_range(0, CHUNK_SIZE - 1);
             let pillar_height = self.prng.gen_range(0, CHUNK_SIZE);
             for y in 0..pillar_height {
-                chunk.set([pillar_x, y, pillar_z].into(), 1);
+                chunk.set([pillar_x, y, pillar_z].into(), block::DIRT);
             }
         }
         return chunk;
@@ -95,10 +96,10 @@ impl WorldGenerator for NaturalWorldGenerator {
                     height = height.powi(5);
                     let normalized_height: u8 = (height * (CHUNK_SIZE as f32)) as u8;
                     if normalized_height == 0 {
-                        chunk.set([x, 0, z].into(), 0);
+                        chunk.set([x, 0, z].into(), block::GRASS);
                     } else {
                         for y in 0..normalized_height + 1 {
-                            chunk.set([x, y, z].into(), 1);
+                            chunk.set([x, y, z].into(), block::DIRT);
                         }
                     }
                 }

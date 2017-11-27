@@ -1,6 +1,6 @@
 use space::Position;
 use std::collections::{HashMap, HashSet};
-use block::{BLOCKS, BlockType};
+use block::BlockType;
 use cgmath::Point3;
 use worldgen::WorldGenerator;
 use std::vec::Vec;
@@ -18,7 +18,7 @@ pub struct Chunk {
     /// Each chunk position is mapped to an index into the BLOCKS slice
     ///
     /// Absence of a chunk position key indicated an empty (air) block
-    pub blocks: HashMap<BlockCoordinates, block::ID>,
+    pub blocks: HashMap<BlockCoordinates, &'static BlockType>,
     /// Chunk positions which are completely occluded and so should never be rendered
     pub mask: HashSet<BlockCoordinates>,
 }
@@ -52,7 +52,7 @@ impl Chunk {
         return set;
     }
 
-    pub fn set(&mut self, position: BlockCoordinates, block_type: block::ID) {
+    pub fn set(&mut self, position: BlockCoordinates, block_type: &'static BlockType) {
         self.blocks.insert(position, block_type);
         if self.is_occluded(position) {
             self.mask.insert(position);
@@ -64,11 +64,8 @@ impl Chunk {
         }
     }
 
-    pub fn get(&self, position: BlockCoordinates) -> Option<&BlockType> {
-        match self.blocks.get(&position) {
-            Some(block_type) => Some(BLOCKS[*block_type]),
-            None => None,
-        }
+    pub fn get(&self, position: BlockCoordinates) -> Option<&&'static BlockType> {
+        return self.blocks.get(&position);
     }
 
     pub fn is_occluded(&self, position: BlockCoordinates) -> bool {
@@ -89,7 +86,7 @@ impl Chunk {
         let mut visible = HashSet::new();
         for (chunk_position, block_type) in self.blocks.iter() {
             if !self.mask.contains(chunk_position) {
-                visible.insert((*chunk_position, BLOCKS[*block_type]));
+                visible.insert((*chunk_position, *block_type));
             };
         }
         return visible;

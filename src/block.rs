@@ -7,9 +7,6 @@ use color;
 use space;
 use space::{Position, Direction};
 
-/// A block type's ID is its index into the global BLOCKS array
-pub type ID = usize;
-
 /// Size of a block (in metres)
 const BLOCK_SIZE: f32 = 1.0;
 
@@ -132,13 +129,12 @@ impl PartialEq for BlockType {
 
 impl Eq for BlockType {}
 
-pub static BLOCKS: [&BlockType; 2] = [
-    &BlockType {
-        name: "grass",
-        color: color::GREEN,
-    },
-    &BlockType {
-        name: "dirt",
-        color: color::BROWN,
-    },
-];
+pub static GRASS: &BlockType = &BlockType {
+    name: "grass",
+    color: [0.196, 0.804, 0.196],
+};
+
+pub static DIRT: &BlockType = &BlockType {
+    name: "dirt",
+    color: [0.545, 0.271, 0.075],
+};
