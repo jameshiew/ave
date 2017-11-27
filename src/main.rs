@@ -118,7 +118,6 @@ fn main() {
         let cx = chunk_coords.x;
         let cy = chunk_coords.y;
         let cz = chunk_coords.z;
-//        println!("Chunk: {}, {}, {}", cx, cy, cz);
         for x in (cx - default::RENDER_DISTANCE_I32)..(cx + default::RENDER_DISTANCE_I32) {
             for y in (cy - default::RENDER_DISTANCE_I32)..(cy + default::RENDER_DISTANCE_I32) {
                 for z in (cz - default::RENDER_DISTANCE_I32)..(cz + default::RENDER_DISTANCE_I32) {

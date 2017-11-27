@@ -94,7 +94,6 @@ impl WorldGenerator for NaturalWorldGenerator {
                     // raise to a power to so we get more 'flat' areas
                     height = height.powi(5);
                     let normalized_height: u8 = (height * (CHUNK_SIZE as f32)) as u8;
-                    println!("({}, {}): Height: {}, Normalized: {}", position.x, position.z, height, normalized_height);
                     if normalized_height == 0 {
                         chunk.set([x, 0, z].into(), 0);
                     } else {
