@@ -6,8 +6,9 @@ use collision;
 use glutin;
 use space::{Position, Direction};
 use block::cube_at;
+use default;
 
-const DEFAULT_ASPECT_RATIO: f32 = 1024.0 / 768.0;
+const DEFAULT_ASPECT_RATIO: f32 = default::VIEWPORT_WIDTH as f32 / default::VIEWPORT_HEIGHT as f32;
 const DEFAULT_FIELD_OF_VIEW: Rad<f32> = Rad(std::f32::consts::PI / 2.0 * (7.0 / 9.0));
 const DEFAULT_Z_NEAR_CUTOFF: f32 = 0.1;
 const DEFAULT_Z_FAR_CUTOFF: f32 = 1024.0;
