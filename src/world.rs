@@ -218,8 +218,9 @@ impl World for InMemoryWorld {
 #[cfg(test)]
 mod tests {
     use block::BLOCKS;
+    use block;
     use std::collections::HashSet;
-    use world::{get_position, position_to_chunk, HashChunk, CHUNK_SIZE};
+    use world::{get_position, position_to_chunk, Chunk, HashChunk, CHUNK_SIZE};
 
     #[test]
     fn world_get_position() {
@@ -237,40 +238,7 @@ mod tests {
     #[test]
     fn chunk_get() {
         let mut chunk = HashChunk::new();
-        chunk.set([0, 0, 0].into(), 1);
-        assert_eq!(chunk.get([0, 0, 0].into()), Some(BLOCKS[1]));
-    }
-
-    #[test]
-    fn chunk_get_adjacent() {
-        let mut origin_adjacent = HashSet::new();
-        origin_adjacent.insert([1u8, 0u8, 0u8].into());
-        origin_adjacent.insert([0u8, 1u8, 0u8].into());
-        origin_adjacent.insert([0u8, 0u8, 1u8].into());
-        assert_eq!(HashChunk::get_adjacent([0, 0, 0].into()), origin_adjacent);
-
-        let mut general_adjacent = HashSet::new();
-        general_adjacent.insert([6u8, 5u8, 5u8].into());
-        general_adjacent.insert([5u8, 6u8, 5u8].into());
-        general_adjacent.insert([5u8, 5u8, 6u8].into());
-        general_adjacent.insert([4u8, 5u8, 5u8].into());
-        general_adjacent.insert([5u8, 4u8, 5u8].into());
-        general_adjacent.insert([5u8, 5u8, 4u8].into());
-        assert_eq!(HashChunk::get_adjacent([5, 5, 5].into()), general_adjacent);
-    }
-
-    #[test]
-    fn chunk_is_occluded() {
-        let mut chunk = HashChunk::new();
-        chunk.set([3, 3, 3].into(), 1);
-        chunk.set([3, 3, 2].into(), 1);
-        chunk.set([5, 5, 5].into(), 1);
-        assert!(!chunk.is_occluded([3, 3, 3].into()));
-        chunk.set([3, 2, 3].into(), 1);
-        chunk.set([2, 3, 3].into(), 1);
-        chunk.set([4, 3, 3].into(), 1);
-        chunk.set([3, 4, 3].into(), 1);
-        chunk.set([3, 3, 4].into(), 1);
-        assert!(chunk.is_occluded([3, 3, 3].into()));
+        chunk.set([0, 0, 0].into(), &block::GRASS);
+        assert_eq!(chunk.get([0, 0, 0].into()), Some(&block::GRASS));
     }
 }
