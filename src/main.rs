@@ -5,6 +5,9 @@ extern crate cgmath;
 extern crate rand;
 extern crate collision;
 extern crate noise;
+#[macro_use]
+extern crate log;
+extern crate simplelog;
 
 mod render;
 mod block;
@@ -23,6 +26,8 @@ use std::time::{Duration, Instant};
 use glutin::GlContext;
 use glutin::ElementState::Pressed;
 use glutin::WindowEvent::{Closed, Resized, KeyboardInput};
+
+use simplelog::{Config, TermLogger, WriteLogger, CombinedLogger, LogLevelFilter};
 
 /// Global, thread-safe context for the application
 struct Application {
@@ -80,7 +85,7 @@ pub fn start_loop<F>(mut callback: F) where F: FnMut() -> Action {
             ticks_per_second = ticks_this_second;
             ticks_this_second = 0;
             this_second = Duration::new(0, 0);
-            println!("TPS: {}", ticks_per_second)
+            debug!("TPS: {}", ticks_per_second)
         }
 
         accumulator += time_passed;
@@ -97,6 +102,11 @@ pub fn start_loop<F>(mut callback: F) where F: FnMut() -> Action {
 }
 
 fn main() {
+    CombinedLogger::init(
+        vec![
+            TermLogger::new(LogLevelFilter::Debug, Config::default()).unwrap(),
+        ]
+    ).unwrap();
     let mut events_loop = glutin::EventsLoop::new();
     let mut application = Application::new(&events_loop);
     application.display.gl_window().set_cursor_state(glutin::CursorState::Grab).expect("couldn't grab cursor");
