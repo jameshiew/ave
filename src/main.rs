@@ -152,8 +152,12 @@ fn main() {
             }
         }
 
+        let mut nearby_blocks_count = 0;
+        let mut blocks_rendered_count = 0;
         for (position, block_type) in application.game.world.at(application.camera.position, default::RENDER_DISTANCE_U8) {
+            nearby_blocks_count += 1;
             if application.camera.can_see(position) {
+                blocks_rendered_count += 1;
                 let vertices = block::make_cube(&application.display, &position, block_type.color);
                 target.draw(
                     &vertices,
@@ -164,6 +168,7 @@ fn main() {
                 ).unwrap()
             }
         }
+        debug!("{} blocks rendered of {} blocks nearby", blocks_rendered_count, nearby_blocks_count);
 
         target.finish().unwrap();
 
