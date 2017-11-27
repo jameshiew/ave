@@ -6,7 +6,6 @@ use worldgen::WorldGenerator;
 use std::vec::Vec;
 use space::Adjacent;
 use worldgen;
-use rand::{Rng, OsRng};
 use rand;
 
 /// Side length of a chunk (in blocks) - all chunks are cubic

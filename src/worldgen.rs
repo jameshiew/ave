@@ -1,7 +1,6 @@
 use world::{ChunkCoordinates, HashChunk, Chunk, CHUNK_SIZE, get_position};
 use rand::{Rng, StdRng, SeedableRng};
 use noise::{NoiseModule, Perlin, Seedable};
-use std;
 use block;
 
 pub trait WorldGenerator {
@@ -36,10 +35,12 @@ impl WorldGenerator for FlatWorldGenerator {
 }
 
 /// A flat world generator with pillars of random height
+#[allow(dead_code)]
 pub struct RandomPillarsWorldGenerator {
     prng: StdRng,
 }
 
+#[allow(dead_code)]
 impl RandomPillarsWorldGenerator {
     pub fn new(seed: usize) -> RandomPillarsWorldGenerator {
         let s: &[_] = &[seed];

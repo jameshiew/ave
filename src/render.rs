@@ -15,6 +15,7 @@ impl Vertex {
 
 implement_vertex!(Vertex, position, color, normal);
 
+#[allow(dead_code)]
 pub enum Shaders {
     None,
     Gouraud,

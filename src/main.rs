@@ -23,11 +23,10 @@ use glium::Surface;
 use world::World;
 use std::thread;
 use std::time::{Duration, Instant};
-use glutin::GlContext;
 use glutin::ElementState::Pressed;
 use glutin::WindowEvent::{Closed, Resized, KeyboardInput};
 
-use simplelog::{Config, TermLogger, WriteLogger, CombinedLogger, LogLevelFilter};
+use simplelog::{Config, TermLogger, CombinedLogger, LogLevelFilter};
 
 /// Global, thread-safe context for the application
 struct Application {
@@ -65,7 +64,7 @@ pub fn start_loop<F>(mut callback: F) where F: FnMut() -> Action {
     let mut previous_clock = Instant::now();
 
     // not really sure how to measure FPS accurately so call it TPS
-    let mut ticks_per_second = 0;
+    let mut ticks_per_second;
     let mut this_second = Duration::new(0, 0);
     let mut ticks_this_second = 0;
 
@@ -184,7 +183,7 @@ fn main() {
                     },
                     KeyboardInput { input, .. } => {
                         let pressed = input.state == Pressed;
-                        let key = match input.virtual_keycode {
+                        match input.virtual_keycode {
                             Some(key) => match key {
                                 glutin::VirtualKeyCode::Escape => {
                                     if pressed {

@@ -3,9 +3,7 @@ use std::hash::{Hash, Hasher};
 use glium::vertex::VertexBuffer;
 use glium::backend::Facade;
 use color::Color;
-use color;
 use space;
-use std::collections::HashSet;
 use space::{Position, Direction};
 
 /// Size of a block (in metres)
