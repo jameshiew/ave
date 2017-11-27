@@ -15,7 +15,7 @@ pub const CHUNK_SIZE: u8 = 32;
 /// Indicates an index into a chunk with dimensions CHUNK_SIZE x CHUNK_SIZE x CHUNK_SIZE
 pub type BlockCoordinates = Point3<u8>;
 
-pub struct Chunk {
+pub struct HashChunk {
     /// Each chunk position is mapped to an index into the BLOCKS slice
     ///
     /// Absence of a chunk position key indicated an empty (air) block
@@ -24,13 +24,25 @@ pub struct Chunk {
     pub mask: HashSet<BlockCoordinates>,
 }
 
-impl Chunk {
-    pub fn new() -> Chunk {
-        Chunk { blocks: HashMap::new(), mask: HashSet::new() }
-    }
-
+pub trait Chunk {
     /// get adjacent positions - ignoring diagonals
-    pub fn get_adjacent(position: BlockCoordinates) -> HashSet<BlockCoordinates> {
+    fn get_adjacent(position: BlockCoordinates) -> HashSet<BlockCoordinates>;
+    fn set(&mut self, position: BlockCoordinates, block_type: &'static BlockType);
+    fn get(&self, position: BlockCoordinates) -> Option<&&'static BlockType>;
+    fn is_occluded(&self, position: BlockCoordinates) -> bool;
+    /// ideally this would be a lazy iterator - but need to think about lifetimes etc
+    fn get_visible(&self) -> HashSet<(BlockCoordinates, &BlockType)>;
+}
+
+impl HashChunk {
+    pub fn new() -> HashChunk {
+        HashChunk { blocks: HashMap::new(), mask: HashSet::new() }
+    }
+}
+
+impl Chunk for HashChunk {
+    /// get adjacent positions - ignoring diagonals
+    fn get_adjacent(position: BlockCoordinates) -> HashSet<BlockCoordinates> {
         let mut set: HashSet<BlockCoordinates> = HashSet::new();
         if position[0] < CHUNK_SIZE - 1 {
             set.insert([position[0] + 1u8, position[1], position[2]].into());
@@ -53,27 +65,27 @@ impl Chunk {
         return set;
     }
 
-    pub fn set(&mut self, position: BlockCoordinates, block_type: &'static BlockType) {
+    fn set(&mut self, position: BlockCoordinates, block_type: &'static BlockType) {
         self.blocks.insert(position, block_type);
         if self.is_occluded(position) {
             self.mask.insert(position);
         }
-        for adjacent_position in Chunk::get_adjacent(position) {
+        for adjacent_position in HashChunk::get_adjacent(position) {
             if self.is_occluded(adjacent_position) {
                 self.mask.insert(adjacent_position);
             }
         }
     }
 
-    pub fn get(&self, position: BlockCoordinates) -> Option<&&'static BlockType> {
+    fn get(&self, position: BlockCoordinates) -> Option<&&'static BlockType> {
         return self.blocks.get(&position);
     }
 
-    pub fn is_occluded(&self, position: BlockCoordinates) -> bool {
+    fn is_occluded(&self, position: BlockCoordinates) -> bool {
         if [0, CHUNK_SIZE - 1].contains(&position[0]) || [0, CHUNK_SIZE - 1].contains(&position[1]) || [0, CHUNK_SIZE - 1].contains(&position[2]) {
             return false;  // cheating by for now always showing blocks that are on the edge of chunks
         }
-        for adjacent_position in Chunk::get_adjacent(position) {
+        for adjacent_position in HashChunk::get_adjacent(position) {
             match self.get(adjacent_position) {
                 None => return false,
                 Some(_) => ()
@@ -83,7 +95,7 @@ impl Chunk {
     }
 
     /// ideally this would be a lazy iterator - but need to think about lifetimes etc
-    pub fn get_visible(&self) -> HashSet<(BlockCoordinates, &BlockType)> {
+    fn get_visible(&self) -> HashSet<(BlockCoordinates, &BlockType)> {
         let mut visible = HashSet::new();
         for (chunk_position, block_type) in self.blocks.iter() {
             if !self.mask.contains(chunk_position) {
@@ -141,13 +153,13 @@ pub fn position_to_chunk(coordinates: &Position) -> ChunkCoordinates {
 
 pub trait World {
     fn new() -> Self;
-    fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &Chunk;
+    fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &HashChunk;
     fn at(&self, position: Position, radius: u8) -> Vec<(Position, &BlockType)>;
 }
 
 pub struct InMemoryWorld {
     generator: Box<WorldGenerator>,
-    chunks: HashMap<ChunkCoordinates, Chunk>,
+    chunks: HashMap<ChunkCoordinates, HashChunk>,
 }
 
 impl World for InMemoryWorld {
@@ -159,7 +171,7 @@ impl World for InMemoryWorld {
         }
     }
 
-    fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &Chunk {
+    fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &HashChunk {
         if self.chunks.contains_key(&coordinates) {
             return self.chunks.get(&coordinates).unwrap();
         } else {
@@ -207,7 +219,7 @@ impl World for InMemoryWorld {
 mod tests {
     use block::BLOCKS;
     use std::collections::HashSet;
-    use world::{get_position, position_to_chunk, Chunk, CHUNK_SIZE};
+    use world::{get_position, position_to_chunk, HashChunk, CHUNK_SIZE};
 
     #[test]
     fn world_get_position() {
@@ -224,7 +236,7 @@ mod tests {
 
     #[test]
     fn chunk_get() {
-        let mut chunk = Chunk::new();
+        let mut chunk = HashChunk::new();
         chunk.set([0, 0, 0].into(), 1);
         assert_eq!(chunk.get([0, 0, 0].into()), Some(BLOCKS[1]));
     }
@@ -235,7 +247,7 @@ mod tests {
         origin_adjacent.insert([1u8, 0u8, 0u8].into());
         origin_adjacent.insert([0u8, 1u8, 0u8].into());
         origin_adjacent.insert([0u8, 0u8, 1u8].into());
-        assert_eq!(Chunk::get_adjacent([0, 0, 0].into()), origin_adjacent);
+        assert_eq!(HashChunk::get_adjacent([0, 0, 0].into()), origin_adjacent);
 
         let mut general_adjacent = HashSet::new();
         general_adjacent.insert([6u8, 5u8, 5u8].into());
@@ -244,12 +256,12 @@ mod tests {
         general_adjacent.insert([4u8, 5u8, 5u8].into());
         general_adjacent.insert([5u8, 4u8, 5u8].into());
         general_adjacent.insert([5u8, 5u8, 4u8].into());
-        assert_eq!(Chunk::get_adjacent([5, 5, 5].into()), general_adjacent);
+        assert_eq!(HashChunk::get_adjacent([5, 5, 5].into()), general_adjacent);
     }
 
     #[test]
     fn chunk_is_occluded() {
-        let mut chunk = Chunk::new();
+        let mut chunk = HashChunk::new();
         chunk.set([3, 3, 3].into(), 1);
         chunk.set([3, 3, 2].into(), 1);
         chunk.set([5, 5, 5].into(), 1);

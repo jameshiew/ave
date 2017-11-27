@@ -1,11 +1,11 @@
-use world::{ChunkCoordinates, Chunk, CHUNK_SIZE, get_position};
+use world::{ChunkCoordinates, HashChunk, Chunk, CHUNK_SIZE, get_position};
 use rand::{Rng, StdRng, SeedableRng};
 use noise::{NoiseModule, Perlin, Seedable};
 use std;
 use block;
 
 pub trait WorldGenerator {
-    fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> Chunk;
+    fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> HashChunk;
 }
 
 /// Generates a flat world with no structures
@@ -20,8 +20,8 @@ impl FlatWorldGenerator {
 }
 
 impl WorldGenerator for FlatWorldGenerator {
-    fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> Chunk {
-        let mut chunk = Chunk::new();
+    fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> HashChunk {
+        let mut chunk = HashChunk::new();
         if coordinates[1] < 0 {
             for x in 0..CHUNK_SIZE {
                 for y in 0..CHUNK_SIZE {
@@ -48,8 +48,8 @@ impl RandomPillarsWorldGenerator {
 }
 
 impl WorldGenerator for RandomPillarsWorldGenerator {
-    fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> Chunk {
-        let mut chunk = Chunk::new();
+    fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> HashChunk {
+        let mut chunk = HashChunk::new();
         if coordinates[1] == 0 {
             for x in 0..CHUNK_SIZE {
                 for z in 0..CHUNK_SIZE {
@@ -86,8 +86,8 @@ impl NaturalWorldGenerator {
 }
 
 impl WorldGenerator for NaturalWorldGenerator {
-    fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> Chunk {
-        let mut chunk = Chunk::new();
+    fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> HashChunk {
+        let mut chunk = HashChunk::new();
         if coordinates[1] == 0 {  // only create hills in ground chunks
             for x in 0..CHUNK_SIZE {
                 for z in 0..CHUNK_SIZE {
