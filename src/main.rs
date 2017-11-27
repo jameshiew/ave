@@ -175,7 +175,7 @@ fn main() {
                 glutin::Event::WindowEvent { event, .. } => match event {
                     Closed => action = Action::Stop,
                     Resized(w, h) => {
-                        println!("Resized window to {}px x {}px", w, h);
+                        info!("Window resized to {}px x {}px", w, h);
                     },
                     KeyboardInput { input, .. } => {
                         let pressed = input.state == Pressed;
