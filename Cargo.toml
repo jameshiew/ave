@@ -1,6 +1,6 @@
 [package]
 name = "ave"
-version = "0.1.0"
+version = "0.1.0-alpha"
 authors = ["James Hiew <james@hiew.net>"]
 
 [dependencies]
