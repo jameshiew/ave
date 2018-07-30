@@ -1,4 +1,4 @@
-# ave - Another Voxel Engine
+# ave - Another Voxel Engine [![Build Status](https://travis-ci.org/jameshiew/ave.svg?branch=master)](https://travis-ci.org/jameshiew/ave)
 
 ![Screenshot](screenshot.png "Screenshot")
 
