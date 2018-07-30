@@ -217,7 +217,6 @@ impl World for InMemoryWorld {
 #[cfg(test)]
 mod tests {
     use block;
-    use std::collections::HashSet;
     use world::{get_position, position_to_chunk, Chunk, HashChunk, CHUNK_SIZE};
 
     #[test]
