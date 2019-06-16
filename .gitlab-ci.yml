@@ -1,3 +1,4 @@
+---
 stages:
   - test
 
@@ -7,3 +8,6 @@ run tests:
   script:
     - cargo build --release --verbose --all
     - cargo test --release --verbose --all
+  artifacts:
+    paths:
+      - target/release/ave
