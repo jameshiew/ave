@@ -1,0 +1,9 @@
+stages:
+  - test
+
+run tests:
+  image: rust:1.35.0
+  stage: test
+  script:
+    - cargo build --release --verbose --all
+    - cargo test --release --verbose --all
