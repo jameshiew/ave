@@ -10,6 +10,7 @@ pub trait WorldGenerator {
 /// Generates a flat world with no structures
 ///
 /// Everything at and below world y=0 is ground, everything above is air
+// add options aka TODO
 pub struct FlatWorldGenerator {}
 #[allow(dead_code)]
 impl FlatWorldGenerator {
