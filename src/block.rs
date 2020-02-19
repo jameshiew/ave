@@ -171,11 +171,11 @@ pub static STONE: &BlockType = &BlockType {
     name: "stone",
     color: [0.827, 0.827, 0.827],
 };
-
-pub static WATER: &BlockType = &BlockType {
+// add water later aka TODO lol
+/*pub static WATER: &BlockType = &BlockType {
     name: "water",
     color: [0.498, 1.000, 0.831],
-};
+}; */
 
 pub static SAND: &BlockType = &BlockType {
     name: "sand",
