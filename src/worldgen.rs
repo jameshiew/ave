@@ -11,7 +11,7 @@ pub trait WorldGenerator {
 ///
 /// Everything at and below world y=0 is ground, everything above is air
 pub struct FlatWorldGenerator {}
-
+#[allow(dead_code)]
 impl FlatWorldGenerator {
     pub fn new() -> FlatWorldGenerator {
         FlatWorldGenerator {}
