@@ -157,7 +157,7 @@ pub trait World {
 }
 
 pub struct InMemoryWorld {
-    generator: Box<WorldGenerator>,
+    generator: Box<dyn WorldGenerator>,
     chunks: HashMap<ChunkCoordinates, HashChunk>,
 }
 
