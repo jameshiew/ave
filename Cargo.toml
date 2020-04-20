@@ -4,8 +4,8 @@ version = "0.1.1-alpha"
 authors = ["James Hiew <james@hiew.net>"]
 
 [dependencies]
-glium = "= 0.22.0"
-glutin = "= 0.17.0"
+glium = "= 0.24.0"
+glutin = "= 0.20.0"
 cgmath = "= 0.15.0"
 collision = "= 0.12.0"
 float-cmp = "= 0.2.5"
@@ -13,7 +13,3 @@ rand = "= 0.3.18"
 log = "= 0.3.8"
 simplelog = "= 0.4.3"
 noise = "= 0.4.1"
-
-# temporarily locked to avoid error[E0282]: type annotations needed
-libc = "= 0.2.36"
-objc = "= 0.2.2"
