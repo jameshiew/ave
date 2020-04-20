@@ -13,3 +13,7 @@ rand = "= 0.3.18"
 log = "= 0.3.8"
 simplelog = "= 0.4.3"
 noise = "= 0.4.1"
+
+# temporarily locked to avoid error[E0282]: type annotations needed
+libc = "= 0.2.33"
+objc = "= 0.2.2"
