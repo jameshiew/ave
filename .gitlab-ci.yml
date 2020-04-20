@@ -6,6 +6,7 @@ run tests:
   image: rust:1.42.0
   stage: test
   script:
+    - RUSTFLAGS=-Awarnings cargo check
     - cargo build --release --verbose --all
     - cargo test --release --verbose --all
   artifacts:
