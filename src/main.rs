@@ -110,7 +110,7 @@ fn main() {
         {
             let system = glium_text::TextSystem::new(&application.display);
 
-            let font = glium_text::FontTexture::new(&application.display, &include_bytes!("font.ttf")[..], 70).unwrap();
+            let font = glium_text::FontTexture::new(&application.display, &include_bytes!("InconsolataExpanded-Black.ttf")[..], 70).unwrap();
 
             let text = glium_text::TextDisplay::new(&system, &font, "Hello world!");
             let text_width = text.get_width();
