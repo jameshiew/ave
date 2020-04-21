@@ -14,7 +14,7 @@ cgmath = "*"
 collision = "*"
 float-cmp = "*"
 rand = "= 0.3.18"
-noise = "= 0.4.1"
+noise = "= 0.5.1"
 
 # logging
 log = "*"
