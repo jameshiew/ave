@@ -205,8 +205,8 @@ fn main() {
                     }
                     KeyboardInput { input, .. } => {
                         let pressed = input.state == Pressed;
-                        match input.virtual_keycode {
-                            Some(key) => match key {
+                        if let Some(key) = input.virtual_keycode {
+                            match key {
                                 glutin::VirtualKeyCode::Escape => {
                                     if pressed {
                                         if cursor_grabbed {
@@ -239,9 +239,8 @@ fn main() {
                                     }
                                 }
                                 _ => application.camera.process_input(pressed, key),
-                            },
-                            None => (),
-                        };
+                            }
+                        }
                     }
                     _ => (),
                 }
