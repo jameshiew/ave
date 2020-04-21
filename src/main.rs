@@ -3,7 +3,6 @@ mod block;
 mod camera;
 mod color;
 mod default;
-mod debug;
 mod event_loop;
 mod game;
 mod render;
