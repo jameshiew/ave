@@ -5,7 +5,7 @@ use cgmath::Matrix4;
 use cgmath::{Angle, PerspectiveFov, Rad};
 use collision;
 use collision::Frustum;
-use glutin;
+use glium::glutin;
 use std;
 
 const DEFAULT_ASPECT_RATIO: f32 = default::VIEWPORT_WIDTH as f32 / default::VIEWPORT_HEIGHT as f32;

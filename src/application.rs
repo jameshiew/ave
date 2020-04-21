@@ -8,11 +8,11 @@ pub struct Application {
 }
 
 impl Application {
-    pub fn new(events_loop: &glutin::EventsLoop) -> Application {
-        let window = glutin::WindowBuilder::new()
+    pub fn new(events_loop: &glium::glutin::EventsLoop) -> Application {
+        let window = glium::glutin::WindowBuilder::new()
             .with_dimensions(default::VIEWPORT)
             .with_title("Ave");
-        let context = glutin::ContextBuilder::new()
+        let context = glium::glutin::ContextBuilder::new()
             .with_depth_buffer(24)
             .with_vsync(true);
         let display = glium::Display::new(window, context, events_loop).unwrap();
