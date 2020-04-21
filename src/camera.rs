@@ -1,11 +1,11 @@
-use block::cube_at;
+use crate::block::cube_at;
+use crate::default;
+use crate::space::{Direction, Position};
 use cgmath::Matrix4;
 use cgmath::{Angle, PerspectiveFov, Rad};
 use collision;
 use collision::Frustum;
-use default;
 use glutin;
-use space::{Direction, Position};
 use std;
 
 const DEFAULT_ASPECT_RATIO: f32 = default::VIEWPORT_WIDTH as f32 / default::VIEWPORT_HEIGHT as f32;

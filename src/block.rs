@@ -1,8 +1,8 @@
-use color::Color;
+use crate::color::Color;
+use crate::render::Vertex;
+use crate::space;
 use glium::backend::Facade;
 use glium::vertex::VertexBuffer;
-use render::Vertex;
-use space;
 use space::{Direction, Position};
 use std::hash::{Hash, Hasher};
 

@@ -1,12 +1,12 @@
-use block::BlockType;
+use crate::block::BlockType;
+use crate::space::Adjacent;
+use crate::space::Position;
+use crate::worldgen;
+use crate::worldgen::WorldGenerator;
 use cgmath::Point3;
 use rand;
-use space::Adjacent;
-use space::Position;
 use std::collections::{HashMap, HashSet};
 use std::vec::Vec;
-use worldgen;
-use worldgen::WorldGenerator;
 
 /// Side length of a chunk (in blocks) - all chunks are cubic
 pub const CHUNK_SIZE: u8 = 32;
@@ -236,8 +236,8 @@ impl World for InMemoryWorld {
 
 #[cfg(test)]
 mod tests {
-    use block;
-    use world::{get_position, position_to_chunk, Chunk, HashChunk, CHUNK_SIZE};
+    use crate::block;
+    use crate::world::{get_position, position_to_chunk, Chunk, HashChunk, CHUNK_SIZE};
 
     #[test]
     fn world_get_position() {
