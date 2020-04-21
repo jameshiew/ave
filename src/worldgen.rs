@@ -45,10 +45,9 @@ pub struct RandomPillarsWorldGenerator {
 
 #[allow(dead_code)]
 impl RandomPillarsWorldGenerator {
-    pub fn new(seed: usize) -> RandomPillarsWorldGenerator {
-        let s: &[_] = &[seed];
+    pub fn new(seed: u32) -> RandomPillarsWorldGenerator {
         RandomPillarsWorldGenerator {
-            prng: StdRng::from_seed(s),
+            prng: StdRng::seed_from_u64(seed as u64),
         }
     }
 }
@@ -106,7 +105,9 @@ impl WorldGenerator for NaturalWorldGenerator {
                     // we need a height in the range [0, CHUNK_SIZE)
                     // https://www.redblobgames.com/maps/terrain-from-noise/ is a good source for tips
                     let position = get_position(&coordinates, [x, 0, z].into());
-                    let height = self.perlin.get([(position.x * 0.015) as f64, (position.z * 0.015) as f64]);
+                    let height = self
+                        .perlin
+                        .get([(position.x * 0.015) as f64, (position.z * 0.015) as f64]);
                     // raise height to decent even power to so we get more flats and its nonnegative
                     let normalized_height: u8 = (height.powi(4) * (CHUNK_SIZE as f64)) as u8;
                     let mut blk = block::GRASS;
