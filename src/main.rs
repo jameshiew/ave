@@ -1,32 +1,32 @@
 #[macro_use]
 extern crate glium;
-extern crate glutin;
 extern crate cgmath;
-extern crate rand;
 extern crate collision;
+extern crate glutin;
 extern crate noise;
+extern crate rand;
 #[macro_use]
 extern crate log;
 extern crate simplelog;
 
-mod render;
 mod block;
 mod camera;
-mod space;
 mod color;
+mod default;
+mod game;
+mod render;
+mod space;
 mod world;
 mod worldgen;
-mod game;
-mod default;
 
 use glium::Surface;
-use world::World;
+use glutin::ElementState::Pressed;
+use glutin::WindowEvent::{CloseRequested, KeyboardInput, Resized};
 use std::thread;
 use std::time::{Duration, Instant};
-use glutin::ElementState::Pressed;
-use glutin::WindowEvent::{CloseRequested, Resized, KeyboardInput};
+use world::World;
 
-use simplelog::{Config, TermLogger, CombinedLogger, LogLevelFilter};
+use simplelog::{CombinedLogger, Config, LogLevelFilter, TermLogger};
 
 /// Global, thread-safe context for the application
 struct Application {
@@ -59,7 +59,10 @@ pub enum Action {
     Continue,
 }
 
-pub fn start_loop<F>(mut callback: F) where F: FnMut() -> Action {
+pub fn start_loop<F>(mut callback: F)
+where
+    F: FnMut() -> Action,
+{
     let mut accumulator = Duration::new(0, 0);
     let mut previous_clock = Instant::now();
 
@@ -71,7 +74,7 @@ pub fn start_loop<F>(mut callback: F) where F: FnMut() -> Action {
     loop {
         match callback() {
             Action::Stop => break,
-            Action::Continue => ()
+            Action::Continue => (),
         };
         ticks_this_second += 1;
 
@@ -101,14 +104,20 @@ pub fn start_loop<F>(mut callback: F) where F: FnMut() -> Action {
 }
 
 fn main() {
-    CombinedLogger::init(
-        vec![
-            TermLogger::new(LogLevelFilter::Debug, Config::default()).unwrap(),
-        ]
-    ).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LogLevelFilter::Debug,
+        Config::default(),
+    )
+    .unwrap()])
+    .unwrap();
     let mut events_loop = glutin::EventsLoop::new();
     let mut application = Application::new(&events_loop);
-    application.display.gl_window().window().grab_cursor(true).expect("couldn't grab cursor");
+    application
+        .display
+        .gl_window()
+        .window()
+        .grab_cursor(true)
+        .expect("couldn't grab cursor");
     application.display.gl_window().window().hide_cursor(true);
     let mut cursor_grabbed = true;
 
@@ -154,21 +163,29 @@ fn main() {
 
         let mut nearby_blocks_count = 0;
         let mut blocks_rendered_count = 0;
-        for (position, block_type) in application.game.world.at(application.camera.position, default::RENDER_DISTANCE_U8) {
+        for (position, block_type) in application
+            .game
+            .world
+            .at(application.camera.position, default::RENDER_DISTANCE_U8)
+        {
             nearby_blocks_count += 1;
             if application.camera.can_see(position) {
                 blocks_rendered_count += 1;
-                let vertices = block::make_cube(&application.display, &position, block_type.color, block::Mask::new());
-                target.draw(
-                    &vertices,
-                    indices,
-                    &program,
-                    &uniform,
-                    &params
-                ).unwrap()
+                let vertices = block::make_cube(
+                    &application.display,
+                    &position,
+                    block_type.color,
+                    block::Mask::new(),
+                );
+                target
+                    .draw(&vertices, indices, &program, &uniform, &params)
+                    .unwrap()
             }
         }
-        debug!("{} blocks rendered of {} blocks nearby", blocks_rendered_count, nearby_blocks_count);
+        debug!(
+            "{} blocks rendered of {} blocks nearby",
+            blocks_rendered_count, nearby_blocks_count
+        );
 
         target.finish().unwrap();
 

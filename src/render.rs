@@ -9,7 +9,11 @@ pub struct Vertex {
 
 impl Vertex {
     pub fn new(position: [f32; 3], color: [f32; 3], normal: [f32; 3]) -> Vertex {
-        Vertex {position, color, normal}
+        Vertex {
+            position,
+            color,
+            normal,
+        }
     }
 }
 
@@ -22,7 +26,10 @@ pub enum Shaders {
     Phong,
 }
 
-pub fn get_shader<F>(display: &F, shader: Shaders) -> glium::Program where F: glium::backend::Facade {
+pub fn get_shader<F>(display: &F, shader: Shaders) -> glium::Program
+where
+    F: glium::backend::Facade,
+{
     let program = match shader {
         Shaders::None => glium::Program::from_source(
             display,

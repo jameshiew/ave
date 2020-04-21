@@ -1,12 +1,12 @@
-use cgmath::{Rad, Angle, PerspectiveFov};
-use cgmath::Matrix4;
-use collision::Frustum;
-use std;
-use collision;
-use glutin;
-use space::{Position, Direction};
 use block::cube_at;
+use cgmath::Matrix4;
+use cgmath::{Angle, PerspectiveFov, Rad};
+use collision;
+use collision::Frustum;
 use default;
+use glutin;
+use space::{Direction, Position};
+use std;
 
 const DEFAULT_ASPECT_RATIO: f32 = default::VIEWPORT_WIDTH as f32 / default::VIEWPORT_HEIGHT as f32;
 const DEFAULT_FIELD_OF_VIEW: Rad<f32> = Rad(std::f32::consts::PI / 2.0 * (7.0 / 9.0));
@@ -65,12 +65,14 @@ impl CameraState {
 
     fn update_perspective(&mut self) {
         let f = 1.0 / (self.perspective_fov.fovy / 2.0).tan();
-        self.perspective = Matrix4::new(
+        #[rustfmt::skip] // useful to be able to see each tuple on its own row
+        let new = Matrix4::new(
             f / self.perspective_fov.aspect, 0.0, 0.0, 0.0,
             0.0, f, 0.0, 0.0,
             0.0, 0.0, (self.perspective_fov.far + self.perspective_fov.near) / (self.perspective_fov.far - self.perspective_fov.near), 1.0,
             0.0, 0.0, -(2.0 * self.perspective_fov.far * self.perspective_fov.near) / (self.perspective_fov.far - self.perspective_fov.near), 0.0,
         );
+        self.perspective = new
     }
 
     pub fn get_view(&self) -> Matrix4<f32> {
@@ -83,9 +85,11 @@ impl CameraState {
 
         let up = (0.0, 1.0, 0.0);
 
-        let s = (f.1 * up.2 - f.2 * up.1,
-                 f.2 * up.0 - f.0 * up.2,
-                 f.0 * up.1 - f.1 * up.0);
+        let s = (
+            f.1 * up.2 - f.2 * up.1,
+            f.2 * up.0 - f.0 * up.2,
+            f.0 * up.1 - f.1 * up.0,
+        );
 
         let s_norm = {
             let len = s.0 * s.0 + s.1 * s.1 + s.2 * s.2;
@@ -93,20 +97,26 @@ impl CameraState {
             (s.0 / len, s.1 / len, s.2 / len)
         };
 
-        let u = (s_norm.1 * f.2 - s_norm.2 * f.1,
-                 s_norm.2 * f.0 - s_norm.0 * f.2,
-                 s_norm.0 * f.1 - s_norm.1 * f.0);
+        let u = (
+            s_norm.1 * f.2 - s_norm.2 * f.1,
+            s_norm.2 * f.0 - s_norm.0 * f.2,
+            s_norm.0 * f.1 - s_norm.1 * f.0,
+        );
 
-        let p = (-self.position[0] * s.0 - self.position[1] * s.1 - self.position[2] * s.2,
-                 -self.position[0] * u.0 - self.position[1] * u.1 - self.position[2] * u.2,
-                 -self.position[0] * f.0 - self.position[1] * f.1 - self.position[2] * f.2);
+        let p = (
+            -self.position[0] * s.0 - self.position[1] * s.1 - self.position[2] * s.2,
+            -self.position[0] * u.0 - self.position[1] * u.1 - self.position[2] * u.2,
+            -self.position[0] * f.0 - self.position[1] * f.1 - self.position[2] * f.2,
+        );
 
-        Matrix4::new(
+        #[rustfmt::skip] // useful to be able to see each tuple on its own row
+        let view = Matrix4::new(
             s_norm.0, u.0, f.0, 0.0,
             s_norm.1, u.1, f.1, 0.0,
             s_norm.2, u.2, f.2, 0.0,
-            p.0, p.1, p.2, 1.0,
-        )
+            p.0,      p.1, p.2, 1.0,
+        );
+        view
     }
 
     pub fn update(&mut self) {
@@ -119,9 +129,11 @@ impl CameraState {
 
         let up = (0.0, 1.0, 0.0);
 
-        let s = (f.1 * up.2 - f.2 * up.1,
-                 f.2 * up.0 - f.0 * up.2,
-                 f.0 * up.1 - f.1 * up.0);
+        let s = (
+            f.1 * up.2 - f.2 * up.1,
+            f.2 * up.0 - f.0 * up.2,
+            f.0 * up.1 - f.1 * up.0,
+        );
 
         let s = {
             let len = s.0 * s.0 + s.1 * s.1 + s.2 * s.2;
@@ -129,9 +141,11 @@ impl CameraState {
             (s.0 / len, s.1 / len, s.2 / len)
         };
 
-        let u = (s.1 * f.2 - s.2 * f.1,
-                 s.2 * f.0 - s.0 * f.2,
-                 s.0 * f.1 - s.1 * f.0);
+        let u = (
+            s.1 * f.2 - s.2 * f.1,
+            s.2 * f.0 - s.0 * f.2,
+            s.0 * f.1 - s.1 * f.0,
+        );
 
         if self.moving_up {
             self.position[0] += u.0 * self.move_speed;
@@ -225,13 +239,13 @@ impl CameraState {
                 if self.move_speed > 1.0 {
                     self.move_speed = 1.0;
                 }
-            },
+            }
             glutin::VirtualKeyCode::E => {
                 self.move_speed -= 0.1;
                 if self.move_speed < 0.1 {
                     self.move_speed = 0.1;
                 }
-            },
+            }
             _ => (),
         };
     }
