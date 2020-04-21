@@ -2,7 +2,8 @@ use crate::block;
 use crate::world::{get_position, Chunk, ChunkCoordinates, HashChunk, CHUNK_SIZE};
 use log::debug;
 use noise::{NoiseFn, Perlin, Seedable};
-use rand::{Rng, SeedableRng, StdRng};
+use rand::rngs::StdRng;
+use rand::{Rng, SeedableRng};
 
 pub trait WorldGenerator {
     fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> HashChunk;
