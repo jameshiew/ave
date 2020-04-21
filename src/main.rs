@@ -10,8 +10,8 @@ mod worldgen;
 
 use glium::uniform;
 use glium::Surface;
-use glutin::ElementState::Pressed;
-use glutin::WindowEvent::{CloseRequested, KeyboardInput, Resized};
+use glutin::event::ElementState::Pressed;
+use glutin::event::WindowEvent::{CloseRequested, KeyboardInput, Resized};
 use log::debug;
 use log::info;
 use simplelog::{CombinedLogger, Config, LogLevelFilter, TermLogger};
@@ -27,9 +27,9 @@ struct Application {
 }
 
 impl Application {
-    pub fn new(events_loop: &glutin::EventsLoop) -> Application {
-        let window = glutin::WindowBuilder::new()
-            .with_dimensions(default::VIEWPORT)
+    pub fn new<T>(events_loop: &glutin::event_loop::EventLoop<T>) -> Application {
+        let window = glutin::window::WindowBuilder::new()
+            .with_inner_size(default::VIEWPORT)
             .with_title("Ave");
         let context = glutin::ContextBuilder::new()
             .with_depth_buffer(24)
@@ -101,15 +101,19 @@ fn main() {
     )
     .unwrap()])
     .unwrap();
-    let mut events_loop = glutin::EventsLoop::new();
+    let mut events_loop = glutin::event_loop::EventLoop::new();
     let mut application = Application::new(&events_loop);
     application
         .display
         .gl_window()
         .window()
-        .grab_cursor(true)
+        .set_cursor_grab(true)
         .expect("couldn't grab cursor");
-    application.display.gl_window().window().hide_cursor(true);
+    application
+        .display
+        .gl_window()
+        .window()
+        .set_cursor_visible(false);
     let mut cursor_grabbed = true;
 
     let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
@@ -184,7 +188,7 @@ fn main() {
 
         // polling and handling the events received by the window
         events_loop.poll_events(|event| {
-            if let glutin::Event::WindowEvent {
+            if let glutin::event::Event::WindowEvent {
                 event: window_event,
                 ..
             } = event
@@ -198,33 +202,33 @@ fn main() {
                         let pressed = input.state == Pressed;
                         if let Some(key) = input.virtual_keycode {
                             match key {
-                                glutin::VirtualKeyCode::Escape => {
+                                glutin::event::VirtualKeyCode::Escape => {
                                     if pressed {
                                         if cursor_grabbed {
                                             application
                                                 .display
                                                 .gl_window()
                                                 .window()
-                                                .hide_cursor(false);
+                                                .set_cursor_grab(false)
+                                                .expect("couldn't ungrab cursor");
                                             application
                                                 .display
                                                 .gl_window()
                                                 .window()
-                                                .grab_cursor(false)
-                                                .expect("couldn't ungrab cursor");
+                                                .set_cursor_visible(true);
                                             cursor_grabbed = false;
                                         } else {
                                             application
                                                 .display
                                                 .gl_window()
                                                 .window()
-                                                .grab_cursor(true)
+                                                .set_cursor_grab(true)
                                                 .expect("couldn't grab cursor");
                                             application
                                                 .display
                                                 .gl_window()
                                                 .window()
-                                                .hide_cursor(true);
+                                                .set_cursor_visible(false);
                                             cursor_grabbed = true;
                                         }
                                     }
