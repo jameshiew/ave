@@ -193,12 +193,16 @@ fn main() {
 
         // polling and handling the events received by the window
         events_loop.poll_events(|event| {
-            if let glutin::Event::WindowEvent { event: window_event, .. } = event {
+            if let glutin::Event::WindowEvent {
+                event: window_event,
+                ..
+            } = event
+            {
                 match window_event {
                     CloseRequested => action = Action::Stop,
                     Resized(new) => {
                         info!("Window resized to {}px x {}px", new.width, new.height);
-                    },
+                    }
                     KeyboardInput { input, .. } => {
                         let pressed = input.state == Pressed;
                         match input.virtual_keycode {
@@ -206,12 +210,30 @@ fn main() {
                                 glutin::VirtualKeyCode::Escape => {
                                     if pressed {
                                         if cursor_grabbed {
-                                            application.display.gl_window().window().hide_cursor(false);
-                                            application.display.gl_window().window().grab_cursor(false).expect("couldn't ungrab cursor");
+                                            application
+                                                .display
+                                                .gl_window()
+                                                .window()
+                                                .hide_cursor(false);
+                                            application
+                                                .display
+                                                .gl_window()
+                                                .window()
+                                                .grab_cursor(false)
+                                                .expect("couldn't ungrab cursor");
                                             cursor_grabbed = false;
                                         } else {
-                                            application.display.gl_window().window().grab_cursor(true).expect("couldn't grab cursor");
-                                            application.display.gl_window().window().hide_cursor(true);
+                                            application
+                                                .display
+                                                .gl_window()
+                                                .window()
+                                                .grab_cursor(true)
+                                                .expect("couldn't grab cursor");
+                                            application
+                                                .display
+                                                .gl_window()
+                                                .window()
+                                                .hide_cursor(true);
                                             cursor_grabbed = true;
                                         }
                                     }
@@ -220,7 +242,7 @@ fn main() {
                             },
                             None => (),
                         };
-                    },
+                    }
                     _ => (),
                 }
             }
