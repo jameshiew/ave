@@ -89,7 +89,7 @@ pub fn start_loop<F>(mut callback: F) where F: FnMut() -> Action {
 
         accumulator += time_passed;
 
-        let fixed_time_stamp = Duration::new(0, 16666667);
+        let fixed_time_stamp = Duration::new(0, 16_666_667);
         while accumulator >= fixed_time_stamp {
             accumulator -= fixed_time_stamp;
 
@@ -210,6 +210,6 @@ fn main() {
             }
         });
 
-        return action;
+        action
     });
 }

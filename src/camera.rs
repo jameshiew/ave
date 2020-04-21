@@ -221,13 +221,13 @@ impl CameraState {
             glutin::VirtualKeyCode::Up => self.rotating_up = pressed,
             glutin::VirtualKeyCode::Down => self.rotating_down = pressed,
             glutin::VirtualKeyCode::Q => {
-                self.move_speed += self.move_speed + 0.1;
+                self.move_speed = self.move_speed + self.move_speed + 0.1;
                 if self.move_speed > 1.0 {
                     self.move_speed = 1.0;
                 }
             },
             glutin::VirtualKeyCode::E => {
-                self.move_speed = self.move_speed - 0.1;
+                self.move_speed -= 0.1;
                 if self.move_speed < 0.1 {
                     self.move_speed = 0.1;
                 }

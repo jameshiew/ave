@@ -139,11 +139,11 @@ impl Adjacent for Point3<i32> {
     }
 }
 
-pub fn get_position(chunk_coordinates: &ChunkCoordinates, block_coordinates: &BlockCoordinates) -> Position {
+pub fn get_position(chunk_coordinates: &ChunkCoordinates, block_coordinates: BlockCoordinates) -> Position {
     let x = (chunk_coordinates[0] * CHUNK_SIZE as i32) + block_coordinates[0] as i32;
     let y = (chunk_coordinates[1] * CHUNK_SIZE as i32) + block_coordinates[1] as i32;
     let z = (chunk_coordinates[2] * CHUNK_SIZE as i32) + block_coordinates[2] as i32;
-    return [x as f32, y as f32, z as f32].into();
+    [x as f32, y as f32, z as f32].into()
 }
 
 pub fn position_to_chunk(coordinates: &Position) -> ChunkCoordinates {
@@ -172,11 +172,11 @@ impl World for InMemoryWorld {
 
     fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &HashChunk {
         if self.chunks.contains_key(&coordinates) {
-            return self.chunks.get(&coordinates).unwrap();
+            self.chunks.get(&coordinates).unwrap()
         } else {
             let chunk = self.generator.generate_chunk(coordinates);
             self.chunks.insert(coordinates, chunk);
-            return self.chunks.get_mut(&coordinates).unwrap();
+            self.chunks.get_mut(&coordinates).unwrap()
         }
     }
 
@@ -204,7 +204,7 @@ impl World for InMemoryWorld {
             match chunk_opt {
                 Some(chunk) => {
                     for (block_coordinates, block_type) in chunk.get_visible() {
-                        blocks.push((get_position(&chunk_coordinates, &block_coordinates), block_type))
+                        blocks.push((get_position(&chunk_coordinates, block_coordinates), block_type))
                     }
                 },
                 None => (),
@@ -221,9 +221,9 @@ mod tests {
 
     #[test]
     fn world_get_position() {
-        assert_eq!(get_position(&[0, 0, 0].into(), &[0, 0, 0].into()), [0.0, 0.0, 0.0].into());
-        assert_eq!(get_position(&[0, 0, 0].into(), &[1, 1, 1].into()), [1.0, 1.0, 1.0].into());
-        assert_eq!(get_position(&[1, 1, 1].into(), &[1, 1, 1].into()), [CHUNK_SIZE as f32 + 1.0, CHUNK_SIZE as f32 + 1.0, CHUNK_SIZE as f32 + 1.0].into());
+        assert_eq!(get_position(&[0, 0, 0].into(), [0, 0, 0].into()), [0.0, 0.0, 0.0].into());
+        assert_eq!(get_position(&[0, 0, 0].into(), [1, 1, 1].into()), [1.0, 1.0, 1.0].into());
+        assert_eq!(get_position(&[1, 1, 1].into(), [1, 1, 1].into()), [CHUNK_SIZE as f32 + 1.0, CHUNK_SIZE as f32 + 1.0, CHUNK_SIZE as f32 + 1.0].into());
     }
 
     #[test]

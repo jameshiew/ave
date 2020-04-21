@@ -32,7 +32,7 @@ impl WorldGenerator for FlatWorldGenerator {
                 }
             }
         }
-        return chunk;
+        chunk
     }
 }
 
@@ -70,7 +70,7 @@ impl WorldGenerator for RandomPillarsWorldGenerator {
                 chunk.set([pillar_x, y, pillar_z].into(), block::DIRT);
             }
         }
-        return chunk;
+        chunk
     }
 }
 
@@ -96,7 +96,7 @@ impl WorldGenerator for NaturalWorldGenerator {
                 for z in 0..CHUNK_SIZE {
                     // we need a height in the range [0, CHUNK_SIZE)
                     // https://www.redblobgames.com/maps/terrain-from-noise/ is a good source for tips
-                    let position = get_position(&coordinates, &[x, 0, z].into());
+                    let position = get_position(&coordinates, [x, 0, z].into());
                     let height = self.perlin.get([position.x * 0.015, position.z * 0.015]);
                     // raise height to decent even power to so we get more flats and its nonnegative
                     let normalized_height: u8 = (height.powi(4) * (CHUNK_SIZE as f32)) as u8;
