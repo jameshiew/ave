@@ -2,7 +2,6 @@
 stages:
   - lint
   - check
-  - build
   - test
   - release
 
@@ -32,20 +31,11 @@ check:
     paths:
       - target/
 
-build:
-  image: rust:1.42.0
-  stage: test
-  script:
-    - cargo build --verbose --workspace
-  artifacts:
-    expire_in: 1 hour
-    paths:
-      - target/
-
 test:
   image: rust:1.42.0
   stage: test
   script:
+    - cargo build --verbose --workspace
     - cargo test --verbose --workspace
   artifacts:
     expire_in: 1 hour
