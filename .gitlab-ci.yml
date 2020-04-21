@@ -13,17 +13,16 @@ variables:
 
 stages:
   - lint
-  - check
   - test
   - release
 
-lint:
+lint:rustfmt:
   stage: lint
   script:
     - rustup component add rustfmt
     - cargo fmt -- --check
 
-check:
+lint:clippy:
   stage: lint
   script:
     - cargo check --verbose
