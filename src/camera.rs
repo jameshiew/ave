@@ -65,12 +65,14 @@ impl CameraState {
 
     fn update_perspective(&mut self) {
         let f = 1.0 / (self.perspective_fov.fovy / 2.0).tan();
-        self.perspective = #[rustfmt::skip] Matrix4::new(  // skip rustfmt to be able to see each tuple on its own row
+        #[rustfmt::skip] // useful to be able to see each tuple on its own row
+        let new = Matrix4::new(
             f / self.perspective_fov.aspect, 0.0, 0.0, 0.0,
             0.0, f, 0.0, 0.0,
             0.0, 0.0, (self.perspective_fov.far + self.perspective_fov.near) / (self.perspective_fov.far - self.perspective_fov.near), 1.0,
             0.0, 0.0, -(2.0 * self.perspective_fov.far * self.perspective_fov.near) / (self.perspective_fov.far - self.perspective_fov.near), 0.0,
         );
+        self.perspective = new
     }
 
     pub fn get_view(&self) -> Matrix4<f32> {
@@ -107,13 +109,14 @@ impl CameraState {
             -self.position[0] * f.0 - self.position[1] * f.1 - self.position[2] * f.2,
         );
 
-        #[rustfmt::skip]  // useful to be able to see each tuple on its own row
-        Matrix4::new(
+        #[rustfmt::skip] // useful to be able to see each tuple on its own row
+        let view = Matrix4::new(
             s_norm.0, u.0, f.0, 0.0,
             s_norm.1, u.1, f.1, 0.0,
             s_norm.2, u.2, f.2, 0.0,
             p.0,      p.1, p.2, 1.0,
-        )
+        );
+        view
     }
 
     pub fn update(&mut self) {
