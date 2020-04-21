@@ -185,8 +185,7 @@ impl World for InMemoryWorld {
     }
 
     fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &HashChunk {
-        // TODO: clippy recommends this way but it lags?
-        // self.chunks.entry(coordinates).or_insert(self.generator.generate_chunk(coordinates))
+        #![allow(clippy::map_entry)] // TODO: clippy recommends a different way that we should aim to use
         if self.chunks.contains_key(&coordinates) {
             self.chunks.get(&coordinates).unwrap()
         } else {
