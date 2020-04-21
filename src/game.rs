@@ -1,4 +1,4 @@
-use world;
+use crate::world;
 use world::World;
 
 /// TODO: should be along the lines of `world: W where W: world::World`
