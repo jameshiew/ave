@@ -53,7 +53,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "ave"
-version = "0.1.1-alpha"
+version = "0.1.1"
 dependencies = [
  "cgmath 0.17.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "collision 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
