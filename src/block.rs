@@ -69,7 +69,7 @@ pub fn cube_at(position: &Position) -> [Position; 8] {
         [x + 1.0, y,       z + 1.0].into(),
         [x + 1.0, y + 1.0, z      ].into(),
         [x + 1.0, y + 1.0, z + 1.0].into(),
-    ]
+    ];
 }
 
 pub struct Mask {
@@ -109,40 +109,232 @@ where
     let z = position[2];
     let mut vertices = Vec::new();
     if !mask.south {
-        vertices.push(Vertex::new([x + CUBE_VERTICES[0][0], y + CUBE_VERTICES[0][1], z + CUBE_VERTICES[0][2]], color, CUBE_NORMALS[0].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[1][0], y + CUBE_VERTICES[1][1], z + CUBE_VERTICES[1][2]], color, CUBE_NORMALS[0].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[2][0], y + CUBE_VERTICES[2][1], z + CUBE_VERTICES[2][2]], color, CUBE_NORMALS[0].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[3][0], y + CUBE_VERTICES[3][1], z + CUBE_VERTICES[3][2]], color, CUBE_NORMALS[0].into()));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[0][0],
+                y + CUBE_VERTICES[0][1],
+                z + CUBE_VERTICES[0][2],
+            ],
+            color,
+            CUBE_NORMALS[0].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[1][0],
+                y + CUBE_VERTICES[1][1],
+                z + CUBE_VERTICES[1][2],
+            ],
+            color,
+            CUBE_NORMALS[0].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[2][0],
+                y + CUBE_VERTICES[2][1],
+                z + CUBE_VERTICES[2][2],
+            ],
+            color,
+            CUBE_NORMALS[0].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[3][0],
+                y + CUBE_VERTICES[3][1],
+                z + CUBE_VERTICES[3][2],
+            ],
+            color,
+            CUBE_NORMALS[0].into(),
+        ));
     }
     if !mask.east {
-        vertices.push(Vertex::new([x + CUBE_VERTICES[4][0], y + CUBE_VERTICES[4][1], z + CUBE_VERTICES[4][2]], color, CUBE_NORMALS[1].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[5][0], y + CUBE_VERTICES[5][1], z + CUBE_VERTICES[5][2]], color, CUBE_NORMALS[1].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[6][0], y + CUBE_VERTICES[6][1], z + CUBE_VERTICES[6][2]], color, CUBE_NORMALS[1].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[7][0], y + CUBE_VERTICES[7][1], z + CUBE_VERTICES[7][2]], color, CUBE_NORMALS[1].into()));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[4][0],
+                y + CUBE_VERTICES[4][1],
+                z + CUBE_VERTICES[4][2],
+            ],
+            color,
+            CUBE_NORMALS[1].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[5][0],
+                y + CUBE_VERTICES[5][1],
+                z + CUBE_VERTICES[5][2],
+            ],
+            color,
+            CUBE_NORMALS[1].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[6][0],
+                y + CUBE_VERTICES[6][1],
+                z + CUBE_VERTICES[6][2],
+            ],
+            color,
+            CUBE_NORMALS[1].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[7][0],
+                y + CUBE_VERTICES[7][1],
+                z + CUBE_VERTICES[7][2],
+            ],
+            color,
+            CUBE_NORMALS[1].into(),
+        ));
     }
     if !mask.north {
-        vertices.push(Vertex::new([x + CUBE_VERTICES[8][0], y + CUBE_VERTICES[8][1], z + CUBE_VERTICES[8][2]], color, CUBE_NORMALS[2].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[9][0], y + CUBE_VERTICES[9][1], z + CUBE_VERTICES[9][2]], color, CUBE_NORMALS[2].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[10][0], y + CUBE_VERTICES[10][1], z + CUBE_VERTICES[10][2]], color, CUBE_NORMALS[2].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[11][0], y + CUBE_VERTICES[11][1], z + CUBE_VERTICES[11][2]], color, CUBE_NORMALS[2].into()));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[8][0],
+                y + CUBE_VERTICES[8][1],
+                z + CUBE_VERTICES[8][2],
+            ],
+            color,
+            CUBE_NORMALS[2].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[9][0],
+                y + CUBE_VERTICES[9][1],
+                z + CUBE_VERTICES[9][2],
+            ],
+            color,
+            CUBE_NORMALS[2].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[10][0],
+                y + CUBE_VERTICES[10][1],
+                z + CUBE_VERTICES[10][2],
+            ],
+            color,
+            CUBE_NORMALS[2].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[11][0],
+                y + CUBE_VERTICES[11][1],
+                z + CUBE_VERTICES[11][2],
+            ],
+            color,
+            CUBE_NORMALS[2].into(),
+        ));
     }
     if !mask.west {
-        vertices.push(Vertex::new([x + CUBE_VERTICES[12][0], y + CUBE_VERTICES[12][1], z + CUBE_VERTICES[12][2]], color, CUBE_NORMALS[3].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[13][0], y + CUBE_VERTICES[13][1], z + CUBE_VERTICES[13][2]], color, CUBE_NORMALS[3].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[14][0], y + CUBE_VERTICES[14][1], z + CUBE_VERTICES[14][2]], color, CUBE_NORMALS[3].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[15][0], y + CUBE_VERTICES[15][1], z + CUBE_VERTICES[15][2]], color, CUBE_NORMALS[3].into()));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[12][0],
+                y + CUBE_VERTICES[12][1],
+                z + CUBE_VERTICES[12][2],
+            ],
+            color,
+            CUBE_NORMALS[3].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[13][0],
+                y + CUBE_VERTICES[13][1],
+                z + CUBE_VERTICES[13][2],
+            ],
+            color,
+            CUBE_NORMALS[3].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[14][0],
+                y + CUBE_VERTICES[14][1],
+                z + CUBE_VERTICES[14][2],
+            ],
+            color,
+            CUBE_NORMALS[3].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[15][0],
+                y + CUBE_VERTICES[15][1],
+                z + CUBE_VERTICES[15][2],
+            ],
+            color,
+            CUBE_NORMALS[3].into(),
+        ));
     }
     if !mask.down {
-        vertices.push(Vertex::new([x + CUBE_VERTICES[16][0], y + CUBE_VERTICES[16][1], z + CUBE_VERTICES[16][2]], color, CUBE_NORMALS[4].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[17][0], y + CUBE_VERTICES[17][1], z + CUBE_VERTICES[17][2]], color, CUBE_NORMALS[4].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[18][0], y + CUBE_VERTICES[18][1], z + CUBE_VERTICES[18][2]], color, CUBE_NORMALS[4].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[19][0], y + CUBE_VERTICES[19][1], z + CUBE_VERTICES[19][2]], color, CUBE_NORMALS[4].into()));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[16][0],
+                y + CUBE_VERTICES[16][1],
+                z + CUBE_VERTICES[16][2],
+            ],
+            color,
+            CUBE_NORMALS[4].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[17][0],
+                y + CUBE_VERTICES[17][1],
+                z + CUBE_VERTICES[17][2],
+            ],
+            color,
+            CUBE_NORMALS[4].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[18][0],
+                y + CUBE_VERTICES[18][1],
+                z + CUBE_VERTICES[18][2],
+            ],
+            color,
+            CUBE_NORMALS[4].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[19][0],
+                y + CUBE_VERTICES[19][1],
+                z + CUBE_VERTICES[19][2],
+            ],
+            color,
+            CUBE_NORMALS[4].into(),
+        ));
     }
     if !mask.up {
-        vertices.push(Vertex::new([x + CUBE_VERTICES[20][0], y + CUBE_VERTICES[20][1], z + CUBE_VERTICES[20][2]], color, CUBE_NORMALS[5].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[21][0], y + CUBE_VERTICES[21][1], z + CUBE_VERTICES[21][2]], color, CUBE_NORMALS[5].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[22][0], y + CUBE_VERTICES[22][1], z + CUBE_VERTICES[22][2]], color, CUBE_NORMALS[5].into()));
-        vertices.push(Vertex::new([x + CUBE_VERTICES[23][0], y + CUBE_VERTICES[23][1], z + CUBE_VERTICES[23][2]], color, CUBE_NORMALS[5].into()));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[20][0],
+                y + CUBE_VERTICES[20][1],
+                z + CUBE_VERTICES[20][2],
+            ],
+            color,
+            CUBE_NORMALS[5].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[21][0],
+                y + CUBE_VERTICES[21][1],
+                z + CUBE_VERTICES[21][2],
+            ],
+            color,
+            CUBE_NORMALS[5].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[22][0],
+                y + CUBE_VERTICES[22][1],
+                z + CUBE_VERTICES[22][2],
+            ],
+            color,
+            CUBE_NORMALS[5].into(),
+        ));
+        vertices.push(Vertex::new(
+            [
+                x + CUBE_VERTICES[23][0],
+                y + CUBE_VERTICES[23][1],
+                z + CUBE_VERTICES[23][2],
+            ],
+            color,
+            CUBE_NORMALS[5].into(),
+        ));
     }
     VertexBuffer::new(facade, vertices.as_slice()).unwrap()
 }
