@@ -100,7 +100,7 @@ impl WorldGenerator for NaturalWorldGenerator {
                     let height = self.perlin.get([position.x * 0.015, position.z * 0.015]);
                     // raise height to decent even power to so we get more flats and its nonnegative
                     let normalized_height: u8 = (height.powi(4) * (CHUNK_SIZE as f32)) as u8;
-                    let mut blk = block::WATER;
+                    let mut blk = block::GRASS;
                     if normalized_height == 0 {
                         if height < 0.0 {
                             blk = block::SAND
