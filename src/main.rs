@@ -83,7 +83,7 @@ where
 
         accumulator += time_passed;
 
-        let fixed_time_stamp = Duration::new(0, 16666667);
+        let fixed_time_stamp = Duration::new(0, 16_666_667);
         while accumulator >= fixed_time_stamp {
             accumulator -= fixed_time_stamp;
 
@@ -183,49 +183,61 @@ fn main() {
         let mut action = Action::Continue;
 
         // polling and handling the events received by the window
-        events_loop.poll_events(|event| match event {
-            glutin::Event::WindowEvent { event, .. } => match event {
-                CloseRequested => action = Action::Stop,
-                Resized(new) => {
-                    info!("Window resized to {}px x {}px", new.width, new.height);
-                }
-                KeyboardInput { input, .. } => {
-                    let pressed = input.state == Pressed;
-                    match input.virtual_keycode {
-                        Some(key) => match key {
-                            glutin::VirtualKeyCode::Escape => {
-                                if pressed {
-                                    if cursor_grabbed {
-                                        application.display.gl_window().window().hide_cursor(false);
-                                        application
-                                            .display
-                                            .gl_window()
-                                            .window()
-                                            .grab_cursor(false)
-                                            .expect("couldn't ungrab cursor");
-                                        cursor_grabbed = false;
-                                    } else {
-                                        application
-                                            .display
-                                            .gl_window()
-                                            .window()
-                                            .grab_cursor(true)
-                                            .expect("couldn't grab cursor");
-                                        application.display.gl_window().window().hide_cursor(true);
-                                        cursor_grabbed = true;
+        events_loop.poll_events(|event| {
+            if let glutin::Event::WindowEvent {
+                event: window_event,
+                ..
+            } = event
+            {
+                match window_event {
+                    CloseRequested => action = Action::Stop,
+                    Resized(new) => {
+                        info!("Window resized to {}px x {}px", new.width, new.height);
+                    }
+                    KeyboardInput { input, .. } => {
+                        let pressed = input.state == Pressed;
+                        if let Some(key) = input.virtual_keycode {
+                            match key {
+                                glutin::VirtualKeyCode::Escape => {
+                                    if pressed {
+                                        if cursor_grabbed {
+                                            application
+                                                .display
+                                                .gl_window()
+                                                .window()
+                                                .hide_cursor(false);
+                                            application
+                                                .display
+                                                .gl_window()
+                                                .window()
+                                                .grab_cursor(false)
+                                                .expect("couldn't ungrab cursor");
+                                            cursor_grabbed = false;
+                                        } else {
+                                            application
+                                                .display
+                                                .gl_window()
+                                                .window()
+                                                .grab_cursor(true)
+                                                .expect("couldn't grab cursor");
+                                            application
+                                                .display
+                                                .gl_window()
+                                                .window()
+                                                .hide_cursor(true);
+                                            cursor_grabbed = true;
+                                        }
                                     }
                                 }
+                                _ => application.camera.process_input(pressed, key),
                             }
-                            _ => application.camera.process_input(pressed, key),
-                        },
-                        None => (),
-                    };
+                        }
+                    }
+                    _ => (),
                 }
-                _ => (),
-            },
-            _ => (),
+            }
         });
 
-        return action;
+        action
     });
 }

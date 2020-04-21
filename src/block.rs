@@ -60,7 +60,7 @@ pub fn cube_at(position: &Position) -> [Position; 8] {
     let y = position.y;
     let z = position.z;
     #[rustfmt::skip]  // useful to be able to see these structs as a grid
-    return [
+    let pos = [
         [x,       y,       z      ].into(),
         [x,       y,       z + 1.0].into(),
         [x,       y + 1.0, z      ].into(),
@@ -70,6 +70,7 @@ pub fn cube_at(position: &Position) -> [Position; 8] {
         [x + 1.0, y + 1.0, z      ].into(),
         [x + 1.0, y + 1.0, z + 1.0].into(),
     ];
+    pos
 }
 
 pub struct Mask {
