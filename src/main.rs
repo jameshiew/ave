@@ -1,14 +1,3 @@
-#[macro_use]
-extern crate glium;
-extern crate cgmath;
-extern crate collision;
-extern crate glutin;
-extern crate noise;
-extern crate rand;
-#[macro_use]
-extern crate log;
-extern crate simplelog;
-
 mod block;
 mod camera;
 mod color;
@@ -19,14 +8,16 @@ mod space;
 mod world;
 mod worldgen;
 
+use glium::uniform;
 use glium::Surface;
 use glutin::ElementState::Pressed;
 use glutin::WindowEvent::{CloseRequested, KeyboardInput, Resized};
+use log::debug;
+use log::info;
+use simplelog::{CombinedLogger, Config, LogLevelFilter, TermLogger};
 use std::thread;
 use std::time::{Duration, Instant};
 use world::World;
-
-use simplelog::{CombinedLogger, Config, LogLevelFilter, TermLogger};
 
 /// Global, thread-safe context for the application
 struct Application {
@@ -87,7 +78,7 @@ where
             ticks_per_second = ticks_this_second;
             ticks_this_second = 0;
             this_second = Duration::new(0, 0);
-            debug!("TPS: {}", ticks_per_second)
+            log::debug!("TPS: {}", ticks_per_second)
         }
 
         accumulator += time_passed;
