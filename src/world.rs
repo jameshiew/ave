@@ -177,7 +177,7 @@ pub struct InMemoryWorld {
 
 impl World for InMemoryWorld {
     fn new() -> InMemoryWorld {
-        let seed = rand::random::<usize>();
+        let seed = rand::random::<u32>();
         InMemoryWorld {
             generator: Box::new(worldgen::NaturalWorldGenerator::new(seed)),
             chunks: HashMap::new(),
