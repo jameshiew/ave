@@ -176,8 +176,8 @@ fn main() {
 
         // polling and handling the events received by the window
         events_loop.poll_events(|event| {
-            match event {
-                glutin::Event::WindowEvent { event, .. } => match event {
+            if let glutin::Event::WindowEvent { event: window_event, .. } = event {
+                match window_event {
                     CloseRequested => action = Action::Stop,
                     Resized(new) => {
                         info!("Window resized to {}px x {}px", new.width, new.height);
@@ -205,8 +205,7 @@ fn main() {
                         };
                     },
                     _ => (),
-                },
-                _ => (),
+                }
             }
         });
 

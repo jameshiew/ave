@@ -201,13 +201,10 @@ impl World for InMemoryWorld {
         let mut blocks = Vec::new();
         for chunk_coordinates in chunk_coordinates_to_render {
             let chunk_opt = self.chunks.get(&chunk_coordinates);
-            match chunk_opt {
-                Some(chunk) => {
-                    for (block_coordinates, block_type) in chunk.get_visible() {
-                        blocks.push((get_position(&chunk_coordinates, block_coordinates), block_type))
-                    }
-                },
-                None => (),
+            if let Some(chunk) = chunk_opt {
+                for (block_coordinates, block_type) in chunk.get_visible() {
+                    blocks.push((get_position(&chunk_coordinates, block_coordinates), block_type))
+                }
             }
         }
         blocks
