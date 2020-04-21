@@ -163,7 +163,7 @@ pub struct InMemoryWorld {
 
 impl World for InMemoryWorld {
     fn new() -> InMemoryWorld {
-        let seed = rand::random::<usize>();
+        let seed = 1639785248369381032;
         InMemoryWorld {
             generator: Box::new(worldgen::NaturalWorldGenerator::new(seed)),
             chunks: HashMap::new()
@@ -171,6 +171,8 @@ impl World for InMemoryWorld {
     }
 
     fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &HashChunk {
+        // TODO: clippy recommends this way but it lags?
+        // self.chunks.entry(coordinates).or_insert(self.generator.generate_chunk(coordinates))
         if self.chunks.contains_key(&coordinates) {
             self.chunks.get(&coordinates).unwrap()
         } else {
