@@ -1,13 +1,17 @@
+mod application;
 mod block;
 mod camera;
 mod color;
 mod default;
+mod event_loop;
 mod game;
 mod render;
 mod space;
 mod world;
 mod worldgen;
 
+use application::Application;
+use event_loop::{run, Action};
 use glium::uniform;
 use glium::Surface;
 use glutin::ElementState::Pressed;
@@ -15,84 +19,7 @@ use glutin::WindowEvent::{CloseRequested, KeyboardInput, Resized};
 use log::debug;
 use log::info;
 use simplelog::{CombinedLogger, Config, LevelFilter, TermLogger, TerminalMode};
-use std::thread;
-use std::time::{Duration, Instant};
 use world::World;
-
-/// Global, thread-safe context for the application
-struct Application {
-    pub display: glium::Display,
-    pub camera: camera::CameraState,
-    pub game: game::Game,
-}
-
-impl Application {
-    pub fn new(events_loop: &glutin::EventsLoop) -> Application {
-        let window = glutin::WindowBuilder::new()
-            .with_dimensions(default::VIEWPORT)
-            .with_title("Ave");
-        let context = glutin::ContextBuilder::new()
-            .with_depth_buffer(24)
-            .with_vsync(true);
-        let display = glium::Display::new(window, context, events_loop).unwrap();
-        let camera = camera::CameraState::new();
-        let game = game::Game::new();
-        Application {
-            display,
-            camera,
-            game,
-        }
-    }
-}
-
-pub enum Action {
-    Stop,
-    Continue,
-}
-
-pub fn start_loop<F>(mut callback: F)
-where
-    F: FnMut() -> Action,
-{
-    let mut accumulator = Duration::new(0, 0);
-    let mut previous_clock = Instant::now();
-
-    // not really sure how to measure FPS accurately so call it TPS
-    let mut ticks_per_second;
-    let mut this_second = Duration::new(0, 0);
-    let mut ticks_this_second = 0;
-
-    loop {
-        match callback() {
-            Action::Stop => break,
-            Action::Continue => (),
-        };
-        ticks_this_second += 1;
-
-        let now = Instant::now();
-        let time_passed = now - previous_clock;
-        previous_clock = now;
-
-        this_second += time_passed;
-        if this_second > Duration::new(1, 0) {
-            ticks_per_second = ticks_this_second;
-            ticks_this_second = 0;
-            this_second = Duration::new(0, 0);
-            log::debug!("TPS: {}", ticks_per_second)
-        }
-
-        accumulator += time_passed;
-
-        let fixed_time_stamp = Duration::new(0, 16_666_667);
-        while accumulator >= fixed_time_stamp {
-            accumulator -= fixed_time_stamp;
-
-            // if you have a game, update the state here
-        }
-
-        thread::sleep(fixed_time_stamp - accumulator);
-    }
-}
 
 fn main() {
     CombinedLogger::init(vec![TermLogger::new(
@@ -128,7 +55,7 @@ fn main() {
     };
     let sky_color = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
 
-    start_loop(move || {
+    run(move || {
         application.camera.update();
         let mut target = application.display.draw();
         target.clear_color_and_depth(sky_color, 1.0);
