@@ -172,6 +172,7 @@ pub static STONE: &BlockType = &BlockType {
     color: [0.827, 0.827, 0.827],
 };
 
+#[allow(dead_code)]  // use as and when
 pub static WATER: &BlockType = &BlockType {
     name: "water",
     color: [0.498, 1.000, 0.831],
