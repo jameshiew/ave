@@ -13,7 +13,7 @@ glutin = "= 0.21.0"
 cgmath = "*"
 collision = "*"
 float-cmp = "*"
-rand = "0.6"
+rand = "*"
 noise = "*"
 
 # logging
