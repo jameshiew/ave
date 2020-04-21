@@ -12,11 +12,10 @@ glutin = "= 0.21.0"
 # math
 cgmath = "*"
 collision = "*"
-
 float-cmp = "*"
 rand = "= 0.3.18"
 noise = "= 0.4.1"
 
 # logging
-log = "= 0.4.5"
+log = "*"
 simplelog = "= 0.4.3"
