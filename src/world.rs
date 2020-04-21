@@ -1,12 +1,12 @@
-use space::Position;
-use std::collections::{HashMap, HashSet};
 use block::BlockType;
 use cgmath::Point3;
-use worldgen::WorldGenerator;
-use std::vec::Vec;
-use space::Adjacent;
-use worldgen;
 use rand;
+use space::Adjacent;
+use space::Position;
+use std::collections::{HashMap, HashSet};
+use std::vec::Vec;
+use worldgen;
+use worldgen::WorldGenerator;
 
 /// Side length of a chunk (in blocks) - all chunks are cubic
 pub const CHUNK_SIZE: u8 = 32;
@@ -35,7 +35,10 @@ pub trait Chunk {
 
 impl HashChunk {
     pub fn new() -> HashChunk {
-        HashChunk { blocks: HashMap::new(), mask: HashSet::new() }
+        HashChunk {
+            blocks: HashMap::new(),
+            mask: HashSet::new(),
+        }
     }
 }
 
@@ -81,13 +84,16 @@ impl Chunk for HashChunk {
     }
 
     fn is_occluded(&self, position: BlockCoordinates) -> bool {
-        if [0, CHUNK_SIZE - 1].contains(&position[0]) || [0, CHUNK_SIZE - 1].contains(&position[1]) || [0, CHUNK_SIZE - 1].contains(&position[2]) {
-            return false;  // cheating by for now always showing blocks that are on the edge of chunks
+        if [0, CHUNK_SIZE - 1].contains(&position[0])
+            || [0, CHUNK_SIZE - 1].contains(&position[1])
+            || [0, CHUNK_SIZE - 1].contains(&position[2])
+        {
+            return false; // cheating by for now always showing blocks that are on the edge of chunks
         }
         for adjacent_position in HashChunk::get_adjacent(position) {
             match self.get(adjacent_position) {
                 None => return false,
-                Some(_) => ()
+                Some(_) => (),
             }
         }
         return true;
@@ -139,7 +145,10 @@ impl Adjacent for Point3<i32> {
     }
 }
 
-pub fn get_position(chunk_coordinates: &ChunkCoordinates, block_coordinates: &BlockCoordinates) -> Position {
+pub fn get_position(
+    chunk_coordinates: &ChunkCoordinates,
+    block_coordinates: &BlockCoordinates,
+) -> Position {
     let x = (chunk_coordinates[0] * CHUNK_SIZE as i32) + block_coordinates[0] as i32;
     let y = (chunk_coordinates[1] * CHUNK_SIZE as i32) + block_coordinates[1] as i32;
     let z = (chunk_coordinates[2] * CHUNK_SIZE as i32) + block_coordinates[2] as i32;
@@ -147,7 +156,12 @@ pub fn get_position(chunk_coordinates: &ChunkCoordinates, block_coordinates: &Bl
 }
 
 pub fn position_to_chunk(coordinates: &Position) -> ChunkCoordinates {
-    ((coordinates[0] / CHUNK_SIZE as f32) as i32, (coordinates[1] / CHUNK_SIZE as f32) as i32, (coordinates[2] / CHUNK_SIZE as f32) as i32).into()
+    (
+        (coordinates[0] / CHUNK_SIZE as f32) as i32,
+        (coordinates[1] / CHUNK_SIZE as f32) as i32,
+        (coordinates[2] / CHUNK_SIZE as f32) as i32,
+    )
+        .into()
 }
 
 pub trait World {
@@ -166,7 +180,7 @@ impl World for InMemoryWorld {
         let seed = rand::random::<usize>();
         InMemoryWorld {
             generator: Box::new(worldgen::NaturalWorldGenerator::new(seed)),
-            chunks: HashMap::new()
+            chunks: HashMap::new(),
         }
     }
 
@@ -190,9 +204,12 @@ impl World for InMemoryWorld {
             for y in -iradius..iradius + 1 {
                 for z in -iradius..iradius + 1 {
                     chunk_coordinates_to_render.insert(
-                        [current_chunk_coordinates[0] + x,
-                        current_chunk_coordinates[1] + y,
-                        current_chunk_coordinates[2] + z].into()
+                        [
+                            current_chunk_coordinates[0] + x,
+                            current_chunk_coordinates[1] + y,
+                            current_chunk_coordinates[2] + z,
+                        ]
+                        .into(),
                     );
                 }
             }
@@ -204,9 +221,12 @@ impl World for InMemoryWorld {
             match chunk_opt {
                 Some(chunk) => {
                     for (block_coordinates, block_type) in chunk.get_visible() {
-                        blocks.push((get_position(&chunk_coordinates, &block_coordinates), block_type))
+                        blocks.push((
+                            get_position(&chunk_coordinates, &block_coordinates),
+                            block_type,
+                        ))
                     }
-                },
+                }
                 None => (),
             }
         }
@@ -221,15 +241,32 @@ mod tests {
 
     #[test]
     fn world_get_position() {
-        assert_eq!(get_position(&[0, 0, 0].into(), &[0, 0, 0].into()), [0.0, 0.0, 0.0].into());
-        assert_eq!(get_position(&[0, 0, 0].into(), &[1, 1, 1].into()), [1.0, 1.0, 1.0].into());
-        assert_eq!(get_position(&[1, 1, 1].into(), &[1, 1, 1].into()), [CHUNK_SIZE as f32 + 1.0, CHUNK_SIZE as f32 + 1.0, CHUNK_SIZE as f32 + 1.0].into());
+        assert_eq!(
+            get_position(&[0, 0, 0].into(), &[0, 0, 0].into()),
+            [0.0, 0.0, 0.0].into()
+        );
+        assert_eq!(
+            get_position(&[0, 0, 0].into(), &[1, 1, 1].into()),
+            [1.0, 1.0, 1.0].into()
+        );
+        assert_eq!(
+            get_position(&[1, 1, 1].into(), &[1, 1, 1].into()),
+            [
+                CHUNK_SIZE as f32 + 1.0,
+                CHUNK_SIZE as f32 + 1.0,
+                CHUNK_SIZE as f32 + 1.0
+            ]
+            .into()
+        );
     }
 
     #[test]
     fn world_get_chunk_xyz() {
         assert_eq!(position_to_chunk(&[0.0, 0.0, 0.0].into()), [0, 0, 0].into());
-        assert_eq!(position_to_chunk(&[10.0, 12.0, 15.0].into()), [0, 0, 0].into());
+        assert_eq!(
+            position_to_chunk(&[10.0, 12.0, 15.0].into()),
+            [0, 0, 0].into()
+        );
     }
 
     #[test]
