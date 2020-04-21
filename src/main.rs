@@ -3,6 +3,7 @@ mod block;
 mod camera;
 mod color;
 mod default;
+mod debug;
 mod event_loop;
 mod game;
 mod render;
@@ -105,6 +106,26 @@ fn main() {
             "{} blocks rendered of {} blocks nearby",
             blocks_rendered_count, nearby_blocks_count
         );
+
+        {
+            let system = glium_text::TextSystem::new(&application.display);
+
+            let font = glium_text::FontTexture::new(&application.display, &include_bytes!("font.ttf")[..], 70).unwrap();
+
+            let text = glium_text::TextDisplay::new(&system, &font, "Hello world!");
+            let text_width = text.get_width();
+
+            let (w, h) = application.display.get_framebuffer_dimensions();
+
+            let matrix:[[f32; 4]; 4] = cgmath::Matrix4::new(
+                2.0 / text_width, 0.0, 0.0, 0.0,
+                0.0, 2.0 * (w as f32) / (h as f32) / text_width, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                -1.0, -1.0, 0.0, 1.0f32,
+            ).into();
+
+            glium_text::draw(&text, &system, &mut target, matrix, (1.0, 1.0, 0.0, 1.0));
+        }
 
         target.finish().unwrap();
 

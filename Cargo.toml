@@ -7,8 +7,7 @@ edition = "2018"
 [dependencies]
 # OpenGL + UI
 glium = "= 0.25.1"
-glium_text = "*"
-glutin = "= 0.21.0"
+glium_text = { git = "https://github.com/I3ck/glium_text", branch = "glium-0-25-0"}
 
 # math
 cgmath = "*"
