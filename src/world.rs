@@ -61,7 +61,7 @@ impl Chunk for HashChunk {
         if position[2] > 0 {
             set.insert([position[0], position[1], position[2] - 1u8].into());
         }
-        return set;
+        set
     }
 
     fn set(&mut self, position: BlockCoordinates, block_type: &'static BlockType) {
@@ -77,7 +77,7 @@ impl Chunk for HashChunk {
     }
 
     fn get(&self, position: BlockCoordinates) -> Option<&&'static BlockType> {
-        return self.blocks.get(&position);
+        self.blocks.get(&position)
     }
 
     fn is_occluded(&self, position: BlockCoordinates) -> bool {
@@ -90,7 +90,7 @@ impl Chunk for HashChunk {
                 Some(_) => ()
             }
         }
-        return true;
+        true
     }
 
     /// ideally this would be a lazy iterator - but need to think about lifetimes etc
@@ -101,7 +101,7 @@ impl Chunk for HashChunk {
                 visible.insert((*chunk_position, *block_type));
             };
         }
-        return visible;
+        visible
     }
 }
 

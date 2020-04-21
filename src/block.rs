@@ -58,7 +58,7 @@ pub fn cube_at(position: &Position) -> [Position; 8] {
     let x = position.x;
     let y = position.y;
     let z = position.z;
-    return [
+    [
         [x,       y,       z      ].into(),
         [x,       y,       z + 1.0].into(),
         [x,       y + 1.0, z      ].into(),
