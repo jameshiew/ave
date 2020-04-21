@@ -18,4 +18,4 @@ noise = "= 0.4.1"
 
 # logging
 log = "*"
-simplelog = "= 0.4.3"
+simplelog = "*"

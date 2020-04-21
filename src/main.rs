@@ -14,7 +14,7 @@ use glutin::ElementState::Pressed;
 use glutin::WindowEvent::{CloseRequested, KeyboardInput, Resized};
 use log::debug;
 use log::info;
-use simplelog::{CombinedLogger, Config, LogLevelFilter, TermLogger};
+use simplelog::{CombinedLogger, Config, LevelFilter, TermLogger, TerminalMode};
 use std::thread;
 use std::time::{Duration, Instant};
 use world::World;
@@ -96,8 +96,9 @@ where
 
 fn main() {
     CombinedLogger::init(vec![TermLogger::new(
-        LogLevelFilter::Debug,
+        LevelFilter::Debug,
         Config::default(),
+        TerminalMode::Stdout,
     )
     .unwrap()])
     .unwrap();
