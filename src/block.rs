@@ -1,10 +1,10 @@
-use render::Vertex;
-use std::hash::{Hash, Hasher};
-use glium::vertex::VertexBuffer;
-use glium::backend::Facade;
 use color::Color;
+use glium::backend::Facade;
+use glium::vertex::VertexBuffer;
+use render::Vertex;
 use space;
-use space::{Position, Direction};
+use space::{Direction, Position};
+use std::hash::{Hash, Hasher};
 
 /// Size of a block (in metres)
 const BLOCK_SIZE: f32 = 1.0;
@@ -12,6 +12,7 @@ const BLOCK_SIZE: f32 = 1.0;
 /// Vertices of a cube
 ///
 /// ordering is important - so that the correct faces get culled
+#[rustfmt::skip]  // useful to be able to see these structs as a grid
 const CUBE_VERTICES: [Position; 24] = [
     // south
     Position { x: 0.0,        y: 0.0,        z: BLOCK_SIZE },
@@ -58,6 +59,7 @@ pub fn cube_at(position: &Position) -> [Position; 8] {
     let x = position.x;
     let y = position.y;
     let z = position.z;
+    #[rustfmt::skip]  // useful to be able to see these structs as a grid
     return [
         [x,       y,       z      ].into(),
         [x,       y,       z + 1.0].into(),
@@ -93,7 +95,15 @@ impl Mask {
 }
 
 /// Create a vertex buffer for a cube centred at (x, y, z)
-pub fn make_cube<F: ? Sized>(facade: &F, position: &Position, color: Color, mask: Mask) -> VertexBuffer<Vertex> where F: Facade {
+pub fn make_cube<F: ?Sized>(
+    facade: &F,
+    position: &Position,
+    color: Color,
+    mask: Mask,
+) -> VertexBuffer<Vertex>
+where
+    F: Facade,
+{
     let x = position[0];
     let y = position[1];
     let z = position[2];
@@ -172,7 +182,7 @@ pub static STONE: &BlockType = &BlockType {
     color: [0.827, 0.827, 0.827],
 };
 
-#[allow(dead_code)]  // use as and when
+#[allow(dead_code)] // use as and when
 pub static WATER: &BlockType = &BlockType {
     name: "water",
     color: [0.498, 1.000, 0.831],
