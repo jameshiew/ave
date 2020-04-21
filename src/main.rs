@@ -14,8 +14,8 @@ use application::Application;
 use event_loop::{run, Action};
 use glium::uniform;
 use glium::Surface;
-use glutin::ElementState::Pressed;
-use glutin::WindowEvent::{CloseRequested, KeyboardInput, Resized};
+use glium::glutin::ElementState::Pressed;
+use glium::glutin::WindowEvent::{CloseRequested, KeyboardInput, Resized};
 use log::debug;
 use log::info;
 use simplelog::{CombinedLogger, Config, LevelFilter, TermLogger, TerminalMode};
@@ -29,7 +29,7 @@ fn main() {
     )
     .unwrap()])
     .unwrap();
-    let mut events_loop = glutin::EventsLoop::new();
+    let mut events_loop = glium::glutin::EventsLoop::new();
     let mut application = Application::new(&events_loop);
     application
         .display
@@ -112,7 +112,7 @@ fn main() {
 
         // polling and handling the events received by the window
         events_loop.poll_events(|event| {
-            if let glutin::Event::WindowEvent {
+            if let glium::glutin::Event::WindowEvent {
                 event: window_event,
                 ..
             } = event
@@ -126,7 +126,7 @@ fn main() {
                         let pressed = input.state == Pressed;
                         if let Some(key) = input.virtual_keycode {
                             match key {
-                                glutin::VirtualKeyCode::Escape => {
+                                glium::glutin::VirtualKeyCode::Escape => {
                                     if pressed {
                                         if cursor_grabbed {
                                             application
