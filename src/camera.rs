@@ -65,8 +65,7 @@ impl CameraState {
 
     fn update_perspective(&mut self) {
         let f = 1.0 / (self.perspective_fov.fovy / 2.0).tan();
-        #[rustfmt::skip]  // useful to be able to see each tuple on its own row
-        self.perspective = Matrix4::new(
+        self.perspective = #[rustfmt::skip] Matrix4::new(  // skip rustfmt to be able to see each tuple on its own row
             f / self.perspective_fov.aspect, 0.0, 0.0, 0.0,
             0.0, f, 0.0, 0.0,
             0.0, 0.0, (self.perspective_fov.far + self.perspective_fov.near) / (self.perspective_fov.far - self.perspective_fov.near), 1.0,
