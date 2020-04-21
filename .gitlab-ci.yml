@@ -59,8 +59,8 @@ release:
     - cargo clean --verbose
     - cargo build --release --verbose --workspace
   rules:
-      - if: 'CI_COMMIT_REF_NAME =~ /^(master|develop)$/'
-        when: always
+    - if: '$CI_COMMIT_REF_NAME =~ /^(master|develop)$/'
+      when: always
   artifacts:
     paths:
       - target/release/ave
