@@ -1,7 +1,7 @@
-use world::{ChunkCoordinates, HashChunk, Chunk, CHUNK_SIZE, get_position};
-use rand::{Rng, StdRng, SeedableRng};
-use noise::{NoiseModule, Perlin, Seedable};
 use block;
+use noise::{NoiseModule, Perlin, Seedable};
+use rand::{Rng, SeedableRng, StdRng};
+use world::{get_position, Chunk, ChunkCoordinates, HashChunk, CHUNK_SIZE};
 
 pub trait WorldGenerator {
     fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> HashChunk;
@@ -46,7 +46,9 @@ pub struct RandomPillarsWorldGenerator {
 impl RandomPillarsWorldGenerator {
     pub fn new(seed: usize) -> RandomPillarsWorldGenerator {
         let s: &[_] = &[seed];
-        RandomPillarsWorldGenerator { prng: StdRng::from_seed(s) }
+        RandomPillarsWorldGenerator {
+            prng: StdRng::from_seed(s),
+        }
     }
 }
 
@@ -81,9 +83,14 @@ pub struct NaturalWorldGenerator {
 
 impl NaturalWorldGenerator {
     pub fn new(seed: usize) -> NaturalWorldGenerator {
-        let mut generator = NaturalWorldGenerator { perlin: Perlin::new() };
+        let mut generator = NaturalWorldGenerator {
+            perlin: Perlin::new(),
+        };
         generator.perlin = generator.perlin.set_seed(seed);
-        debug!("Using seed {} for NaturalWorldGenerator", generator.perlin.seed);
+        debug!(
+            "Using seed {} for NaturalWorldGenerator",
+            generator.perlin.seed
+        );
         generator
     }
 }
@@ -91,7 +98,8 @@ impl NaturalWorldGenerator {
 impl WorldGenerator for NaturalWorldGenerator {
     fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> HashChunk {
         let mut chunk = HashChunk::new();
-        if coordinates[1] == 0 {  // only create hills in ground chunks
+        if coordinates[1] == 0 {
+            // only create hills in ground chunks
             for x in 0..CHUNK_SIZE {
                 for z in 0..CHUNK_SIZE {
                     // we need a height in the range [0, CHUNK_SIZE)

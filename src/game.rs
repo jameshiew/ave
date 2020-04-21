@@ -8,6 +8,8 @@ pub struct Game {
 
 impl Game {
     pub fn new() -> Game {
-        Game { world: world::InMemoryWorld::new() }
+        Game {
+            world: world::InMemoryWorld::new(),
+        }
     }
 }

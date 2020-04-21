@@ -1,5 +1,6 @@
 ---
 stages:
+  - lint
   - test
 
 variables:
@@ -8,6 +9,13 @@ variables:
 cache:
   paths:
     - cargo/
+
+rustfmt:
+  image: rust:1.42.0
+  stage: lint
+  script:
+    - rustup component add rustfmt
+    - cargo fmt -- --check
 
 run tests:
   image: rust:1.42.0
