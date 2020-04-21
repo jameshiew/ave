@@ -19,12 +19,6 @@ lint:
   script:
     - rustup component add rustfmt
     - cargo fmt -- --check
-    - rustup component add clippy
-    - cargo clippy --all-targets --all-features -- -D warnings
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - target/
 
 check:
   image: rust:1.42.0
