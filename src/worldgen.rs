@@ -1,5 +1,6 @@
 use crate::block;
 use crate::world::{get_position, Chunk, ChunkCoordinates, HashChunk, CHUNK_SIZE};
+use log::debug;
 use noise::{NoiseModule, Perlin, Seedable};
 use rand::{Rng, SeedableRng, StdRng};
 

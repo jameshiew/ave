@@ -1,4 +1,5 @@
 use glium;
+use glium::implement_vertex;
 
 #[derive(Copy, Clone)]
 pub struct Vertex {
