@@ -108,7 +108,7 @@ fn run<T>(
             blocks_rendered_count, nearby_blocks_count
         );
 
-        {
+        if application.get_debug_overlay() {
             let text = glium_text::TextDisplay::new(&system, &font, "TPS: ?");
             let text_width = text.get_width();
 
@@ -152,6 +152,11 @@ fn run<T>(
                                 glium::glutin::event::VirtualKeyCode::Escape => {
                                     if pressed {
                                         application.toggle_cursor_grabbed()
+                                    }
+                                }
+                                glium::glutin::event::VirtualKeyCode::F3 => {
+                                    if pressed {
+                                        application.toggle_debug_overlay()
                                     }
                                 }
                                 _ => application.camera.process_input(pressed, key),

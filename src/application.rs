@@ -6,6 +6,7 @@ pub struct Application {
     pub camera: camera::CameraState,
     pub game: game::Game,
     cursor_grabbed: bool,
+    debug_overlay: bool,
 }
 
 impl Application {
@@ -24,7 +25,14 @@ impl Application {
             camera,
             game,
             cursor_grabbed: false,
+            debug_overlay: false
         }
+    }
+    pub fn toggle_debug_overlay(&mut self) {
+        self.debug_overlay = !self.debug_overlay;
+    }
+    pub fn get_debug_overlay(&self) -> bool {
+        self.debug_overlay
     }
     pub fn grab_cursor(&mut self) {
         self.display
