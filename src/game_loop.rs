@@ -1,6 +1,6 @@
+use std::sync::mpsc::Sender;
 use std::thread;
 use std::time::{Duration, Instant};
-use std::sync::mpsc::Sender;
 
 pub enum Action {
     Stop,

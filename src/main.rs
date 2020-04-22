@@ -22,9 +22,8 @@ use glium::glutin::platform::desktop::EventLoopExtDesktop;
 use glium::uniform;
 use glium::Surface;
 use log::info;
-use world::World;
 use std::sync::mpsc;
-use std::sync::mpsc::{Sender, Receiver};
+use world::World;
 
 fn main() {
     logging::initialize();
@@ -69,13 +68,12 @@ fn run<T>(
     let blocks_nearby = prometheus::Gauge::new("nearby_blocks", "Blocks nearby this tick").unwrap();
     let blocks_rendered =
         prometheus::Gauge::new("rendered_blocks", "Blocks rendered this tick").unwrap();
-    let tps =
-        prometheus::Gauge::new("ticks_per_seconds", "Ticks per second").unwrap();
+    let tps = prometheus::Gauge::new("ticks_per_seconds", "Ticks per second").unwrap();
     application.register_metric(Box::new(blocks_nearby.clone()));
     application.register_metric(Box::new(blocks_rendered.clone()));
     application.register_metric(Box::new(tps.clone()));
 
-    let (tps_send, tps_receive): (Sender<f64>, Receiver<f64>) = mpsc::channel();
+    let (tps_send, tps_receive) = mpsc::channel();
 
     game_loop::run(tps_send, move || {
         match tps_receive.try_recv().ok() {
@@ -158,8 +156,11 @@ fn run<T>(
                 (1.0, 1.0, 1.0, 1.0),
             );
 
-            let tps_text =
-                glium_text::TextDisplay::new(&system, &font, &format!("TPS: {}", tps.get()).to_string());
+            let tps_text = glium_text::TextDisplay::new(
+                &system,
+                &font,
+                &format!("TPS: {}", tps.get()).to_string(),
+            );
             #[rustfmt::skip] // useful to be able to see each tuple on its own row
                 let tps_matrix:[[f32; 4]; 4] = cgmath::Matrix4::new(
                 TEXT_SIZE, 0.0, 0.0, 0.0,
