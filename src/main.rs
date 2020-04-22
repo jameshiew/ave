@@ -64,18 +64,11 @@ fn run<T>(
     .unwrap();
 
     // metrics
-
     let blocks_nearby = prometheus::Gauge::new("nearby_blocks", "Blocks nearby this tick").unwrap();
     let blocks_rendered =
         prometheus::Gauge::new("rendered_blocks", "Blocks rendered this tick").unwrap();
-    application
-        .registry
-        .register(Box::new(blocks_nearby.clone()))
-        .unwrap();
-    application
-        .registry
-        .register(Box::new(blocks_rendered.clone()))
-        .unwrap();
+    application.register_metric(Box::new(blocks_nearby.clone()));
+    application.register_metric(Box::new(blocks_rendered.clone()));
 
     game_loop::run(move || {
         application.camera.update();
@@ -146,13 +139,16 @@ fn run<T>(
                 HORIZONTAL_POS, VERTICAL_POS, 0.0, 1.0f32,
             ).into();
 
-            glium_text::draw(&b_text, &system, &mut target, b_matrix, (1.0, 1.0, 1.0, 1.0));
-
-            let tps_text = glium_text::TextDisplay::new(
+            glium_text::draw(
+                &b_text,
                 &system,
-                &font,
-                &format!("TPS: {}", 123).to_string(),
+                &mut target,
+                b_matrix,
+                (1.0, 1.0, 1.0, 1.0),
             );
+
+            let tps_text =
+                glium_text::TextDisplay::new(&system, &font, &format!("TPS: {}", 123).to_string());
             #[rustfmt::skip] // useful to be able to see each tuple on its own row
                 let tps_matrix:[[f32; 4]; 4] = cgmath::Matrix4::new(
                 TEXT_SIZE, 0.0, 0.0, 0.0,
@@ -161,7 +157,13 @@ fn run<T>(
                 HORIZONTAL_POS, VERTICAL_POS - (TEXT_SIZE + 0.02), 0.0, 1.0f32,
             ).into();
 
-            glium_text::draw(&tps_text, &system, &mut target, tps_matrix, (1.0, 1.0, 1.0, 1.0));
+            glium_text::draw(
+                &tps_text,
+                &system,
+                &mut target,
+                tps_matrix,
+                (1.0, 1.0, 1.0, 1.0),
+            );
         }
 
         target.finish().unwrap();

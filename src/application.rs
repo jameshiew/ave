@@ -1,5 +1,4 @@
 use crate::{camera, default, game};
-use prometheus::Gauge;
 
 /// Singleton state for the running application
 pub struct Application {
@@ -26,12 +25,6 @@ impl Application {
         let camera = camera::CameraState::new();
         let game = game::Game::new();
 
-        let ticks_per_second =
-            Gauge::new("ticks_per_second", "Most recent ticks per second").unwrap();
-        registry
-            .register(Box::new(ticks_per_second.clone()))
-            .unwrap();
-
         Application {
             registry,
             display,
@@ -40,6 +33,9 @@ impl Application {
             cursor_grabbed: false,
             debug_overlay: false,
         }
+    }
+    pub fn register_metric(&mut self, c: Box<dyn prometheus::core::Collector>) {
+        self.registry.register(c).unwrap();
     }
     pub fn toggle_debug_overlay(&mut self) {
         self.debug_overlay = !self.debug_overlay;
