@@ -1,4 +1,4 @@
-use prometheus::{Counter, Encoder, Opts, Registry, TextEncoder};
+use prometheus::Registry;
 
 pub fn initialize() -> Registry {
     Registry::new()

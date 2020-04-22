@@ -21,7 +21,6 @@ use glium::glutin::event_loop::ControlFlow;
 use glium::glutin::platform::desktop::EventLoopExtDesktop;
 use glium::uniform;
 use glium::Surface;
-use log::debug;
 use log::info;
 use world::World;
 
@@ -128,27 +127,41 @@ fn run<T>(
         blocks_rendered.set(blocks_rendered_count as f64);
 
         if application.get_debug_overlay() {
-            let text = glium_text::TextDisplay::new(
+            let (w, h) = application.display.get_framebuffer_dimensions();
+
+            let b_text = glium_text::TextDisplay::new(
                 &system,
                 &font,
                 &format!("B: {}/{}", blocks_rendered.get(), blocks_nearby.get()).to_string(),
             );
-            let text_width = text.get_width();
-
-            let (w, h) = application.display.get_framebuffer_dimensions();
 
             const TEXT_SIZE: f32 = 0.05;
             const HORIZONTAL_POS: f32 = -0.95;
             const VERTICAL_POS: f32 = 0.9;
             #[rustfmt::skip] // useful to be able to see each tuple on its own row
-            let matrix:[[f32; 4]; 4] = cgmath::Matrix4::new(
+            let b_matrix:[[f32; 4]; 4] = cgmath::Matrix4::new(
                 TEXT_SIZE, 0.0, 0.0, 0.0,
                 0.0, TEXT_SIZE * (w as f32) / (h as f32), 0.0, 0.0,
                 0.0, 0.0, 1.0, 0.0,
                 HORIZONTAL_POS, VERTICAL_POS, 0.0, 1.0f32,
             ).into();
 
-            glium_text::draw(&text, &system, &mut target, matrix, (1.0, 1.0, 1.0, 1.0));
+            glium_text::draw(&b_text, &system, &mut target, b_matrix, (1.0, 1.0, 1.0, 1.0));
+
+            let tps_text = glium_text::TextDisplay::new(
+                &system,
+                &font,
+                &format!("TPS: {}", 123).to_string(),
+            );
+            #[rustfmt::skip] // useful to be able to see each tuple on its own row
+                let tps_matrix:[[f32; 4]; 4] = cgmath::Matrix4::new(
+                TEXT_SIZE, 0.0, 0.0, 0.0,
+                0.0, TEXT_SIZE * (w as f32) / (h as f32), 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                HORIZONTAL_POS, VERTICAL_POS - (TEXT_SIZE + 0.02), 0.0, 1.0f32,
+            ).into();
+
+            glium_text::draw(&tps_text, &system, &mut target, tps_matrix, (1.0, 1.0, 1.0, 1.0));
         }
 
         target.finish().unwrap();
