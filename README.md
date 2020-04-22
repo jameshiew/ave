@@ -11,6 +11,6 @@ Built with lots of help from the [Glium](https://github.com/glium/glium) and [Gl
 Rust and Cargo need to be installed. Tested against Rust 1.22.1
 
 1. Run `cargo run --release` from a shell
-2. WASD to move; arrow keys to rotate the camera; Q and E to speed up and slow down, respectively
+2. WASD to move; arrow keys to rotate the camera; Q and E to speed up and slow down, respectively; F3 to toggle debug overlay
 
 Some default values such as render distance can be edited in `src/default.rs`

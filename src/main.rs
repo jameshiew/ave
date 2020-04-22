@@ -5,9 +5,11 @@ mod color;
 mod default;
 mod game;
 mod game_loop;
+mod instrumentation;
 mod logging;
 mod render;
 mod space;
+mod text;
 mod world;
 mod worldgen;
 
@@ -19,15 +21,16 @@ use glium::glutin::event_loop::ControlFlow;
 use glium::glutin::platform::desktop::EventLoopExtDesktop;
 use glium::uniform;
 use glium::Surface;
-use log::debug;
 use log::info;
+use std::sync::mpsc;
 use world::World;
 
 fn main() {
     logging::initialize();
+    let registry = instrumentation::initialize();
 
     let events_loop = glium::glutin::event_loop::EventLoop::new();
-    let mut application = Application::new(&events_loop);
+    let mut application = Application::new(&events_loop, registry);
     application.grab_cursor();
 
     run(events_loop, application)
@@ -53,7 +56,29 @@ fn run<T>(
     };
     const SKY_COLOR: (f32, f32, f32, f32) = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
 
-    game_loop::run(move || {
+    let system = glium_text::TextSystem::new(&application.display);
+    let font = glium_text::FontTexture::new(
+        &application.display,
+        &include_bytes!("../assets/InconsolataExpanded-Black.ttf")[..],
+        70,
+    )
+    .unwrap();
+
+    // metrics
+    let blocks_nearby = prometheus::Gauge::new("nearby_blocks", "Blocks nearby this tick").unwrap();
+    let blocks_rendered =
+        prometheus::Gauge::new("rendered_blocks", "Blocks rendered this tick").unwrap();
+    let tps = prometheus::Gauge::new("ticks_per_seconds", "Ticks per second").unwrap();
+    application.register_metric(Box::new(blocks_nearby.clone()));
+    application.register_metric(Box::new(blocks_rendered.clone()));
+    application.register_metric(Box::new(tps.clone()));
+
+    let (tps_send, tps_receive) = mpsc::channel();
+
+    game_loop::run(tps_send, move || {
+        if let Ok(tps_val) = tps_receive.try_recv() {
+            tps.set(tps_val)
+        }
         application.camera.update();
         let mut target = application.display.draw();
         target.clear_color_and_depth(SKY_COLOR, 1.0);
@@ -99,10 +124,55 @@ fn run<T>(
                     .unwrap()
             }
         }
-        debug!(
-            "{} blocks rendered of {} blocks nearby",
-            blocks_rendered_count, nearby_blocks_count
-        );
+        blocks_nearby.set(nearby_blocks_count as f64);
+        blocks_rendered.set(blocks_rendered_count as f64);
+
+        if application.get_debug_overlay() {
+            let (w, h) = application.display.get_framebuffer_dimensions();
+
+            let b_text = glium_text::TextDisplay::new(
+                &system,
+                &font,
+                &format!("B: {}/{}", blocks_rendered.get(), blocks_nearby.get()),
+            );
+
+            const TEXT_SIZE: f32 = 0.05;
+            const HORIZONTAL_POS: f32 = -0.95;
+            const VERTICAL_POS: f32 = 0.9;
+            #[rustfmt::skip] // useful to be able to see each tuple on its own row
+            let b_matrix:[[f32; 4]; 4] = cgmath::Matrix4::new(
+                TEXT_SIZE, 0.0, 0.0, 0.0,
+                0.0, TEXT_SIZE * (w as f32) / (h as f32), 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                HORIZONTAL_POS, VERTICAL_POS, 0.0, 1.0f32,
+            ).into();
+
+            glium_text::draw(
+                &b_text,
+                &system,
+                &mut target,
+                b_matrix,
+                (1.0, 1.0, 1.0, 1.0),
+            );
+
+            let tps_text =
+                glium_text::TextDisplay::new(&system, &font, &format!("TPS: {}", tps.get()));
+            #[rustfmt::skip] // useful to be able to see each tuple on its own row
+                let tps_matrix:[[f32; 4]; 4] = cgmath::Matrix4::new(
+                TEXT_SIZE, 0.0, 0.0, 0.0,
+                0.0, TEXT_SIZE * (w as f32) / (h as f32), 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                HORIZONTAL_POS, VERTICAL_POS - (TEXT_SIZE + 0.02), 0.0, 1.0f32,
+            ).into();
+
+            glium_text::draw(
+                &tps_text,
+                &system,
+                &mut target,
+                tps_matrix,
+                (1.0, 1.0, 1.0, 1.0),
+            );
+        }
 
         target.finish().unwrap();
 
@@ -129,6 +199,11 @@ fn run<T>(
                                 glium::glutin::event::VirtualKeyCode::Escape => {
                                     if pressed {
                                         application.toggle_cursor_grabbed()
+                                    }
+                                }
+                                glium::glutin::event::VirtualKeyCode::F3 => {
+                                    if pressed {
+                                        application.toggle_debug_overlay()
                                     }
                                 }
                                 _ => application.camera.process_input(pressed, key),

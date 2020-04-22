@@ -1,3 +1,4 @@
+use std::sync::mpsc::Sender;
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -6,15 +7,13 @@ pub enum Action {
     Continue,
 }
 
-pub fn run<F>(mut each_tick: F)
+// not really sure how to measure FPS accurately so call it TPS
+pub fn run<F>(tps: Sender<f64>, mut each_tick: F)
 where
     F: FnMut() -> Action,
 {
     let mut accumulator = Duration::new(0, 0);
     let mut previous_clock = Instant::now();
-
-    // not really sure how to measure FPS accurately so call it TPS
-    let mut ticks_per_second;
     let mut this_second = Duration::new(0, 0);
     let mut ticks_this_second = 0;
 
@@ -31,10 +30,9 @@ where
 
         this_second += time_passed;
         if this_second > Duration::new(1, 0) {
-            ticks_per_second = ticks_this_second;
+            tps.send(ticks_this_second as f64).unwrap();
             ticks_this_second = 0;
             this_second = Duration::new(0, 0);
-            log::debug!("TPS: {}", ticks_per_second)
         }
 
         accumulator += time_passed;
