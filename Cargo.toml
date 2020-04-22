@@ -15,8 +15,8 @@ gitlab = { repository = "https://gitlab.com/jameshiew/ave" }
 
 [dependencies]
 # OpenGL + UI
-glium = "*"
-glium_text = { git = "https://github.com/I3ck/glium_text", branch = "glium-0-25-0"}
+glium = "0.27.0"
+glium_text = { git = "https://github.com/jameshiew/glium_text"}
 
 # math
 cgmath = "*"
