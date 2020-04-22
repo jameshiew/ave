@@ -7,7 +7,6 @@ description = "Voxel based world generation in Rust"
 readme = "README.md"
 homepage = "https://github.com/jameshiew/ave"
 repository = "https://github.com/jameshiew/ave"
-license = "MIT"
 license-file = "LICENSE.txt"
 keywords = ["voxel", "glsl"]
 
