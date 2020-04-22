@@ -33,7 +33,10 @@ fn main() {
     run(events_loop, application)
 }
 
-fn run<T>(mut events_loop: glium::glutin::event_loop::EventLoop<T>, mut application: application::Application) {
+fn run<T>(
+    mut events_loop: glium::glutin::event_loop::EventLoop<T>,
+    mut application: application::Application,
+) {
     const INDICES: glium::index::NoIndices =
         glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
     let program = render::get_shader(&application.display, render::Shaders::Phong);
