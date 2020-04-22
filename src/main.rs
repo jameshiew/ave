@@ -76,9 +76,8 @@ fn run<T>(
     let (tps_send, tps_receive) = mpsc::channel();
 
     game_loop::run(tps_send, move || {
-        match tps_receive.try_recv().ok() {
-            Some(tps_val) => tps.set(tps_val),
-            _ => (),
+        if let Ok(tps_val) = tps_receive.try_recv() {
+            tps.set(tps_val)
         }
         application.camera.update();
         let mut target = application.display.draw();
@@ -134,7 +133,7 @@ fn run<T>(
             let b_text = glium_text::TextDisplay::new(
                 &system,
                 &font,
-                &format!("B: {}/{}", blocks_rendered.get(), blocks_nearby.get()).to_string(),
+                &format!("B: {}/{}", blocks_rendered.get(), blocks_nearby.get()),
             );
 
             const TEXT_SIZE: f32 = 0.05;
@@ -156,11 +155,8 @@ fn run<T>(
                 (1.0, 1.0, 1.0, 1.0),
             );
 
-            let tps_text = glium_text::TextDisplay::new(
-                &system,
-                &font,
-                &format!("TPS: {}", tps.get()).to_string(),
-            );
+            let tps_text =
+                glium_text::TextDisplay::new(&system, &font, &format!("TPS: {}", tps.get()));
             #[rustfmt::skip] // useful to be able to see each tuple on its own row
                 let tps_matrix:[[f32; 4]; 4] = cgmath::Matrix4::new(
                 TEXT_SIZE, 0.0, 0.0, 0.0,
