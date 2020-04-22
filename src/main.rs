@@ -10,6 +10,7 @@ mod render;
 mod space;
 mod world;
 mod worldgen;
+mod text;
 
 use application::Application;
 use game_loop::Action;
@@ -52,6 +53,9 @@ fn run<T>(
         ..Default::default()
     };
     const SKY_COLOR: (f32, f32, f32, f32) = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
+
+    let system = glium_text::TextSystem::new(&application.display);
+    let font = glium_text::FontTexture::new(&application.display, &include_bytes!("../assets/InconsolataExpanded-Black.ttf")[..], 70).unwrap();
 
     game_loop::run(move || {
         application.camera.update();
@@ -105,23 +109,22 @@ fn run<T>(
         );
 
         {
-            let system = glium_text::TextSystem::new(&application.display);
-
-            let font = glium_text::FontTexture::new(&application.display, &include_bytes!("../assets/InconsolataExpanded-Black.ttf")[..], 70).unwrap();
-
-            let text = glium_text::TextDisplay::new(&system, &font, "Hello world!");
+            let text = glium_text::TextDisplay::new(&system, &font, "TPS: ?");
             let text_width = text.get_width();
 
             let (w, h) = application.display.get_framebuffer_dimensions();
 
+            const TEXT_SIZE: f32 = 0.05;
+            const HORIZONTAL_POS: f32 = -0.95;
+            const VERTICAL_POS: f32 = 0.9;
             let matrix:[[f32; 4]; 4] = cgmath::Matrix4::new(
-                2.0 / text_width, 0.0, 0.0, 0.0,
-                0.0, 2.0 * (w as f32) / (h as f32) / text_width, 0.0, 0.0,
+                TEXT_SIZE, 0.0, 0.0, 0.0,
+                0.0, TEXT_SIZE * (w as f32) / (h as f32), 0.0, 0.0,
                 0.0, 0.0, 1.0, 0.0,
-                -1.0, -1.0, 0.0, 1.0f32,
+                HORIZONTAL_POS, VERTICAL_POS, 0.0, 1.0f32,
             ).into();
 
-            glium_text::draw(&text, &system, &mut target, matrix, (1.0, 1.0, 0.0, 1.0));
+            glium_text::draw(&text, &system, &mut target, matrix, (1.0, 1.0, 1.0, 1.0));
         }
 
         target.finish().unwrap();
