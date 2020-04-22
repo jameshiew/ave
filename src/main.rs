@@ -15,6 +15,8 @@ use application::Application;
 use game_loop::Action;
 use glium::glutin::event::ElementState::Pressed;
 use glium::glutin::event::WindowEvent::{CloseRequested, KeyboardInput, Resized};
+use glium::glutin::event_loop::ControlFlow;
+use glium::glutin::platform::desktop::EventLoopExtDesktop;
 use glium::uniform;
 use glium::Surface;
 use log::debug;
@@ -104,7 +106,9 @@ fn run<T>(mut events_loop: glium::glutin::event_loop::EventLoop<T>, mut applicat
         let mut action = Action::Continue;
 
         // polling and handling the events received by the window
-        events_loop.poll_events(|event| {
+        // TODO: we should use `run` instead of `run_return`
+        events_loop.run_return(|event, _, control_flow| {
+            *control_flow = ControlFlow::Exit;
             if let glium::glutin::event::Event::WindowEvent {
                 event: window_event,
                 ..
