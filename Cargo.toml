@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 # OpenGL + UI
-glium = "= 0.25.1"
+glium = "*"
 
 # math
 cgmath = "*"
