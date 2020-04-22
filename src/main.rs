@@ -13,8 +13,10 @@ mod worldgen;
 
 use application::Application;
 use game_loop::Action;
-use glium::glutin::ElementState::Pressed;
-use glium::glutin::WindowEvent::{CloseRequested, KeyboardInput, Resized};
+use glium::glutin::event::ElementState::Pressed;
+use glium::glutin::event::WindowEvent::{CloseRequested, KeyboardInput, Resized};
+use glium::glutin::event_loop::ControlFlow;
+use glium::glutin::platform::desktop::EventLoopExtDesktop;
 use glium::uniform;
 use glium::Surface;
 use log::debug;
@@ -24,14 +26,17 @@ use world::World;
 fn main() {
     logging::initialize();
 
-    let events_loop = glium::glutin::EventsLoop::new();
+    let events_loop = glium::glutin::event_loop::EventLoop::new();
     let mut application = Application::new(&events_loop);
     application.grab_cursor();
 
     run(events_loop, application)
 }
 
-fn run(mut events_loop: glium::glutin::EventsLoop, mut application: application::Application) {
+fn run<T>(
+    mut events_loop: glium::glutin::event_loop::EventLoop<T>,
+    mut application: application::Application,
+) {
     const INDICES: glium::index::NoIndices =
         glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
     let program = render::get_shader(&application.display, render::Shaders::Phong);
@@ -104,8 +109,10 @@ fn run(mut events_loop: glium::glutin::EventsLoop, mut application: application:
         let mut action = Action::Continue;
 
         // polling and handling the events received by the window
-        events_loop.poll_events(|event| {
-            if let glium::glutin::Event::WindowEvent {
+        // TODO: we should use `run` instead of `run_return`
+        events_loop.run_return(|event, _, control_flow| {
+            *control_flow = ControlFlow::Exit;
+            if let glium::glutin::event::Event::WindowEvent {
                 event: window_event,
                 ..
             } = event
@@ -119,7 +126,7 @@ fn run(mut events_loop: glium::glutin::EventsLoop, mut application: application:
                         let pressed = input.state == Pressed;
                         if let Some(key) = input.virtual_keycode {
                             match key {
-                                glium::glutin::VirtualKeyCode::Escape => {
+                                glium::glutin::event::VirtualKeyCode::Escape => {
                                     if pressed {
                                         application.toggle_cursor_grabbed()
                                     }

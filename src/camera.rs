@@ -222,25 +222,25 @@ impl CameraState {
         false
     }
 
-    pub fn process_input(&mut self, pressed: bool, key: glutin::VirtualKeyCode) {
+    pub fn process_input(&mut self, pressed: bool, key: glutin::event::VirtualKeyCode) {
         match key {
-            glutin::VirtualKeyCode::Space => self.moving_up = pressed,
-            glutin::VirtualKeyCode::LControl => self.moving_down = pressed,
-            glutin::VirtualKeyCode::A => self.moving_left = pressed,
-            glutin::VirtualKeyCode::D => self.moving_right = pressed,
-            glutin::VirtualKeyCode::W => self.moving_forward = pressed,
-            glutin::VirtualKeyCode::S => self.moving_backward = pressed,
-            glutin::VirtualKeyCode::Left => self.rotating_left = pressed,
-            glutin::VirtualKeyCode::Right => self.rotating_right = pressed,
-            glutin::VirtualKeyCode::Up => self.rotating_up = pressed,
-            glutin::VirtualKeyCode::Down => self.rotating_down = pressed,
-            glutin::VirtualKeyCode::Q => {
+            glutin::event::VirtualKeyCode::Space => self.moving_up = pressed,
+            glutin::event::VirtualKeyCode::LControl => self.moving_down = pressed,
+            glutin::event::VirtualKeyCode::A => self.moving_left = pressed,
+            glutin::event::VirtualKeyCode::D => self.moving_right = pressed,
+            glutin::event::VirtualKeyCode::W => self.moving_forward = pressed,
+            glutin::event::VirtualKeyCode::S => self.moving_backward = pressed,
+            glutin::event::VirtualKeyCode::Left => self.rotating_left = pressed,
+            glutin::event::VirtualKeyCode::Right => self.rotating_right = pressed,
+            glutin::event::VirtualKeyCode::Up => self.rotating_up = pressed,
+            glutin::event::VirtualKeyCode::Down => self.rotating_down = pressed,
+            glutin::event::VirtualKeyCode::Q => {
                 self.move_speed = self.move_speed + self.move_speed + 0.1;
                 if self.move_speed > 1.0 {
                     self.move_speed = 1.0;
                 }
             }
-            glutin::VirtualKeyCode::E => {
+            glutin::event::VirtualKeyCode::E => {
                 self.move_speed -= 0.1;
                 if self.move_speed < 0.1 {
                     self.move_speed = 0.1;
