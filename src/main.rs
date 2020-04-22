@@ -33,7 +33,8 @@ fn main() {
     let mut application = Application::new(&events_loop);
     application.grab_cursor();
 
-    let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
+    const INDICES: glium::index::NoIndices =
+        glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
     let program = render::get_shader(&application.display, render::Shaders::Phong);
     let params = glium::DrawParameters {
         depth: glium::Depth {
@@ -46,12 +47,12 @@ fn main() {
         smooth: Some(glium::draw_parameters::Smooth::Nicest),
         ..Default::default()
     };
-    let sky_color = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
+    const SKY_COLOR: (f32, f32, f32, f32) = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
 
     run(move || {
         application.camera.update();
         let mut target = application.display.draw();
-        target.clear_color_and_depth(sky_color, 1.0);
+        target.clear_color_and_depth(SKY_COLOR, 1.0);
         let perspective: [[f32; 4]; 4] = application.camera.perspective.into();
         let view: [[f32; 4]; 4] = application.camera.get_view().into();
         let uniform = uniform! {
@@ -90,7 +91,7 @@ fn main() {
                     block::Mask::new(),
                 );
                 target
-                    .draw(&vertices, indices, &program, &uniform, &params)
+                    .draw(&vertices, INDICES, &program, &uniform, &params)
                     .unwrap()
             }
         }
