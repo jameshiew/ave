@@ -3,44 +3,42 @@ mod block;
 mod camera;
 mod color;
 mod default;
-mod event_loop;
 mod game;
+mod game_loop;
+mod logging;
 mod render;
 mod space;
 mod world;
 mod worldgen;
 
 use application::Application;
-use event_loop::{run, Action};
+use game_loop::Action;
+use glium::glutin::event::ElementState::Pressed;
+use glium::glutin::event::WindowEvent::{CloseRequested, KeyboardInput, Resized};
+use glium::glutin::event_loop::ControlFlow;
+use glium::glutin::platform::desktop::EventLoopExtDesktop;
 use glium::uniform;
 use glium::Surface;
-use glium::glutin::ElementState::Pressed;
-use glium::glutin::WindowEvent::{CloseRequested, KeyboardInput, Resized};
 use log::debug;
 use log::info;
-use simplelog::{CombinedLogger, Config, LevelFilter, TermLogger, TerminalMode};
 use world::World;
 
 fn main() {
-    CombinedLogger::init(vec![TermLogger::new(
-        LevelFilter::Debug,
-        Config::default(),
-        TerminalMode::Stdout,
-    )
-    .unwrap()])
-    .unwrap();
-    let mut events_loop = glium::glutin::EventsLoop::new();
-    let mut application = Application::new(&events_loop);
-    application
-        .display
-        .gl_window()
-        .window()
-        .grab_cursor(true)
-        .expect("couldn't grab cursor");
-    application.display.gl_window().window().hide_cursor(true);
-    let mut cursor_grabbed = true;
+    logging::initialize();
 
-    let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
+    let events_loop = glium::glutin::event_loop::EventLoop::new();
+    let mut application = Application::new(&events_loop);
+    application.grab_cursor();
+
+    run(events_loop, application)
+}
+
+fn run<T>(
+    mut events_loop: glium::glutin::event_loop::EventLoop<T>,
+    mut application: application::Application,
+) {
+    const INDICES: glium::index::NoIndices =
+        glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
     let program = render::get_shader(&application.display, render::Shaders::Phong);
     let params = glium::DrawParameters {
         depth: glium::Depth {
@@ -53,12 +51,12 @@ fn main() {
         smooth: Some(glium::draw_parameters::Smooth::Nicest),
         ..Default::default()
     };
-    let sky_color = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
+    const SKY_COLOR: (f32, f32, f32, f32) = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
 
-    run(move || {
+    game_loop::run(move || {
         application.camera.update();
         let mut target = application.display.draw();
-        target.clear_color_and_depth(sky_color, 1.0);
+        target.clear_color_and_depth(SKY_COLOR, 1.0);
         let perspective: [[f32; 4]; 4] = application.camera.perspective.into();
         let view: [[f32; 4]; 4] = application.camera.get_view().into();
         let uniform = uniform! {
@@ -97,7 +95,7 @@ fn main() {
                     block::Mask::new(),
                 );
                 target
-                    .draw(&vertices, indices, &program, &uniform, &params)
+                    .draw(&vertices, INDICES, &program, &uniform, &params)
                     .unwrap()
             }
         }
@@ -131,8 +129,10 @@ fn main() {
         let mut action = Action::Continue;
 
         // polling and handling the events received by the window
-        events_loop.poll_events(|event| {
-            if let glium::glutin::Event::WindowEvent {
+        // TODO: we should use `run` instead of `run_return`
+        events_loop.run_return(|event, _, control_flow| {
+            *control_flow = ControlFlow::Exit;
+            if let glium::glutin::event::Event::WindowEvent {
                 event: window_event,
                 ..
             } = event
@@ -146,35 +146,9 @@ fn main() {
                         let pressed = input.state == Pressed;
                         if let Some(key) = input.virtual_keycode {
                             match key {
-                                glium::glutin::VirtualKeyCode::Escape => {
+                                glium::glutin::event::VirtualKeyCode::Escape => {
                                     if pressed {
-                                        if cursor_grabbed {
-                                            application
-                                                .display
-                                                .gl_window()
-                                                .window()
-                                                .hide_cursor(false);
-                                            application
-                                                .display
-                                                .gl_window()
-                                                .window()
-                                                .grab_cursor(false)
-                                                .expect("couldn't ungrab cursor");
-                                            cursor_grabbed = false;
-                                        } else {
-                                            application
-                                                .display
-                                                .gl_window()
-                                                .window()
-                                                .grab_cursor(true)
-                                                .expect("couldn't grab cursor");
-                                            application
-                                                .display
-                                                .gl_window()
-                                                .window()
-                                                .hide_cursor(true);
-                                            cursor_grabbed = true;
-                                        }
+                                        application.toggle_cursor_grabbed()
                                     }
                                 }
                                 _ => application.camera.process_input(pressed, key),

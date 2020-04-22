@@ -1,16 +1,17 @@
 use crate::{camera, default, game};
 
-/// Global, thread-safe context for the application
+/// Singleton state for the running application
 pub struct Application {
     pub display: glium::Display,
     pub camera: camera::CameraState,
     pub game: game::Game,
+    cursor_grabbed: bool,
 }
 
 impl Application {
-    pub fn new(events_loop: &glium::glutin::EventsLoop) -> Application {
-        let window = glium::glutin::WindowBuilder::new()
-            .with_dimensions(default::VIEWPORT)
+    pub fn new<T>(events_loop: &glium::glutin::event_loop::EventLoop<T>) -> Application {
+        let window = glium::glutin::window::WindowBuilder::new()
+            .with_inner_size(default::VIEWPORT)
             .with_title("Ave");
         let context = glium::glutin::ContextBuilder::new()
             .with_depth_buffer(24)
@@ -22,6 +23,32 @@ impl Application {
             display,
             camera,
             game,
+            cursor_grabbed: false,
+        }
+    }
+    pub fn grab_cursor(&mut self) {
+        self.display
+            .gl_window()
+            .window()
+            .set_cursor_grab(true)
+            .expect("couldn't grab cursor");
+        self.display.gl_window().window().set_cursor_visible(false);
+        self.cursor_grabbed = true;
+    }
+    pub fn ungrab_cursor(&mut self) {
+        self.display
+            .gl_window()
+            .window()
+            .set_cursor_grab(false)
+            .expect("couldn't ungrab cursor");
+        self.display.gl_window().window().set_cursor_visible(true);
+        self.cursor_grabbed = false;
+    }
+    pub fn toggle_cursor_grabbed(&mut self) {
+        if self.cursor_grabbed {
+            self.ungrab_cursor()
+        } else {
+            self.grab_cursor()
         }
     }
 }

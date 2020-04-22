@@ -6,7 +6,7 @@ pub enum Action {
     Continue,
 }
 
-pub fn run<F>(mut callback: F)
+pub fn run<F>(mut each_tick: F)
 where
     F: FnMut() -> Action,
 {
@@ -19,7 +19,7 @@ where
     let mut ticks_this_second = 0;
 
     loop {
-        match callback() {
+        match each_tick() {
             Action::Stop => break,
             Action::Continue => (),
         };

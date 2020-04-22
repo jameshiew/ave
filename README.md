@@ -4,7 +4,7 @@
 
 Playing around with voxel-based procedural generation in Rust.
 
-Most of the code is not very efficient, the rendering code in particular is pretty forced - and there is no multithreading, so lots of room for improvement. Built with lots of help from the [Glium](https://github.com/glium/glium) and [Glutin](https://github.com/tomaka/glutin) examples - most of the boilerplate code and shaders are adapted from there.
+Built with lots of help from the [Glium](https://github.com/glium/glium) and [Glutin](https://github.com/tomaka/glutin) examples - most of the boilerplate code and shaders are adapted from there.
 
 ## Getting Started
 

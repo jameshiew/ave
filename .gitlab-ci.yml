@@ -50,7 +50,7 @@ release:
     - cargo build --release --verbose --workspace
   rules:
     - if: '$CI_COMMIT_REF_NAME =~ /^(master|develop)$/'
-      when: always
+      when: on_success
   artifacts:
     paths:
       - target/release/ave
