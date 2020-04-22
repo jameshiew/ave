@@ -25,6 +25,9 @@ float-cmp = "*"
 rand = "*"
 noise = "*"
 
+# instrumentation
+prometheus = "*"
+
 # logging
 log = "*"
 simplelog = "*"

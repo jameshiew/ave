@@ -5,12 +5,13 @@ mod color;
 mod default;
 mod game;
 mod game_loop;
+mod instrumentation;
 mod logging;
 mod render;
 mod space;
+mod text;
 mod world;
 mod worldgen;
-mod text;
 
 use application::Application;
 use game_loop::Action;
@@ -26,9 +27,10 @@ use world::World;
 
 fn main() {
     logging::initialize();
+    let registry = instrumentation::initialize();
 
     let events_loop = glium::glutin::event_loop::EventLoop::new();
-    let mut application = Application::new(&events_loop);
+    let mut application = Application::new(&events_loop, registry);
     application.grab_cursor();
 
     run(events_loop, application)
@@ -55,7 +57,26 @@ fn run<T>(
     const SKY_COLOR: (f32, f32, f32, f32) = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
 
     let system = glium_text::TextSystem::new(&application.display);
-    let font = glium_text::FontTexture::new(&application.display, &include_bytes!("../assets/InconsolataExpanded-Black.ttf")[..], 70).unwrap();
+    let font = glium_text::FontTexture::new(
+        &application.display,
+        &include_bytes!("../assets/InconsolataExpanded-Black.ttf")[..],
+        70,
+    )
+    .unwrap();
+
+    // metrics
+
+    let blocks_nearby = prometheus::Gauge::new("nearby_blocks", "Blocks nearby this tick").unwrap();
+    let blocks_rendered =
+        prometheus::Gauge::new("rendered_blocks", "Blocks rendered this tick").unwrap();
+    application
+        .registry
+        .register(Box::new(blocks_nearby.clone()))
+        .unwrap();
+    application
+        .registry
+        .register(Box::new(blocks_rendered.clone()))
+        .unwrap();
 
     game_loop::run(move || {
         application.camera.update();
@@ -103,13 +124,15 @@ fn run<T>(
                     .unwrap()
             }
         }
-        debug!(
-            "{} blocks rendered of {} blocks nearby",
-            blocks_rendered_count, nearby_blocks_count
-        );
+        blocks_nearby.set(nearby_blocks_count as f64);
+        blocks_rendered.set(blocks_rendered_count as f64);
 
         if application.get_debug_overlay() {
-            let text = glium_text::TextDisplay::new(&system, &font, "TPS: ?");
+            let text = glium_text::TextDisplay::new(
+                &system,
+                &font,
+                &format!("B: {}/{}", blocks_rendered.get(), blocks_nearby.get()).to_string(),
+            );
             let text_width = text.get_width();
 
             let (w, h) = application.display.get_framebuffer_dimensions();
@@ -117,6 +140,7 @@ fn run<T>(
             const TEXT_SIZE: f32 = 0.05;
             const HORIZONTAL_POS: f32 = -0.95;
             const VERTICAL_POS: f32 = 0.9;
+            #[rustfmt::skip] // useful to be able to see each tuple on its own row
             let matrix:[[f32; 4]; 4] = cgmath::Matrix4::new(
                 TEXT_SIZE, 0.0, 0.0, 0.0,
                 0.0, TEXT_SIZE * (w as f32) / (h as f32), 0.0, 0.0,

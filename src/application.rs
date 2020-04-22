@@ -1,7 +1,9 @@
 use crate::{camera, default, game};
+use prometheus::Gauge;
 
 /// Singleton state for the running application
 pub struct Application {
+    pub registry: prometheus::Registry,
     pub display: glium::Display,
     pub camera: camera::CameraState,
     pub game: game::Game,
@@ -10,7 +12,10 @@ pub struct Application {
 }
 
 impl Application {
-    pub fn new<T>(events_loop: &glium::glutin::event_loop::EventLoop<T>) -> Application {
+    pub fn new<T>(
+        events_loop: &glium::glutin::event_loop::EventLoop<T>,
+        registry: prometheus::Registry,
+    ) -> Application {
         let window = glium::glutin::window::WindowBuilder::new()
             .with_inner_size(default::VIEWPORT)
             .with_title("Ave");
@@ -20,12 +25,20 @@ impl Application {
         let display = glium::Display::new(window, context, events_loop).unwrap();
         let camera = camera::CameraState::new();
         let game = game::Game::new();
+
+        let ticks_per_second =
+            Gauge::new("ticks_per_second", "Most recent ticks per second").unwrap();
+        registry
+            .register(Box::new(ticks_per_second.clone()))
+            .unwrap();
+
         Application {
+            registry,
             display,
             camera,
             game,
             cursor_grabbed: false,
-            debug_overlay: false
+            debug_overlay: false,
         }
     }
     pub fn toggle_debug_overlay(&mut self) {
