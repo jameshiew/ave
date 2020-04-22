@@ -3,36 +3,35 @@ mod block;
 mod camera;
 mod color;
 mod default;
-mod event_loop;
 mod game;
+mod game_loop;
+mod logging;
 mod render;
 mod space;
 mod world;
 mod worldgen;
 
 use application::Application;
-use event_loop::{run, Action};
+use game_loop::Action;
 use glium::glutin::ElementState::Pressed;
 use glium::glutin::WindowEvent::{CloseRequested, KeyboardInput, Resized};
 use glium::uniform;
 use glium::Surface;
 use log::debug;
 use log::info;
-use simplelog::{CombinedLogger, Config, LevelFilter, TermLogger, TerminalMode};
 use world::World;
 
 fn main() {
-    CombinedLogger::init(vec![TermLogger::new(
-        LevelFilter::Debug,
-        Config::default(),
-        TerminalMode::Stdout,
-    )
-    .unwrap()])
-    .unwrap();
-    let mut events_loop = glium::glutin::EventsLoop::new();
+    logging::initialize();
+
+    let events_loop = glium::glutin::EventsLoop::new();
     let mut application = Application::new(&events_loop);
     application.grab_cursor();
 
+    run(events_loop, application)
+}
+
+fn run(mut events_loop: glium::glutin::EventsLoop, mut application: application::Application) {
     const INDICES: glium::index::NoIndices =
         glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
     let program = render::get_shader(&application.display, render::Shaders::Phong);
@@ -49,7 +48,7 @@ fn main() {
     };
     const SKY_COLOR: (f32, f32, f32, f32) = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
 
-    run(move || {
+    game_loop::run(move || {
         application.camera.update();
         let mut target = application.display.draw();
         target.clear_color_and_depth(SKY_COLOR, 1.0);
