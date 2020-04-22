@@ -1,8 +1,9 @@
 use crate::block;
 use crate::world::{get_position, Chunk, ChunkCoordinates, HashChunk, CHUNK_SIZE};
 use log::debug;
-use noise::{NoiseModule, Perlin, Seedable};
-use rand::{Rng, SeedableRng, StdRng};
+use noise::{NoiseFn, Perlin, Seedable};
+use rand::rngs::StdRng;
+use rand::{Rng, SeedableRng};
 
 pub trait WorldGenerator {
     fn generate_chunk(&mut self, coordinates: ChunkCoordinates) -> HashChunk;
@@ -45,10 +46,9 @@ pub struct RandomPillarsWorldGenerator {
 
 #[allow(dead_code)]
 impl RandomPillarsWorldGenerator {
-    pub fn new(seed: usize) -> RandomPillarsWorldGenerator {
-        let s: &[_] = &[seed];
+    pub fn new(seed: u32) -> RandomPillarsWorldGenerator {
         RandomPillarsWorldGenerator {
-            prng: StdRng::from_seed(s),
+            prng: StdRng::seed_from_u64(seed as u64),
         }
     }
 }
@@ -83,14 +83,14 @@ pub struct NaturalWorldGenerator {
 }
 
 impl NaturalWorldGenerator {
-    pub fn new(seed: usize) -> NaturalWorldGenerator {
+    pub fn new(seed: u32) -> NaturalWorldGenerator {
         let mut generator = NaturalWorldGenerator {
             perlin: Perlin::new(),
         };
         generator.perlin = generator.perlin.set_seed(seed);
         debug!(
             "Using seed {} for NaturalWorldGenerator",
-            generator.perlin.seed
+            generator.perlin.seed()
         );
         generator
     }
@@ -106,9 +106,11 @@ impl WorldGenerator for NaturalWorldGenerator {
                     // we need a height in the range [0, CHUNK_SIZE)
                     // https://www.redblobgames.com/maps/terrain-from-noise/ is a good source for tips
                     let position = get_position(&coordinates, [x, 0, z].into());
-                    let height = self.perlin.get([position.x * 0.015, position.z * 0.015]);
+                    let height = self
+                        .perlin
+                        .get([(position.x * 0.015) as f64, (position.z * 0.015) as f64]);
                     // raise height to decent even power to so we get more flats and its nonnegative
-                    let normalized_height: u8 = (height.powi(4) * (CHUNK_SIZE as f32)) as u8;
+                    let normalized_height: u8 = (height.powi(4) * (CHUNK_SIZE as f64)) as u8;
                     let mut blk = block::GRASS;
                     if normalized_height == 0 {
                         if height < 0.0 {

@@ -1,4 +1,4 @@
-use glutin::dpi::LogicalSize;
+use glium::glutin::dpi::LogicalSize;
 
 /// Default settings go here
 

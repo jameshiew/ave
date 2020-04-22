@@ -1,35 +1,56 @@
----
-stages:
-  - lint
-  - test
-
-variables:
-  CARGO_HOME: $CI_PROJECT_DIR/cargo
+default:
+  image: rust:latest
 
 cache:
+  key: "$CI_JOB_NAME"
+  untracked: true
   paths:
     - cargo/
 
-lint:
-  image: rust:1.42.0
+variables:
+  CARGO_HOME: $CI_PROJECT_DIR/cargo
+  RUST_BACKTRACE: FULL
+
+stages:
+  - lint
+  - test
+  - release
+
+lint:rustfmt:
   stage: lint
   script:
     - rustup component add rustfmt
     - cargo fmt -- --check
+
+lint:clippy:
+  stage: lint
+  script:
+    - cargo check --verbose
     - rustup component add clippy
     - cargo clippy --all-targets --all-features -- -D warnings
   artifacts:
-    expire_in: 1 day
+    expire_in: 1 hour
     paths:
       - target/
 
-run tests:
-  image: rust:1.42.0
+test:
   stage: test
   script:
-    - cargo check --release --verbose --all
-    - cargo build --release --verbose --all
-    - cargo test --release --verbose --all
+    - cargo build --verbose --workspace
+    - cargo test --verbose --workspace
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - target/
+
+release:
+  stage: release
+  script:
+    - cargo clean --verbose
+    - cargo build --release --verbose --workspace
+  rules:
+    - if: '$CI_COMMIT_REF_NAME =~ /^(master|develop)$/'
+      when: on_success
   artifacts:
     paths:
       - target/release/ave

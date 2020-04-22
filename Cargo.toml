@@ -5,12 +5,16 @@ authors = ["James Hiew <james@hiew.net>"]
 edition = "2018"
 
 [dependencies]
-glium = "= 0.26.0"
-glutin = "= 0.23.0"
-cgmath = "= 0.15.0"
-collision = "= 0.12.0"
-float-cmp = "= 0.2.5"
-rand = "= 0.3.18"
-log = "= 0.4.5"
-simplelog = "= 0.4.3"
-noise = "= 0.4.1"
+# OpenGL + UI
+glium = "= 0.25.1"
+
+# math
+cgmath = "*"
+collision = "*"
+float-cmp = "*"
+rand = "*"
+noise = "*"
+
+# logging
+log = "*"
+simplelog = "*"
