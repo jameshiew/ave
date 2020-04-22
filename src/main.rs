@@ -12,10 +12,10 @@ mod worldgen;
 
 use application::Application;
 use event_loop::{run, Action};
-use glium::uniform;
-use glium::Surface;
 use glium::glutin::ElementState::Pressed;
 use glium::glutin::WindowEvent::{CloseRequested, KeyboardInput, Resized};
+use glium::uniform;
+use glium::Surface;
 use log::debug;
 use log::info;
 use simplelog::{CombinedLogger, Config, LevelFilter, TermLogger, TerminalMode};
@@ -31,14 +31,7 @@ fn main() {
     .unwrap();
     let mut events_loop = glium::glutin::EventsLoop::new();
     let mut application = Application::new(&events_loop);
-    application
-        .display
-        .gl_window()
-        .window()
-        .grab_cursor(true)
-        .expect("couldn't grab cursor");
-    application.display.gl_window().window().hide_cursor(true);
-    let mut cursor_grabbed = true;
+    application.grab_cursor();
 
     let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
     let program = render::get_shader(&application.display, render::Shaders::Phong);
@@ -128,33 +121,7 @@ fn main() {
                             match key {
                                 glium::glutin::VirtualKeyCode::Escape => {
                                     if pressed {
-                                        if cursor_grabbed {
-                                            application
-                                                .display
-                                                .gl_window()
-                                                .window()
-                                                .hide_cursor(false);
-                                            application
-                                                .display
-                                                .gl_window()
-                                                .window()
-                                                .grab_cursor(false)
-                                                .expect("couldn't ungrab cursor");
-                                            cursor_grabbed = false;
-                                        } else {
-                                            application
-                                                .display
-                                                .gl_window()
-                                                .window()
-                                                .grab_cursor(true)
-                                                .expect("couldn't grab cursor");
-                                            application
-                                                .display
-                                                .gl_window()
-                                                .window()
-                                                .hide_cursor(true);
-                                            cursor_grabbed = true;
-                                        }
+                                        application.toggle_cursor_grabbed()
                                     }
                                 }
                                 _ => application.camera.process_input(pressed, key),

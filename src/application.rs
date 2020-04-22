@@ -1,10 +1,11 @@
 use crate::{camera, default, game};
 
-/// Global, thread-safe context for the application
+/// Singleton state for the running application
 pub struct Application {
     pub display: glium::Display,
     pub camera: camera::CameraState,
     pub game: game::Game,
+    cursor_grabbed: bool,
 }
 
 impl Application {
@@ -22,6 +23,32 @@ impl Application {
             display,
             camera,
             game,
+            cursor_grabbed: false,
+        }
+    }
+    pub fn grab_cursor(&mut self) {
+        self.display
+            .gl_window()
+            .window()
+            .grab_cursor(true)
+            .expect("couldn't grab cursor");
+        self.display.gl_window().window().hide_cursor(true);
+        self.cursor_grabbed = true;
+    }
+    pub fn ungrab_cursor(&mut self) {
+        self.display.gl_window().window().hide_cursor(false);
+        self.display
+            .gl_window()
+            .window()
+            .grab_cursor(false)
+            .expect("couldn't ungrab cursor");
+        self.cursor_grabbed = false;
+    }
+    pub fn toggle_cursor_grabbed(&mut self) {
+        if self.cursor_grabbed {
+            self.ungrab_cursor()
+        } else {
+            self.grab_cursor()
         }
     }
 }
