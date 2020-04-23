@@ -28,20 +28,12 @@ lint:clippy:
     - cargo check --verbose
     - rustup component add clippy
     - cargo clippy --all-targets --all-features -- -D warnings
-  artifacts:
-    expire_in: 1 hour
-    paths:
-      - target/
 
 test:
   stage: test
   script:
     - cargo build --verbose --workspace
     - cargo test --verbose --workspace
-  artifacts:
-    expire_in: 1 hour
-    paths:
-      - target/
 
 release:
   stage: release
