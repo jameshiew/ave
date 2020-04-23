@@ -4,41 +4,47 @@ mod camera;
 mod color;
 mod default;
 mod game;
-mod game_loop;
-mod instrumentation;
 mod logging;
 mod render;
 mod space;
-mod text;
 mod world;
+mod world_renderer;
 mod worldgen;
 
+use crate::game::Ticker;
 use application::Application;
-use game_loop::Action;
 use glium::glutin::event::ElementState::Pressed;
 use glium::glutin::event::WindowEvent::{CloseRequested, KeyboardInput, Resized};
 use glium::glutin::event_loop::ControlFlow;
 use glium::glutin::platform::desktop::EventLoopExtDesktop;
-use glium::uniform;
 use glium::Surface;
 use log::info;
-use std::sync::mpsc;
-use world::World;
+
+const TITLE: &str = "Ave";
 
 fn main() {
     logging::initialize();
-    let registry = instrumentation::initialize();
 
-    let events_loop = glium::glutin::event_loop::EventLoop::new();
-    let mut application = Application::new(&events_loop, registry);
+    let game = game::Game::new();
+
+    let window = glium::glutin::window::WindowBuilder::new()
+        .with_inner_size(default::VIEWPORT)
+        .with_title(TITLE);
+    let context = glium::glutin::ContextBuilder::new()
+        .with_depth_buffer(24)
+        .with_vsync(true);
+    let event_loop = glium::glutin::event_loop::EventLoop::new();
+    let display = glium::Display::new(window, context, &event_loop).unwrap();
+    let mut application = Application::new(display);
     application.grab_cursor();
 
-    run(events_loop, application)
+    run(event_loop, application, game)
 }
 
 fn run<T>(
     mut events_loop: glium::glutin::event_loop::EventLoop<T>,
     mut application: application::Application,
+    mut game: game::Game,
 ) {
     const INDICES: glium::index::NoIndices =
         glium::index::NoIndices(glium::index::PrimitiveType::TriangleStrip);
@@ -54,6 +60,9 @@ fn run<T>(
         smooth: Some(glium::draw_parameters::Smooth::Nicest),
         ..Default::default()
     };
+
+    let world_renderer = world_renderer::WorldRenderer::new(INDICES, program, params);
+
     const SKY_COLOR: (f32, f32, f32, f32) = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
 
     let system = glium_text::TextSystem::new(&application.display);
@@ -64,68 +73,14 @@ fn run<T>(
     )
     .unwrap();
 
-    // metrics
-    let blocks_nearby = prometheus::Gauge::new("nearby_blocks", "Blocks nearby this tick").unwrap();
-    let blocks_rendered =
-        prometheus::Gauge::new("rendered_blocks", "Blocks rendered this tick").unwrap();
-    let tps = prometheus::Gauge::new("ticks_per_seconds", "Ticks per second").unwrap();
-    application.register_metric(Box::new(blocks_nearby.clone()));
-    application.register_metric(Box::new(blocks_rendered.clone()));
-    application.register_metric(Box::new(tps.clone()));
+    let ticker = Ticker::new();
+    ticker.run(|| {
+        game.tick();
 
-    let (tps_send, tps_receive) = mpsc::channel();
-
-    game_loop::run(tps_send, move || {
-        if let Ok(tps_val) = tps_receive.try_recv() {
-            tps.set(tps_val)
-        }
-        application.camera.update();
         let mut target = application.display.draw();
         target.clear_color_and_depth(SKY_COLOR, 1.0);
-        let perspective: [[f32; 4]; 4] = application.camera.perspective.into();
-        let view: [[f32; 4]; 4] = application.camera.get_view().into();
-        let uniform = uniform! {
-            model: space::MODEL,
-            perspective: perspective,
-            view: view
-        };
 
-        // generate chunks as we move the camera
-        let chunk_coords = world::position_to_chunk(&application.camera.position);
-        let cx = chunk_coords.x;
-        let cy = chunk_coords.y;
-        let cz = chunk_coords.z;
-        for x in (cx - default::RENDER_DISTANCE_I32)..(cx + default::RENDER_DISTANCE_I32) {
-            for y in (cy - default::RENDER_DISTANCE_I32)..(cy + default::RENDER_DISTANCE_I32) {
-                for z in (cz - default::RENDER_DISTANCE_I32)..(cz + default::RENDER_DISTANCE_I32) {
-                    application.game.world.get_or_create([x, y, z].into());
-                }
-            }
-        }
-
-        let mut nearby_blocks_count = 0;
-        let mut blocks_rendered_count = 0;
-        for (position, block_type) in application
-            .game
-            .world
-            .at(application.camera.position, default::RENDER_DISTANCE_U8)
-        {
-            nearby_blocks_count += 1;
-            if application.camera.can_see(position) {
-                blocks_rendered_count += 1;
-                let vertices = block::make_cube(
-                    &application.display,
-                    &position,
-                    block_type.color,
-                    block::Mask::new(),
-                );
-                target
-                    .draw(&vertices, INDICES, &program, &uniform, &params)
-                    .unwrap()
-            }
-        }
-        blocks_nearby.set(nearby_blocks_count as f64);
-        blocks_rendered.set(blocks_rendered_count as f64);
+        world_renderer.render(&game, &application.display, &mut target);
 
         if application.get_debug_overlay() {
             let (w, h) = application.display.get_framebuffer_dimensions();
@@ -133,7 +88,11 @@ fn run<T>(
             let b_text = glium_text::TextDisplay::new(
                 &system,
                 &font,
-                &format!("B: {}/{}", blocks_rendered.get(), blocks_nearby.get()),
+                &format!(
+                    "B: {}/{}",
+                    world_renderer.get_blocks_rendered(),
+                    world_renderer.get_blocks_nearby()
+                ),
             );
 
             const TEXT_SIZE: f32 = 0.05;
@@ -156,7 +115,7 @@ fn run<T>(
             );
 
             let tps_text =
-                glium_text::TextDisplay::new(&system, &font, &format!("TPS: {}", tps.get()));
+                glium_text::TextDisplay::new(&system, &font, &format!("TPS: {}", ticker.get_tps()));
             #[rustfmt::skip] // useful to be able to see each tuple on its own row
                 let tps_matrix:[[f32; 4]; 4] = cgmath::Matrix4::new(
                 TEXT_SIZE, 0.0, 0.0, 0.0,
@@ -176,7 +135,7 @@ fn run<T>(
 
         target.finish().unwrap();
 
-        let mut action = Action::Continue;
+        let mut should_continue = true;
 
         // polling and handling the events received by the window
         // TODO: we should use `run` instead of `run_return`
@@ -188,7 +147,7 @@ fn run<T>(
             } = event
             {
                 match window_event {
-                    CloseRequested => action = Action::Stop,
+                    CloseRequested => should_continue = false,
                     Resized(new) => {
                         info!("Window resized to {}px x {}px", new.width, new.height);
                     }
@@ -206,7 +165,7 @@ fn run<T>(
                                         application.toggle_debug_overlay()
                                     }
                                 }
-                                _ => application.camera.process_input(pressed, key),
+                                _ => game.camera.process_input(pressed, key),
                             }
                         }
                     }
@@ -215,6 +174,6 @@ fn run<T>(
             }
         });
 
-        action
+        should_continue
     });
 }

@@ -1,41 +1,17 @@
-use crate::{camera, default, game};
-
 /// Singleton state for the running application
 pub struct Application {
-    pub registry: prometheus::Registry,
     pub display: glium::Display,
-    pub camera: camera::CameraState,
-    pub game: game::Game,
     cursor_grabbed: bool,
     debug_overlay: bool,
 }
 
 impl Application {
-    pub fn new<T>(
-        events_loop: &glium::glutin::event_loop::EventLoop<T>,
-        registry: prometheus::Registry,
-    ) -> Application {
-        let window = glium::glutin::window::WindowBuilder::new()
-            .with_inner_size(default::VIEWPORT)
-            .with_title("Ave");
-        let context = glium::glutin::ContextBuilder::new()
-            .with_depth_buffer(24)
-            .with_vsync(true);
-        let display = glium::Display::new(window, context, events_loop).unwrap();
-        let camera = camera::CameraState::new();
-        let game = game::Game::new();
-
+    pub fn new(display: glium::Display) -> Application {
         Application {
-            registry,
             display,
-            camera,
-            game,
             cursor_grabbed: false,
             debug_overlay: false,
         }
-    }
-    pub fn register_metric(&mut self, c: Box<dyn prometheus::core::Collector>) {
-        self.registry.register(c).unwrap();
     }
     pub fn toggle_debug_overlay(&mut self) {
         self.debug_overlay = !self.debug_overlay;

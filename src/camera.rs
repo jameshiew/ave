@@ -13,7 +13,7 @@ const DEFAULT_FIELD_OF_VIEW: Rad<f32> = Rad(std::f32::consts::PI / 2.0 * (7.0 / 
 const DEFAULT_Z_NEAR_CUTOFF: f32 = 0.1;
 const DEFAULT_Z_FAR_CUTOFF: f32 = 1024.0;
 
-pub struct CameraState {
+pub struct Camera {
     perspective_fov: PerspectiveFov<f32>,
     pub perspective: Matrix4<f32>,
     pub position: Position,
@@ -34,9 +34,9 @@ pub struct CameraState {
     rotating_right: bool,
 }
 
-impl CameraState {
-    pub fn new() -> CameraState {
-        let mut camera = CameraState {
+impl Camera {
+    pub fn new() -> Camera {
+        let mut camera = Camera {
             perspective_fov: PerspectiveFov {
                 fovy: DEFAULT_FIELD_OF_VIEW,
                 aspect: DEFAULT_ASPECT_RATIO,
@@ -66,7 +66,7 @@ impl CameraState {
     fn update_perspective(&mut self) {
         let f = 1.0 / (self.perspective_fov.fovy / 2.0).tan();
         #[rustfmt::skip] // useful to be able to see each tuple on its own row
-        let new = Matrix4::new(
+            let new = Matrix4::new(
             f / self.perspective_fov.aspect, 0.0, 0.0, 0.0,
             0.0, f, 0.0, 0.0,
             0.0, 0.0, (self.perspective_fov.far + self.perspective_fov.near) / (self.perspective_fov.far - self.perspective_fov.near), 1.0,
@@ -110,7 +110,7 @@ impl CameraState {
         );
 
         #[rustfmt::skip] // useful to be able to see each tuple on its own row
-        let view = Matrix4::new(
+            let view = Matrix4::new(
             s_norm.0, u.0, f.0, 0.0,
             s_norm.1, u.1, f.1, 0.0,
             s_norm.2, u.2, f.2, 0.0,
