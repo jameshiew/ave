@@ -6,10 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2020-04-23
+# Added
+* Pressing F3 brings up a debug overlay showing blocks rendered/blocks nearby + "TPS"
+
+# Removed
+* Logging of stats that are now visible in F3 instead
+
+# Dev Changes
+* Upgraded glium to the latest version
+* Upgraded all other minor dependencies to the latest version
+* Some internal refactoring
+
 ## [0.1.1] - 2020-04-22
 Internal changes only, should be functionally identical to the previous 0.1.0-alpha release.
 
-# Changed
+# Dev Changes
 * Upgraded all dependencies to their latest versions except for glium, which was upgraded to a newer version nonetheless
 * Modernizing codebase and CI pipeline (Rust 2018 edition, using clippy/rustfmt, etc)
 
