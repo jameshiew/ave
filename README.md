@@ -7,10 +7,21 @@ Playing around with voxel-based procedural generation in Rust.
 Built with lots of help from the [Glium](https://github.com/glium/glium) and [Glutin](https://github.com/tomaka/glutin) examples - most of the boilerplate code and shaders are adapted from there.
 
 ## Getting Started
+Prerequisites:
+* Rust
+* Cargo
 
-Rust and Cargo need to be installed. Tested against Rust 1.22.1
+```
+git clone https://github.com/jameshiew/ave.git
+cd ave/
+cargo run --release
+```
 
-1. Run `cargo run --release` from a shell
-2. WASD to move; arrow keys to rotate the camera; Q and E to speed up and slow down, respectively; F3 to toggle debug overlay
+### Controls
+* WASD to move
+* arrow keys to rotate the camera
+* Q and E to speed up and slow down, respectively
+* F3 to toggle a debug overlay
 
-Some default values such as render distance can be edited in `src/default.rs`
+## Options
+Choices of shader and world generator are hard coded at compile time, currently. Also, some default values such as render distance can be edited in `src/default.rs`. 
