@@ -12,32 +12,37 @@ variables:
 
 stages:
   - lint
-  - test
+  - qa
   - release
 
-lint:rustfmt:
-  stage: lint
+lint:
+  stage: qa
   script:
     - rustup component add rustfmt
     - cargo fmt -- --check
 
-lint:clippy:
-  stage: lint
+qa:
+  stage: qa
   script:
     - cargo check --verbose
     - rustup component add clippy
     - cargo clippy --all-targets --all-features -- -D warnings
-
-test:
-  stage: test
-  script:
     - cargo build --verbose --workspace
     - cargo test --verbose --workspace
+
+updated-dependencies:
+  stage: qa
+  script:
+    - cargo update --verbose
+    - cargo check --verbose
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: on_success
+  allow_failure: true
 
 release:
   stage: release
   script:
-    - cargo clean --verbose
     - cargo build --release --verbose --workspace
   rules:
     - if: '$CI_COMMIT_REF_NAME =~ /^(master|develop)$/'
