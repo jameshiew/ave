@@ -15,19 +15,19 @@ gitlab = { repository = "https://gitlab.com/jameshiew/ave" }
 
 [dependencies]
 # OpenGL + UI
-glium = "*"
+glium = "0.27"
 glium_text = { git = "https://github.com/jameshiew/glium_text"}
 
 # math
-cgmath = "*"
-collision = "*"
-float-cmp = "*"
-rand = "*"
-noise = "*"
+cgmath = "0.17"
+collision = "0.20"
+float-cmp = "0.6"
+rand = "0.7"
+noise = "0.6"
 
 # instrumentation
-prometheus = "*"
+prometheus = "0.8"
 
 # logging
-log = "*"
-simplelog = "*"
+log = "0.4"
+simplelog = "0.7"
