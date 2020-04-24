@@ -4,7 +4,6 @@ mod camera;
 mod color;
 mod default;
 mod game;
-mod logging;
 mod render;
 mod space;
 mod world;
@@ -23,7 +22,7 @@ use log::info;
 const TITLE: &str = "Ave";
 
 fn main() {
-    logging::initialize();
+    env_logger::init();
 
     let game = game::Game::new();
 
