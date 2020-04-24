@@ -1,6 +1,6 @@
 [package]
 name = "ave"
-version = "0.2.0"
+version = "0.2.0-alpha"
 authors = ["James Hiew <james@hiew.net>"]
 edition = "2018"
 description = "Voxel based world generation in Rust"
