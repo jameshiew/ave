@@ -1,5 +1,4 @@
 use cgmath::{Point3, Vector3};
-use std;
 use std::vec::Vec;
 
 pub const MODEL: [[f32; 4]; 4] = [

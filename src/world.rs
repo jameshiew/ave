@@ -4,7 +4,6 @@ use crate::space::Position;
 use crate::worldgen;
 use crate::worldgen::WorldGenerator;
 use cgmath::Point3;
-use rand;
 use std::collections::{HashMap, HashSet};
 use std::vec::Vec;
 

@@ -1,4 +1,3 @@
-use rand;
 use rand::Rng;
 
 pub type Color = [f32; 3];

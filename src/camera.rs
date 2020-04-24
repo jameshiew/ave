@@ -3,10 +3,8 @@ use crate::default;
 use crate::space::{Direction, Position};
 use cgmath::Matrix4;
 use cgmath::{Angle, PerspectiveFov, Rad};
-use collision;
 use collision::Frustum;
 use glium::glutin;
-use std;
 
 const DEFAULT_ASPECT_RATIO: f32 = default::VIEWPORT_WIDTH as f32 / default::VIEWPORT_HEIGHT as f32;
 const DEFAULT_FIELD_OF_VIEW: Rad<f32> = Rad(std::f32::consts::PI / 2.0 * (7.0 / 9.0));
