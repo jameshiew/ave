@@ -8,8 +8,9 @@ Built with lots of help from the [Glium](https://github.com/glium/glium) and [Gl
 
 ## Getting Started
 Prerequisites:
-* Rust
+* Rust 2018
 * Cargo
+* FreeType (e.g. install with `brew install freetype` on macOS)
 
 ```
 git clone https://github.com/jameshiew/ave.git
