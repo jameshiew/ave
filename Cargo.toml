@@ -1,6 +1,6 @@
 [package]
 name = "ave"
-version = "0.2.1-alpha"
+version = "0.2.1"
 authors = ["James Hiew <james@hiew.net>"]
 edition = "2018"
 description = "Voxel based world generation in Rust"
@@ -16,7 +16,7 @@ gitlab = { repository = "https://gitlab.com/jameshiew/ave" }
 [dependencies]
 # OpenGL + UI
 glium = "0.27"
-glium_text = { git = "https://github.com/jameshiew/glium_text"}
+glium_text = { git = "https://github.com/rschristian/glium_text", rev = "9ade2e5f" }
 
 # math
 cgmath = "0.17"

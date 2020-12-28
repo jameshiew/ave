@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2020-12-28
+Internal changes only, should be functionally identical to the previous 0.2.0 release.
+
+# Dev Changes
+* Switch to using env_logger
+* Use glium_text dependency from https://github.com/rschristian/glium_text
+* Updated and pinned some other dependencies
+
 ## [0.2.0] - 2020-04-23
 # Added
 * Pressing F3 brings up a debug overlay showing blocks rendered/blocks nearby + "TPS"
