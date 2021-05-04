@@ -64,11 +64,11 @@ impl WorldGenerator for RandomPillarsWorldGenerator {
             }
         }
 
-        let number_of_pillars = self.prng.gen_range(1, 8);
+        let number_of_pillars = self.prng.gen_range(1..8);
         for _ in 0..number_of_pillars {
-            let pillar_x = self.prng.gen_range(0, CHUNK_SIZE - 1);
-            let pillar_z = self.prng.gen_range(0, CHUNK_SIZE - 1);
-            let pillar_height = self.prng.gen_range(0, CHUNK_SIZE);
+            let pillar_x = self.prng.gen_range(0..CHUNK_SIZE - 1);
+            let pillar_z = self.prng.gen_range(0..CHUNK_SIZE - 1);
+            let pillar_height = self.prng.gen_range(0..CHUNK_SIZE);
             for y in 0..pillar_height {
                 chunk.set([pillar_x, y, pillar_z].into(), block::DIRT);
             }

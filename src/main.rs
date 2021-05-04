@@ -15,7 +15,7 @@ use application::Application;
 use glium::glutin::event::ElementState::Pressed;
 use glium::glutin::event::WindowEvent::{CloseRequested, KeyboardInput, Resized};
 use glium::glutin::event_loop::ControlFlow;
-use glium::glutin::platform::desktop::EventLoopExtDesktop;
+use glium::glutin::platform::run_return::EventLoopExtRunReturn;
 use glium::Surface;
 use log::info;
 
@@ -64,11 +64,12 @@ fn run<T>(
 
     const SKY_COLOR: (f32, f32, f32, f32) = (color::SKY[0], color::SKY[1], color::SKY[2], 1.0);
 
-    let system = glium_text::TextSystem::new(&application.display);
-    let font = glium_text::FontTexture::new(
+    let system = glium_text_rusttype::TextSystem::new(&application.display);
+    let font = glium_text_rusttype::FontTexture::new(
         &application.display,
         &include_bytes!("../assets/InconsolataExpanded-Black.ttf")[..],
         70,
+        glium_text_rusttype::FontTexture::ascii_character_list(),
     )
     .unwrap();
 
@@ -84,7 +85,7 @@ fn run<T>(
         if application.get_debug_overlay() {
             let (w, h) = application.display.get_framebuffer_dimensions();
 
-            let b_text = glium_text::TextDisplay::new(
+            let b_text = glium_text_rusttype::TextDisplay::new(
                 &system,
                 &font,
                 &format!(
@@ -105,16 +106,20 @@ fn run<T>(
                 HORIZONTAL_POS, VERTICAL_POS, 0.0, 1.0f32,
             ).into();
 
-            glium_text::draw(
+            glium_text_rusttype::draw(
                 &b_text,
                 &system,
                 &mut target,
                 b_matrix,
                 (1.0, 1.0, 1.0, 1.0),
-            );
+            )
+            .unwrap();
 
-            let tps_text =
-                glium_text::TextDisplay::new(&system, &font, &format!("TPS: {}", ticker.get_tps()));
+            let tps_text = glium_text_rusttype::TextDisplay::new(
+                &system,
+                &font,
+                &format!("TPS: {}", ticker.get_tps()),
+            );
             #[rustfmt::skip] // useful to be able to see each tuple on its own row
                 let tps_matrix:[[f32; 4]; 4] = cgmath::Matrix4::new(
                 TEXT_SIZE, 0.0, 0.0, 0.0,
@@ -123,13 +128,14 @@ fn run<T>(
                 HORIZONTAL_POS, VERTICAL_POS - (TEXT_SIZE + 0.02), 0.0, 1.0f32,
             ).into();
 
-            glium_text::draw(
+            glium_text_rusttype::draw(
                 &tps_text,
                 &system,
                 &mut target,
                 tps_matrix,
                 (1.0, 1.0, 1.0, 1.0),
-            );
+            )
+            .unwrap();
         }
 
         target.finish().unwrap();
