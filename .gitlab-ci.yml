@@ -1,5 +1,5 @@
 default:
-  image: rust:latest
+  image: rust:1.51.0
 
 cache:
   untracked: true
@@ -16,7 +16,7 @@ stages:
   - release
 
 lint:
-  stage: qa
+  stage: lint
   script:
     - rustup component add rustfmt
     - cargo fmt -- --check
@@ -30,8 +30,9 @@ qa:
     - cargo build --verbose --workspace
     - cargo test --verbose --workspace
 
-updated-dependencies:
+updated:
   stage: qa
+  image: rust:latest
   script:
     - cargo update --verbose
     - cargo check --verbose

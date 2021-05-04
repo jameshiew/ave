@@ -120,27 +120,27 @@ impl Adjacent for Point3<i32> {
     }
 
     fn directly_adjacent(&self) -> Vec<Self> {
-        let mut vec = Vec::new();
-        vec.push([self[0] + 1, self[1], self[2]].into());
-        vec.push([self[0], self[1] + 1, self[2]].into());
-        vec.push([self[0], self[1], self[2] + 1].into());
-        vec.push([self[0] - 1, self[1], self[2]].into());
-        vec.push([self[0], self[1] - 1, self[2]].into());
-        vec.push([self[0], self[1], self[2] - 1].into());
-        vec
+        vec![
+            [self[0] + 1, self[1], self[2]].into(),
+            [self[0], self[1] + 1, self[2]].into(),
+            [self[0], self[1], self[2] + 1].into(),
+            [self[0] - 1, self[1], self[2]].into(),
+            [self[0], self[1] - 1, self[2]].into(),
+            [self[0], self[1], self[2] - 1].into(),
+        ]
     }
 
     fn diagonally_adjacent(&self) -> Vec<Self> {
-        let mut vec = Vec::new();
-        vec.push([self[0] + 1, self[1] + 1, self[2] + 1].into());
-        vec.push([self[0] - 1, self[1] + 1, self[2] + 1].into());
-        vec.push([self[0] - 1, self[1] - 1, self[2] + 1].into());
-        vec.push([self[0] - 1, self[1] - 1, self[2] - 1].into());
-        vec.push([self[0] - 1, self[1] + 1, self[2] - 1].into());
-        vec.push([self[0] + 1, self[1] + 1, self[2] - 1].into());
-        vec.push([self[0] + 1, self[1] - 1, self[2] - 1].into());
-        vec.push([self[0] + 1, self[1] - 1, self[2] + 1].into());
-        vec
+        vec![
+            [self[0] + 1, self[1] + 1, self[2] + 1].into(),
+            [self[0] - 1, self[1] + 1, self[2] + 1].into(),
+            [self[0] - 1, self[1] - 1, self[2] + 1].into(),
+            [self[0] - 1, self[1] - 1, self[2] - 1].into(),
+            [self[0] - 1, self[1] + 1, self[2] - 1].into(),
+            [self[0] + 1, self[1] + 1, self[2] - 1].into(),
+            [self[0] + 1, self[1] - 1, self[2] - 1].into(),
+            [self[0] + 1, self[1] - 1, self[2] + 1].into(),
+        ]
     }
 }
 

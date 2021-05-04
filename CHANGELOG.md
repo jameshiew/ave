@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased] - 2021-04-05
+
+# Dev Changes
+* Use glium_text_rusttype instead of glium_text, to avoid dependency on Freetype
+* Updated dependencies
 
 ## [0.2.1] - 2020-12-28
 Internal changes only, should be functionally identical to the previous 0.2.0 release.

@@ -1,6 +1,6 @@
 [package]
 name = "ave"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["James Hiew <james@hiew.net>"]
 edition = "2018"
 description = "Voxel based world generation in Rust"
@@ -15,19 +15,20 @@ gitlab = { repository = "https://gitlab.com/jameshiew/ave" }
 
 [dependencies]
 # OpenGL + UI
-glium = "0.27"
-glium_text = { git = "https://github.com/rschristian/glium_text", rev = "9ade2e5f" }
+glium = "0.29.1"
+glium_text_rusttype = { git = "https://github.com/not-fl3/glium_text_rusttype", rev = "a76cd950aecdd3f58a04bed36a719301b223aa97" }
 
 # math
-cgmath = "0.17"
-collision = "0.20"
-float-cmp = "0.6"
-rand = "0.7"
-noise = "0.6"
+cgmath = "0.18"
+# https://github.com/rustgd/collision-rs/pull/118
+collision = { git = "https://github.com/Vurich/collision-rs", rev = "95218b711af67b70b546549659738aef9f9030d6" }
+float-cmp = "*"
+rand = "*"
+noise = "*"
 
 # instrumentation
-prometheus = "0.8"
+prometheus = "*"
 
 # logging
-env_logger = "0.7"
-log = "0.4"
+env_logger = "*"
+log = "*"

@@ -10,7 +10,6 @@ Built with lots of help from the [Glium](https://github.com/glium/glium) and [Gl
 Prerequisites:
 * Rust 2018
 * Cargo
-* FreeType (e.g. install with `brew install freetype` on macOS)
 
 ```
 git clone https://github.com/jameshiew/ave.git
@@ -26,3 +25,5 @@ cargo run --release
 
 ## Options
 Choices of shader and world generator are hard coded at compile time, currently. Also, some default values such as render distance can be edited in `src/default.rs`. 
+
+Log level can be set via the `RUST_LOG` environment variable e.g. `RUST_LOG=debug`.
