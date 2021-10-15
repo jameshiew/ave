@@ -1,5 +1,9 @@
-default:
-  image: rust:1.51.0
+stages:
+  - lint
+  - qa
+  - release
+
+image: rust:1.55.0
 
 cache:
   untracked: true
@@ -9,11 +13,6 @@ cache:
 variables:
   CARGO_HOME: $CI_PROJECT_DIR/cargo
   RUST_BACKTRACE: FULL
-
-stages:
-  - lint
-  - qa
-  - release
 
 lint:
   stage: lint
