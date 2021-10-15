@@ -269,7 +269,7 @@ mod tests {
     #[test]
     fn chunk_get() {
         let mut chunk = HashChunk::new();
-        chunk.set([0, 0, 0].into(), &block::GRASS);
+        chunk.set([0, 0, 0].into(), block::GRASS);
         assert_eq!(chunk.get([0, 0, 0].into()), Some(&block::GRASS));
     }
 }
