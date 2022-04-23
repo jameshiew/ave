@@ -2,7 +2,7 @@
 name = "ave"
 version = "0.2.2"
 authors = ["James Hiew <james@hiew.net>"]
-edition = "2018"
+edition = "2021"
 description = "Voxel based world generation in Rust"
 readme = "README.md"
 homepage = "https://github.com/jameshiew/ave"
