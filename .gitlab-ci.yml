@@ -3,7 +3,7 @@ stages:
   - qa
   - release
 
-image: rust:1.55.0
+image: rust:latest
 
 cache:
   untracked: true
@@ -31,7 +31,6 @@ qa:
 
 updated:
   stage: qa
-  image: rust:latest
   script:
     - cargo update --verbose
     - cargo check --verbose
