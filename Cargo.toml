@@ -15,13 +15,12 @@ gitlab = { repository = "https://gitlab.com/jameshiew/ave" }
 
 [dependencies]
 # OpenGL + UI
-glium = "0.29.1"
-glium_text_rusttype = { git = "https://github.com/not-fl3/glium_text_rusttype", rev = "a76cd950aecdd3f58a04bed36a719301b223aa97" }
+glium = "*"
+glium_text_rusttype = { git = "https://github.com/jameshiew/glium_text_rusttype", rev = "04f484880466f4f2a46b5a1e51a253a20d7298ab" }
 
 # math
-cgmath = "0.18"
-# https://github.com/rustgd/collision-rs/pull/118
-collision = { git = "https://github.com/Vurich/collision-rs", rev = "95218b711af67b70b546549659738aef9f9030d6" }
+cgmath = "*"
+collision = { git = "https://github.com/eadf/collision-rs", rev = "02e8fff7b8686b4e7f935650b0b68622fe5fd82a" }
 float-cmp = "*"
 rand = "*"
 noise = "*"
