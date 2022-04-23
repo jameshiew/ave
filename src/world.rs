@@ -4,6 +4,7 @@ use crate::space::Position;
 use crate::worldgen;
 use crate::worldgen::WorldGenerator;
 use cgmath::Point3;
+use std::collections::hash_map::Entry;
 use std::collections::{HashMap, HashSet};
 use std::vec::Vec;
 
@@ -184,13 +185,12 @@ impl World for InMemoryWorld {
     }
 
     fn get_or_create(&mut self, coordinates: ChunkCoordinates) -> &HashChunk {
-        #![allow(clippy::map_entry)] // TODO: clippy recommends a different way that we should aim to use
-        if self.chunks.contains_key(&coordinates) {
-            self.chunks.get(&coordinates).unwrap()
-        } else {
+        if let Entry::Vacant(e) = self.chunks.entry(coordinates) {
             let chunk = self.generator.generate_chunk(coordinates);
-            self.chunks.insert(coordinates, chunk);
+            e.insert(chunk);
             self.chunks.get_mut(&coordinates).unwrap()
+        } else {
+            self.chunks.get(&coordinates).unwrap()
         }
     }
 
