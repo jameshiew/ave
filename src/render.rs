@@ -1,6 +1,3 @@
-// TODO: have to allow this lint for this file due to clippy warning on the external implement_vertex! macro
-#![allow(clippy::unneeded_field_pattern)]
-
 use glium::implement_vertex;
 
 #[derive(Copy, Clone)]
