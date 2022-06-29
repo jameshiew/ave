@@ -8,7 +8,7 @@ Built with lots of help from the [Glium](https://github.com/glium/glium) and [Gl
 
 ## Getting Started
 Prerequisites:
-* Rust 2018
+* Rust 2021
 * Cargo
 
 ```
