@@ -15,7 +15,7 @@ gitlab = { repository = "https://gitlab.com/jameshiew/ave" }
 
 [dependencies]
 # OpenGL + UI
-glium = "0.31.0"
+glium = "0.32.1"
 glium_text_rusttype = { git = "https://github.com/jameshiew/glium_text_rusttype", rev = "04f484880466f4f2a46b5a1e51a253a20d7298ab" }
 
 # math
