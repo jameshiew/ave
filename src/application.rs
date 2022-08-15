@@ -1,3 +1,5 @@
+use glium::glutin::window::CursorGrabMode;
+
 /// Singleton state for the running application
 pub struct Application {
     pub display: glium::Display,
@@ -23,7 +25,7 @@ impl Application {
         self.display
             .gl_window()
             .window()
-            .set_cursor_grab(true)
+            .set_cursor_grab(CursorGrabMode::Locked)
             .expect("couldn't grab cursor");
         self.display.gl_window().window().set_cursor_visible(false);
         self.cursor_grabbed = true;
@@ -32,7 +34,7 @@ impl Application {
         self.display
             .gl_window()
             .window()
-            .set_cursor_grab(false)
+            .set_cursor_grab(CursorGrabMode::None)
             .expect("couldn't ungrab cursor");
         self.display.gl_window().window().set_cursor_visible(true);
         self.cursor_grabbed = false;
