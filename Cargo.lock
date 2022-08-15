@@ -242,7 +242,7 @@ dependencies = [
 [[package]]
 name = "collision"
 version = "0.20.1"
-source = "git+https://github.com/eadf/collision-rs?rev=02e8fff7b8686b4e7f935650b0b68622fe5fd82a#02e8fff7b8686b4e7f935650b0b68622fe5fd82a"
+source = "git+https://github.com/rustgd/collision-rs?rev=29090c42a1716d80c1a4fb12e4e1dc2d9c18580e#29090c42a1716d80c1a4fb12e4e1dc2d9c18580e"
 dependencies = [
  "bit-set",
  "cgmath",
