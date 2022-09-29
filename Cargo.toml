@@ -16,11 +16,11 @@ gitlab = { repository = "https://gitlab.com/jameshiew/ave" }
 [dependencies]
 # OpenGL + UI
 glium = "0.32"
-glium_text_rusttype = { git = "https://github.com/jameshiew/glium_text_rusttype", rev = "04f484880466f4f2a46b5a1e51a253a20d7298ab" }
+glium_text_rusttype = "0.3.3"
 
 # math
 cgmath = "0.18"
-collision = { git = "https://github.com/rustgd/collision-rs", rev = "29090c42a1716d80c1a4fb12e4e1dc2d9c18580e" }
+collision = "0.20.1"
 float-cmp = "0.9"
 rand = "0.8"
 noise = "0.7"
@@ -31,3 +31,7 @@ prometheus = "0.13"
 # logging
 env_logger = "0.9"
 log = "0.4"
+
+[patch.crates-io]
+collision = { git = "https://github.com/rustgd/collision-rs", rev = "29090c42a1716d80c1a4fb12e4e1dc2d9c18580e" }
+glium_text_rusttype = { git = "https://github.com/jameshiew/glium_text_rusttype", rev = "04f484880466f4f2a46b5a1e51a253a20d7298ab" }
