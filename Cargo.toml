@@ -9,6 +9,7 @@ homepage = "https://github.com/jameshiew/ave"
 repository = "https://github.com/jameshiew/ave"
 license-file = "LICENSE.txt"
 keywords = ["voxel", "glsl"]
+rust-version = "1.57.0"
 
 [badges]
 gitlab = { repository = "https://gitlab.com/jameshiew/ave" }
