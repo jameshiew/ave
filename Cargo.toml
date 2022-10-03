@@ -23,7 +23,7 @@ cgmath = "0.18"
 collision = "0.20.1"
 float-cmp = "0.9"
 rand = "0.8"
-noise = "0.7"
+noise = "0.8"
 
 # instrumentation
 prometheus = "0.13"

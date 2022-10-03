@@ -84,10 +84,9 @@ pub struct NaturalWorldGenerator {
 
 impl NaturalWorldGenerator {
     pub fn new(seed: u32) -> NaturalWorldGenerator {
-        let mut generator = NaturalWorldGenerator {
-            perlin: Perlin::new(),
+        let generator = NaturalWorldGenerator {
+            perlin: Perlin::new(seed),
         };
-        generator.perlin = generator.perlin.set_seed(seed);
         debug!(
             "Using seed {} for NaturalWorldGenerator",
             generator.perlin.seed()
