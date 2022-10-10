@@ -892,9 +892,9 @@ dependencies = [
 
 [[package]]
 name = "noise"
-version = "0.8.0"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f121e5cd8ee316affb422eababc6cd61fc22ba37cf4cb6d486166fdc058c9307"
+checksum = "13cc3e3ad4c2c5be33c35053984fd689c23af1b33c025d741d63631db051b13d"
 dependencies = [
  "num-traits",
  "rand 0.7.3",
